@@ -51,6 +51,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analizadores\GramaticaOC.cs" />
+    <Compile Include="Analizadores\GramaticaTree.cs" />
+    <Compile Include="Componentes\Arreglo.cs" />
+    <Compile Include="Componentes\Clase.cs" />
+    <Compile Include="Componentes\Clases.cs" />
+    <Compile Include="Componentes\Funcion.cs" />
+    <Compile Include="Componentes\Funciones.cs" />
+    <Compile Include="Componentes\Parametro.cs" />
+    <Compile Include="Componentes\Parametros.cs" />
+    <Compile Include="Componentes\Valores.cs" />
+    <Compile Include="Componentes\Variable.cs" />
+    <Compile Include="Componentes\Variables.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,5 +116,6 @@
   <ItemGroup>
     <Content Include="Resources\world.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

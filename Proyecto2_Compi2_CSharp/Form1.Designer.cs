@@ -43,16 +43,16 @@
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.tabCtrlSalidas = new System.Windows.Forms.TabControl();
             this.tabPConsolaS = new System.Windows.Forms.TabPage();
-            this.tabPErrores = new System.Windows.Forms.TabPage();
-            this.tabPOptim = new System.Windows.Forms.TabPage();
-            this.tabP3D = new System.Windows.Forms.TabPage();
-            this.tabP3Dop = new System.Windows.Forms.TabPage();
-            this.TabCEntradas = new System.Windows.Forms.TabControl();
             this.txtConsola = new System.Windows.Forms.TextBox();
+            this.tabPErrores = new System.Windows.Forms.TabPage();
             this.txtErrores = new System.Windows.Forms.TextBox();
+            this.tabPOptim = new System.Windows.Forms.TabPage();
             this.txtOp = new System.Windows.Forms.TextBox();
+            this.tabP3D = new System.Windows.Forms.TabPage();
             this.txt3D = new System.Windows.Forms.TextBox();
+            this.tabP3Dop = new System.Windows.Forms.TabPage();
             this.txt3Dop = new System.Windows.Forms.TextBox();
+            this.TabCEntradas = new System.Windows.Forms.TabControl();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.tabCtrlSalidas.SuspendLayout();
@@ -165,6 +165,7 @@
             this.toolStripButton4.Name = "toolStripButton4";
             this.toolStripButton4.Size = new System.Drawing.Size(76, 22);
             this.toolStripButton4.Text = "Compilar";
+            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
             // tabCtrlSalidas
             // 
@@ -192,6 +193,16 @@
             this.tabPConsolaS.Text = "Consola de Salida";
             this.tabPConsolaS.UseVisualStyleBackColor = true;
             // 
+            // txtConsola
+            // 
+            this.txtConsola.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtConsola.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtConsola.Location = new System.Drawing.Point(3, 3);
+            this.txtConsola.Multiline = true;
+            this.txtConsola.Name = "txtConsola";
+            this.txtConsola.Size = new System.Drawing.Size(729, 110);
+            this.txtConsola.TabIndex = 0;
+            // 
             // tabPErrores
             // 
             this.tabPErrores.Controls.Add(this.txtErrores);
@@ -202,6 +213,15 @@
             this.tabPErrores.TabIndex = 1;
             this.tabPErrores.Text = "Errores";
             this.tabPErrores.UseVisualStyleBackColor = true;
+            // 
+            // txtErrores
+            // 
+            this.txtErrores.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtErrores.Location = new System.Drawing.Point(3, 3);
+            this.txtErrores.Multiline = true;
+            this.txtErrores.Name = "txtErrores";
+            this.txtErrores.Size = new System.Drawing.Size(729, 110);
+            this.txtErrores.TabIndex = 0;
             // 
             // tabPOptim
             // 
@@ -215,6 +235,15 @@
             this.tabPOptim.UseVisualStyleBackColor = true;
             this.tabPOptim.Click += new System.EventHandler(this.tabPage3_Click);
             // 
+            // txtOp
+            // 
+            this.txtOp.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtOp.Location = new System.Drawing.Point(3, 3);
+            this.txtOp.Multiline = true;
+            this.txtOp.Name = "txtOp";
+            this.txtOp.Size = new System.Drawing.Size(729, 110);
+            this.txtOp.TabIndex = 0;
+            // 
             // tabP3D
             // 
             this.tabP3D.Controls.Add(this.txt3D);
@@ -225,6 +254,18 @@
             this.tabP3D.TabIndex = 3;
             this.tabP3D.Text = "Codigo 3D";
             this.tabP3D.UseVisualStyleBackColor = true;
+            // 
+            // txt3D
+            // 
+            this.txt3D.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txt3D.Location = new System.Drawing.Point(3, 3);
+            this.txt3D.Multiline = true;
+            this.txt3D.Name = "txt3D";
+            this.txt3D.ReadOnly = true;
+            this.txt3D.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txt3D.Size = new System.Drawing.Size(729, 110);
+            this.txt3D.TabIndex = 0;
+            this.txt3D.WordWrap = false;
             // 
             // tabP3Dop
             // 
@@ -237,50 +278,6 @@
             this.tabP3Dop.Text = "Codigo 3D Optimizado";
             this.tabP3Dop.UseVisualStyleBackColor = true;
             // 
-            // TabCEntradas
-            // 
-            this.TabCEntradas.Location = new System.Drawing.Point(207, 52);
-            this.TabCEntradas.Name = "TabCEntradas";
-            this.TabCEntradas.SelectedIndex = 0;
-            this.TabCEntradas.Size = new System.Drawing.Size(524, 331);
-            this.TabCEntradas.TabIndex = 4;
-            // 
-            // txtConsola
-            // 
-            this.txtConsola.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtConsola.Location = new System.Drawing.Point(3, 3);
-            this.txtConsola.Multiline = true;
-            this.txtConsola.Name = "txtConsola";
-            this.txtConsola.Size = new System.Drawing.Size(729, 110);
-            this.txtConsola.TabIndex = 0;
-            // 
-            // txtErrores
-            // 
-            this.txtErrores.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtErrores.Location = new System.Drawing.Point(3, 3);
-            this.txtErrores.Multiline = true;
-            this.txtErrores.Name = "txtErrores";
-            this.txtErrores.Size = new System.Drawing.Size(729, 110);
-            this.txtErrores.TabIndex = 0;
-            // 
-            // txtOp
-            // 
-            this.txtOp.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtOp.Location = new System.Drawing.Point(3, 3);
-            this.txtOp.Multiline = true;
-            this.txtOp.Name = "txtOp";
-            this.txtOp.Size = new System.Drawing.Size(729, 110);
-            this.txtOp.TabIndex = 0;
-            // 
-            // txt3D
-            // 
-            this.txt3D.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txt3D.Location = new System.Drawing.Point(3, 3);
-            this.txt3D.Multiline = true;
-            this.txt3D.Name = "txt3D";
-            this.txt3D.Size = new System.Drawing.Size(729, 110);
-            this.txt3D.TabIndex = 0;
-            // 
             // txt3Dop
             // 
             this.txt3Dop.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -289,6 +286,14 @@
             this.txt3Dop.Name = "txt3Dop";
             this.txt3Dop.Size = new System.Drawing.Size(729, 110);
             this.txt3Dop.TabIndex = 0;
+            // 
+            // TabCEntradas
+            // 
+            this.TabCEntradas.Location = new System.Drawing.Point(207, 52);
+            this.TabCEntradas.Name = "TabCEntradas";
+            this.TabCEntradas.SelectedIndex = 0;
+            this.TabCEntradas.Size = new System.Drawing.Size(524, 331);
+            this.TabCEntradas.TabIndex = 4;
             // 
             // Form1
             // 
