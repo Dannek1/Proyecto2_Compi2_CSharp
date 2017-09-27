@@ -113,6 +113,11 @@ namespace Proyecto2_Compi2_CSharp
                 txtConsola.Text=Consola;
 
                 GramaticaTree gramatica = new GramaticaTree();
+
+                string respuesta = esCadenaValidaT(entrada, gramatica);
+
+                MessageBox.Show("Arbol de Analisis Sintactico Constuido !!!");
+
             }
             else
             {
@@ -182,7 +187,70 @@ namespace Proyecto2_Compi2_CSharp
             return a;
         }
 
+        public string esCadenaValidaT(string cadenaEntrada, Grammar gramatica)
+        {
+            LanguageData lenguaje = new LanguageData(gramatica);
+            Parser p = new Parser(lenguaje);
+            ParseTree arbol = p.Parse(cadenaEntrada);
+
+            string a = "";
+            if (arbol.HasErrors())
+            {
+
+                MessageBox.Show("Errores en la cadena de entrada");
+
+
+                int elementos = arbol.ParserMessages.Count;
+
+                for (int x = 0; x < elementos; x++)
+                {
+
+                    a += "Error en " + arbol.ParserMessages[x].Location + ";" + arbol.ParserMessages[x].Message + "\n";
+
+                    errores += arbol.ParserMessages[x].Location.Line + ";" + arbol.ParserMessages[x].Location.Column + ";" + arbol.ParserMessages[x].Message + "@";
+
+                }
+
+
+                if (arbol.Root != null)
+                {
+                    GenarbolT(arbol.Root);
+                    GenerateGraphT("Entrada.txt", "C:/Fuentes/");
+
+                }
+
+
+
+            }
+            else
+            {
+                if (arbol.Root != null)
+                {
+                    GenarbolT(arbol.Root);
+                    GenerateGraphT("Entrada.txt", "C:/Fuentes/");
+
+
+                    TresD = ActuarC(arbol.Root);
+
+                }
+            }
+
+            return a;
+        }
+
         public void GenarbolC(ParseTreeNode raiz)
+        {
+            System.IO.StreamWriter f = new System.IO.StreamWriter("C:/Arboles/ArbolC.txt");
+            f.Write("digraph lista{ rankdir=TB;node [shape = box, style=rounded]; ");
+            graph = "";
+            Generar(raiz);
+            f.Write(graph);
+            f.Write("}");
+            f.Close();
+
+        }
+
+        public void GenarbolT(ParseTreeNode raiz)
         {
             System.IO.StreamWriter f = new System.IO.StreamWriter("C:/Arboles/ArbolC.txt");
             f.Write("digraph lista{ rankdir=TB;node [shape = box, style=rounded]; ");
@@ -218,6 +286,25 @@ namespace Proyecto2_Compi2_CSharp
                         
 
                 var info = new System.Diagnostics.ProcessStartInfo("CMD.exe", "dot " + archivoEntrada + @"-o "+ archivoSalida + "-Tpng");
+
+
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private static void GenerateGraphT(string fileName, string path)
+        {
+            try
+            {
+                //String dotPath = "C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe";
+                String archivoEntrada = "C:\\Arboles\\ArbolT.txt";
+                String archivoSalida = "C:\\Arboles\\ArbolT.jpg";
+
+
+                var info = new System.Diagnostics.ProcessStartInfo("CMD.exe", "dot " + archivoEntrada + @"-o " + archivoSalida + "-Tpng");
 
 
             }

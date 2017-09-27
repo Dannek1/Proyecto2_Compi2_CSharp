@@ -34,7 +34,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             RegexBasedTerminal Rsino = new RegexBasedTerminal("Rsino", "SI_NO");
             RegexBasedTerminal Rsinosi = new RegexBasedTerminal("Rsinosi", "SI_NO_SI");
             RegexBasedTerminal Rsalir = new RegexBasedTerminal("Rsalir", "salir ");
-            RegexBasedTerminal Relejir = new RegexBasedTerminal("Relejir", "ELEJIR CASO ");
+            RegexBasedTerminal Relegir = new RegexBasedTerminal("Relejir", "ELEGIR CASO ");
             RegexBasedTerminal Rcontinuar = new RegexBasedTerminal("Rcontinuar", "CONTINUAR ");
             RegexBasedTerminal Rmientras = new RegexBasedTerminal("Rmientras", "MIENTRAS\\[");
             RegexBasedTerminal Rhacer = new RegexBasedTerminal("Rhacer", "HACER");
@@ -99,7 +99,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             RegexBasedTerminal resta = new RegexBasedTerminal("resta", "-");
             RegexBasedTerminal multiplicacion = new RegexBasedTerminal("multi", "\\*");
             RegexBasedTerminal division = new RegexBasedTerminal("div", "\\/");
-            RegexBasedTerminal potencia = new RegexBasedTerminal("power", "\\^");
+            RegexBasedTerminal potencia = new RegexBasedTerminal("power", "pow");
 
             RegexBasedTerminal aumentar = new RegexBasedTerminal("aumentar", "\\+\\+");
             RegexBasedTerminal disminuir = new RegexBasedTerminal("disminuir", "--");
@@ -128,8 +128,14 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                     Do_While = new NonTerminal("Do_While"),
                     IF = new NonTerminal("If"),
                     For = new NonTerminal("for"),
-                    SX = new NonTerminal("SX"),
-                    Repetir = new NonTerminal("Repetir"),
+                    Loop = new NonTerminal("Loop"),
+                    Elegir = new NonTerminal("Elegir"),
+                    SalidaC = new NonTerminal("SalidaC"),
+                    aINT = new NonTerminal("aINT"),
+                    aDou = new NonTerminal("aDou"),
+                    intASt = new NonTerminal("intASt"),
+                    douASt = new NonTerminal("douASt"),
+                    douAINt = new NonTerminal("douAINt"),
                     Imprimir = new NonTerminal("Imprimir"),
                     Visibilidad = new NonTerminal("Visibilidad"),
                     Contenido = new NonTerminal("Contenido"),
@@ -142,13 +148,18 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                     Operaciones = new NonTerminal("Operaciones"),
                     Dimensiones = new NonTerminal("Dimensiones"),
                     Dimension = new NonTerminal("Dimension"),
+                    Partes = new NonTerminal("Partes"),
                     AsignacionesArreglo = new NonTerminal("AsignacionesArreglo"),
                     AsignacionArreglo = new NonTerminal("AsignacionArreglo"),
                     Condicion = new NonTerminal("Condicion"),
                     Logica = new NonTerminal("Logica"),
                     Relacional = new NonTerminal("Relacional"),
+                    Nombres = new NonTerminal("Nombres"),
                     Valor = new NonTerminal("Valor"),
-                    Sino = new NonTerminal("Sino");
+                    Sino = new NonTerminal("Sino"),
+                    Salir = new NonTerminal("Salir"),
+                    Repetir = new NonTerminal("Repetir"),
+                    SinoS = new NonTerminal("SinoS");
 
             S.Rule = Cabeza + Cuerpo
                    | Cuerpo;
@@ -159,22 +170,152 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | importacion;
 
             importacion.Rule = ID + "." + ID
-                            |ruta;
+                            | ruta;
 
-            Cuerpo.Rule = RClase + ID + "[" + ID + "]:" + Indent + Componentes
-                          | RClase + ID + "[]:" + Indent + Componentes;
+            Cuerpo.Rule = RClase + ID + "[" + ID + "]:" + Indent + Partes
+                          | RClase + ID + "[]:" + Indent + Partes;
+
+            Partes.Rule = Globales + Componentes
+                        | Componentes;
+
+            Globales.Rule = Globales + Global
+                            | Global;
+
+            Global.Rule = Tipo + Nombres
+                        | Visibilidad + Tipo + Nombres;
+
+            Nombres.Rule = Nombres + "," + ID
+                        | ID;
 
             Componentes.Rule = Componentes + Componente
                             | Componente;
 
             Componente.Rule = ID + "[]:" + Indent + Sentencias + Dedent
-                            | ID + "["+Parametros+"]:" + Indent + Sentencias + Dedent
+                            | ID + "[" + Parametros + "]:" + Indent + Sentencias + Dedent
                             | Tipo + ID + "[]:" + Indent + Sentencias + Dedent
-                            | Tipo +ID + "[" + Parametros + "]:" + Indent + Sentencias + Dedent;
+                            | Tipo + ID + "[" + Parametros + "]:" + Indent + Sentencias + Dedent
+                            | Visibilidad + ID + "[]:" + Indent + Sentencias + Dedent
+                            | Visibilidad + ID + "[" + Parametros + "]:" + Indent + Sentencias + Dedent
+                            | Visibilidad + Tipo + ID + "[]:" + Indent + Sentencias + Dedent
+                            | Visibilidad + Tipo + ID + "[" + Parametros + "]:" + Indent + Sentencias + Dedent;
 
+            Sentencias.Rule = Sentencias + Sentencia
+                            | Sentencia;
 
+            Sentencia.Rule = Retorno
+                           | Asignacion
+                           | Declaracion
+                           | Funciones
+                           | IF
+                           | For
+                           | While
+                           | Loop
+                           | Do_While
+                           | Imprimir
+                           | Elegir
+                           | Loop
+                           | SalidaC
+                           | aINT
+                           | aDou
+                           | douASt
+                           | intASt
+                           | douAINt
+                           | Salir;
 
+            Declaracion.Rule = Tipo + Nombres
+                            | Tipo + Nombres + "=>" + Operacion
+                            | Tipo + ID + Dimensiones;
 
+            Asignacion.Rule = ID + "=>" + Operacion
+                            | ID + Dimensiones + "=>" + Operacion;
+
+            IF.Rule = Rsi + "[" + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent + SinoS + Sino
+                      | Rsi + "[" + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent + Sino
+                      | Rsi + "[" + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent + SinoS
+                      | Rsi + "[" + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent;
+
+            SinoS.Rule = SinoS + Rsinosi + "[" + Logica + "]" + DosPuntos + Indent + Sentencias + Dedent
+                         | Rsinosi + "[" + Logica + "]" + DosPuntos + Indent + Sentencias + Dedent;
+
+            Sino.Rule = Rsino + DosPuntos + Indent + Sentencias + Dedent;
+
+            For.Rule = RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Indent + Sentencias + Dedent
+                        | RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Indent + Sentencias + Dedent
+                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Indent + Sentencias + Dedent
+                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Indent + Sentencias + Dedent;
+
+            While.Rule = Rmientras + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent;
+
+            Do_While.Rule = Rhacer + DosPuntos + Indent + Sentencias + Dedent + Rmientras + Condicion + "]";
+
+            Repetir.Rule = Rrepetir + DosPuntos + Indent + Sentencias + Dedent + Rhasta + Condicion + "]";
+
+            Loop.Rule = Rloop + DosPuntos + Indent + Sentencias + Dedent;
+
+            SalidaC.Rule = RoutS + Operacion + "]";
+
+            aINT.Rule = RParseint + Operacion + "]";
+
+            aDou.Rule = RParseD + Operacion + "]";
+
+            intASt.Rule = RintToSTR + Operacion + "]";
+
+            douASt.Rule = RdoubleToStr + Operacion + "]";
+
+            douAINt.Rule = RdoubleToInt + Operacion + "]";
+
+            Retorno.Rule = Rretorna + Operacion;
+
+            Imprimir.Rule = Rimprimir + Operacion + "]";
+
+            Salir.Rule = Rsalir;
+
+            Condicion.Rule = Logica;
+
+            Logica.Rule = Logica + Logica + Or
+                        | Logica + Logica + and
+                        | Logica + Logica + XOR
+                        | not + Logica
+                        | "(" + Logica + ")"
+                        | Relacional;
+
+            Relacional.Rule = Relacional + Relacional + Igual
+                            | Relacional + Relacional + Diferente
+                            | Relacional + Relacional + Menor
+                            | Relacional + Relacional + MenorQue
+                            | Relacional + Relacional + Mayor
+                            | Relacional + Relacional + MayorQue
+                            | "(" + Relacional + ")"
+                            | Operacion;
+
+            Operacion.Rule = Operacion + Operacion +suma
+                            | Operacion + Operacion + resta
+                            | Operacion  + Operacion + division
+                            | Operacion  + Operacion + multiplicacion
+                            | Operacion + potencia + Operacion
+                            | "(" + Operacion + ")"
+                            | ID
+                            | ID + "[" + Operacion + "]"
+                            | Valor;
+
+            Dimensiones.Rule = Dimensiones + Dimension
+                              | Dimension;
+
+            Dimension.Rule = "[" + Operacion + "]";
+
+            Tipo.Rule = REntero
+                      | Rboolean
+                      | RCadena
+                      | RDoble
+                      | RCaracter
+                      | Rvoid;
+
+            Valor.Rule = Entero
+                 | Verdadero
+                 | Falso
+                 | Caracter
+                 | Doble
+                 | Cadena;
 
             this.Root = S;
         }
