@@ -130,6 +130,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                     For = new NonTerminal("for"),
                     Loop = new NonTerminal("Loop"),
                     Elegir = new NonTerminal("Elegir"),
+                    Casos = new NonTerminal("Casos"),
+                    Caso = new NonTerminal("Caso"),
                     SalidaC = new NonTerminal("SalidaC"),
                     aINT = new NonTerminal("aINT"),
                     aDou = new NonTerminal("aDou"),
@@ -316,6 +318,29 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                  | Caracter
                  | Doble
                  | Cadena;
+
+            Visibilidad.Rule = publico
+                       | privado
+                       | protegido;
+
+            Funciones.Rule = ID + "[" + Operaciones + "]" 
+                           | ID + "[" + "]"  ;
+
+            Operaciones.Rule = Operaciones + "," + Operacion
+                              | Operacion;
+
+            Elegir.Rule = Relegir + "(" + Operacion + ")" + DosPuntos + Casos;
+
+            Casos.Rule = Caso + Casos
+                        | Caso;
+
+            Caso.Rule = Operacion + DosPuntos + Indent + Sentencias + Dedent
+                       | "defecto" + DosPuntos + Indent + Sentencias + Dedent;
+
+            Parametros.Rule = Parametros + "," + Parametro
+                            | Parametro;
+
+            Parametro.Rule = Tipo + ID;
 
             this.Root = S;
         }

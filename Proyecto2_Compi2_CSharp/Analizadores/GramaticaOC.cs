@@ -58,7 +58,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             RegexBasedTerminal RDoble = new RegexBasedTerminal("RDoble", "decimal");
             RegexBasedTerminal Doble = new RegexBasedTerminal("Doble", "[0-9]+\\.[0-9]{6}");
 
-            RegexBasedTerminal Rboolean = new RegexBasedTerminal("Rboolean", "boolean");
+            RegexBasedTerminal Rboolean = new RegexBasedTerminal("Rboolean", "booleano");
             RegexBasedTerminal Verdadero = new RegexBasedTerminal("verdadero", "verdadero|true");
             RegexBasedTerminal Falso = new RegexBasedTerminal("falso", "falso|false");
 
@@ -260,6 +260,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             Declaracion.Rule = Tipo + ID + finSentencia//3
                             | Tipo + ID + "=" + Operacion + finSentencia//5
+                            | Tipo + ID + "=" + ID + "(" + ")" + finSentencia//7
+                            | Tipo + ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//8
                             | Tipo + ID + Dimensiones + finSentencia//4
                             | Tipo + ID + Dimensiones + "=" + ID + finSentencia//6
                             | Tipo + ID + Dimensiones + "=" + ID + "(" + ")" + finSentencia//8
@@ -286,7 +288,11 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Asignacion.Rule = ID + "=" + Operacion + finSentencia//4
                             | ID + aumentar + finSentencia//3
                             | ID + disminuir + finSentencia//3
-                            | ID + Dimension+ "="+ Operacion + finSentencia;//5
+                            | ID + Dimension + "=" + Operacion + finSentencia//5
+                            | Este + "." + ID + "=" + Operacion + finSentencia
+                            | Este + "." + ID + aumentar + finSentencia
+                            | Este + "." + ID + disminuir + finSentencia
+                            | Este + "." + ID + Dimension + "=" + Operacion + finSentencia;//7
 
             Asignacion.ErrorRule = SyntaxError + finSentencia;
 
@@ -294,13 +300,13 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             Retorno.ErrorRule = SyntaxError + finSentencia;
 
-            IF.Rule = Rsi + Condicion + ")" + iniCuerpo + Sentencias + finCuerpo
-                     | Rsi + Condicion + ")" + iniCuerpo + finCuerpo
-                     | Rsi + Condicion + ")" + iniCuerpo + Sentencias + Rsino + IF
-                     | Rsi + Condicion + ")" + iniCuerpo + Rsino + IF
-                     | Rsi + Condicion + ")" + iniCuerpo + Sentencias + Rsino + iniCuerpo + Sentencias + finCuerpo
-                     | Rsi + Condicion + ")" + iniCuerpo + Rsino + iniCuerpo + Sentencias + finCuerpo
-                     | Rsi + Condicion + ")" + iniCuerpo + Rsino + iniCuerpo + finCuerpo;
+            IF.Rule = Rsi + Condicion + ")" + iniCuerpo + Sentencias + finCuerpo//6
+                     | Rsi + Condicion + ")" + iniCuerpo + finCuerpo//5
+                     | Rsi + Condicion + ")" + iniCuerpo + Sentencias + Rsino + IF//7
+                     | Rsi + Condicion + ")" + iniCuerpo + Rsino + IF//6
+                     | Rsi + Condicion + ")" + iniCuerpo + Sentencias + Rsino + iniCuerpo + Sentencias + finCuerpo//9
+                     | Rsi + Condicion + ")" + iniCuerpo + Rsino + iniCuerpo + Sentencias + finCuerpo//8
+                     | Rsi + Condicion + ")" + iniCuerpo + Rsino + iniCuerpo + finCuerpo;//7
 
             IF.ErrorRule = SyntaxError + finCuerpo;
 
@@ -331,8 +337,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             Repetir.ErrorRule = SyntaxError + finSentencia;
 
-            Do_While.Rule = Rhacer + iniCuerpo + Sentencias + finCuerpo + Rmientras + "(" + Condicion + ")" + finSentencia
-                          | Rhacer + iniCuerpo + finCuerpo + Rmientras + "(" + Condicion + ")" + finSentencia;
+            Do_While.Rule = Rhacer + iniCuerpo + Sentencias + finCuerpo + Rmientras + Condicion + ")" + finSentencia
+                          | Rhacer + iniCuerpo + finCuerpo + Rmientras + Condicion + ")" + finSentencia;
 
             Do_While.ErrorRule = SyntaxError + finCuerpo;
 
