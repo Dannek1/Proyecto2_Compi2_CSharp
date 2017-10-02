@@ -275,7 +275,7 @@ namespace Proyecto2_Compi2_CSharp
 
         public void GenarbolT(ParseTreeNode raiz)
         {
-            System.IO.StreamWriter f = new System.IO.StreamWriter("C:/Arboles/ArbolC.txt");
+            System.IO.StreamWriter f = new System.IO.StreamWriter("C:/Arboles/ArbolT.txt");
             f.Write("digraph lista{ rankdir=TB;node [shape = box, style=rounded]; ");
             graph = "";
             Generar(raiz);

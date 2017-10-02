@@ -67,7 +67,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             RegexBasedTerminal RDoble = new RegexBasedTerminal("RDoble", "decimal");
             RegexBasedTerminal Doble = new RegexBasedTerminal("Doble", "[0-9]+\\.[0-9]{6}");
 
-            RegexBasedTerminal Rboolean = new RegexBasedTerminal("Rboolean", "boolean");
+            RegexBasedTerminal Rboolean = new RegexBasedTerminal("Rboolean", "booleano");
             RegexBasedTerminal Verdadero = new RegexBasedTerminal("verdadero", "verdadero|true");
             RegexBasedTerminal Falso = new RegexBasedTerminal("falso", "falso|false");
 
@@ -166,7 +166,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             S.Rule = Cabeza + Cuerpo
                    | Cuerpo;
 
-            Cabeza.Rule = Rimportar + importaciones;
+            Cabeza.Rule = Rimportar + importaciones + Eos;
 
             importaciones.Rule = importaciones + "," + importacion
                             | importacion;
@@ -174,8 +174,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             importacion.Rule = ID + "." + ID
                             | ruta;
 
-            Cuerpo.Rule = RClase + ID + "[" + ID + "]:" + Indent + Partes
-                          | RClase + ID + "[]:" + Indent + Partes;
+            Cuerpo.Rule = RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent
+                          | RClase + ID + "[]:" + Eos + Indent + Partes + Dedent;
 
             Partes.Rule = Globales + Componentes
                         | Componentes;
@@ -183,8 +183,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Globales.Rule = Globales + Global
                             | Global;
 
-            Global.Rule = Tipo + Nombres
-                        | Visibilidad + Tipo + Nombres;
+            Global.Rule = Tipo + Nombres + Eos
+                        | Visibilidad + Tipo + Nombres + Eos
+                        | Tipo + Nombres + "=>" + Operacion + Eos
+                        | Visibilidad + Tipo + Nombres + "=>" + Operacion + Eos;
 
             Nombres.Rule = Nombres + "," + ID
                         | ID;
@@ -192,14 +194,14 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Componentes.Rule = Componentes + Componente
                             | Componente;
 
-            Componente.Rule = ID + "[]:" + Indent + Sentencias + Dedent
-                            | ID + "[" + Parametros + "]:" + Indent + Sentencias + Dedent
-                            | Tipo + ID + "[]:" + Indent + Sentencias + Dedent
-                            | Tipo + ID + "[" + Parametros + "]:" + Indent + Sentencias + Dedent
-                            | Visibilidad + ID + "[]:" + Indent + Sentencias + Dedent
-                            | Visibilidad + ID + "[" + Parametros + "]:" + Indent + Sentencias + Dedent
-                            | Visibilidad + Tipo + ID + "[]:" + Indent + Sentencias + Dedent
-                            | Visibilidad + Tipo + ID + "[" + Parametros + "]:" + Indent + Sentencias + Dedent;
+            Componente.Rule = ID + "[]:" + Eos + Indent + Sentencias + Dedent
+                            | ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent
+                            | Tipo + ID + "[]:" + Eos + Indent + Sentencias + Dedent
+                            | Tipo + ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent
+                            | Visibilidad + ID + "[]:" + Eos + Indent + Sentencias + Dedent
+                            | Visibilidad + ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent
+                            | Visibilidad + Tipo + ID + "[]:" + Eos + Indent + Sentencias + Dedent
+                            | Visibilidad + Tipo + ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent;
 
             Sentencias.Rule = Sentencias + Sentencia
                             | Sentencia;
