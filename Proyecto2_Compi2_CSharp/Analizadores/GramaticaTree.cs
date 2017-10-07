@@ -174,8 +174,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             importacion.Rule = ID + "." + ID
                             | ruta;
 
-            Cuerpo.Rule = RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent
-                          | RClase + ID + "[]:" + Eos + Indent + Partes + Dedent;
+            Cuerpo.Rule =   RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent
+                          | RClase + ID + "[]:" + Eos + Indent + Partes + Dedent
+                          | Visibilidad + RClase + ID + "[]:" + Eos + Indent + Partes + Dedent
+                          | Visibilidad + RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent;
 
             Partes.Rule = Globales + Componentes
                         | Componentes;
@@ -226,53 +228,54 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                            | douAINt
                            | Salir;
 
-            Declaracion.Rule = Tipo + Nombres
-                            | Tipo + Nombres + "=>" + Operacion
-                            | Tipo + ID + Dimensiones;
+            Declaracion.Rule = Tipo + Nombres + Eos
+                            | Tipo + Nombres + "=>" + Operacion + Eos
+                            | Tipo + ID + Dimensiones + Eos;
 
-            Asignacion.Rule = ID + "=>" + Operacion
-                            | ID + Dimensiones + "=>" + Operacion;
+            Asignacion.Rule = ID + "=>" + Operacion + Eos
+                            | ID + Dimensiones + "=>" + Operacion + Eos
+                            | ID + "." + ID + "=>" + Operacion + Eos; 
 
-            IF.Rule = Rsi + "[" + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent + SinoS + Sino
-                      | Rsi + "[" + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent + Sino
-                      | Rsi + "[" + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent + SinoS
-                      | Rsi + "[" + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent;
+            IF.Rule = Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS + Sino
+                      | Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + Sino
+                      | Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS
+                      | Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
-            SinoS.Rule = SinoS + Rsinosi + "[" + Logica + "]" + DosPuntos + Indent + Sentencias + Dedent
-                         | Rsinosi + "[" + Logica + "]" + DosPuntos + Indent + Sentencias + Dedent;
+            SinoS.Rule = SinoS + Rsinosi + "[" + Logica + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
+                         | Rsinosi + "[" + Logica + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
-            Sino.Rule = Rsino + DosPuntos + Indent + Sentencias + Dedent;
+            Sino.Rule = Rsino + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
-            For.Rule = RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Indent + Sentencias + Dedent
-                        | RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Indent + Sentencias + Dedent
-                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Indent + Sentencias + Dedent
-                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Indent + Sentencias + Dedent;
+            For.Rule = RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
+                        | RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
+                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
+                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
-            While.Rule = Rmientras + Condicion + "]" + DosPuntos + Indent + Sentencias + Dedent;
+            While.Rule = Rmientras + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
-            Do_While.Rule = Rhacer + DosPuntos + Indent + Sentencias + Dedent + Rmientras + Condicion + "]";
+            Do_While.Rule = Rhacer + DosPuntos + Eos + Indent + Sentencias + Dedent + Rmientras + Condicion + "]";
 
-            Repetir.Rule = Rrepetir + DosPuntos + Indent + Sentencias + Dedent + Rhasta + Condicion + "]";
+            Repetir.Rule = Rrepetir + DosPuntos + Eos + Indent + Sentencias + Dedent + Rhasta + Condicion + "]";
 
-            Loop.Rule = Rloop + DosPuntos + Indent + Sentencias + Dedent;
+            Loop.Rule = Rloop + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
-            SalidaC.Rule = RoutS + Operacion + "]";
+            SalidaC.Rule = RoutS + Operacion + "]" + Eos;
 
-            aINT.Rule = RParseint + Operacion + "]";
+            aINT.Rule = RParseint + Operacion + "]" + Eos;
 
-            aDou.Rule = RParseD + Operacion + "]";
+            aDou.Rule = RParseD + Operacion + "]" + Eos;
 
-            intASt.Rule = RintToSTR + Operacion + "]";
+            intASt.Rule = RintToSTR + Operacion + "]" + Eos;
 
-            douASt.Rule = RdoubleToStr + Operacion + "]";
+            douASt.Rule = RdoubleToStr + Operacion + "]" + Eos;
 
-            douAINt.Rule = RdoubleToInt + Operacion + "]";
+            douAINt.Rule = RdoubleToInt + Operacion + "]" + Eos;
 
-            Retorno.Rule = Rretorna + Operacion;
+            Retorno.Rule = Rretorna + Operacion + Eos;
 
-            Imprimir.Rule = Rimprimir + Operacion + "]";
+            Imprimir.Rule = Rimprimir + Operacion + "]" + Eos;
 
-            Salir.Rule = Rsalir;
+            Salir.Rule = Rsalir + Eos;
 
             Condicion.Rule = Logica;
 
@@ -300,6 +303,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | "(" + Operacion + ")"
                             | ID
                             | ID + "[" + Operacion + "]"
+                            | Rself + "." + ID
                             | Valor;
 
             Dimensiones.Rule = Dimensiones + Dimension

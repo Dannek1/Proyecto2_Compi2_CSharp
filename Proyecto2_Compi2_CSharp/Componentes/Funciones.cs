@@ -8,8 +8,8 @@ namespace Proyecto2_Compi2_CSharp.Componentes
 {
     class Funciones
     {
-        Funcion cabeza;
-        Funcion ultimo;
+        public Funcion cabeza;
+        public Funcion ultimo;
         public Funcion aux;
 
         public Funciones()

@@ -8,8 +8,8 @@ namespace Proyecto2_Compi2_CSharp.Componentes
 {
     class Variables
     {
-        Variable cabeza;
-        Variable ultimo;
+        public Variable cabeza;
+        public Variable ultimo;
         public Variable aux;
 
         public Variables()

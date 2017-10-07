@@ -265,7 +265,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | Tipo + ID + Dimensiones + finSentencia//4
                             | Tipo + ID + Dimensiones + "=" + ID + finSentencia//6
                             | Tipo + ID + Dimensiones + "=" + ID + "(" + ")" + finSentencia//8
-                            | Tipo + ID + Dimensiones + "=" + ID + "(" + Operaciones+")" + finSentencia//8
+                            | Tipo + ID + Dimensiones + "=" + ID + "(" + Operaciones+")" + finSentencia//9
                             | Tipo + ID + Dimensiones + "=" + "{" + AsignacionesArreglo + "}" + finSentencia//8
                             | Tipo + ID + Dimensiones + "=" + "{" + AsignacionArreglo + "}" + finSentencia;//8
 

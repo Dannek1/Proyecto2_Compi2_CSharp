@@ -19,17 +19,19 @@ namespace Proyecto2_Compi2_CSharp
 {
     public partial class Form1 : Form
     {
-        String graph = "";
-        String errores = "";
         int contadorPestañas = 0;
         int contadorTemp = 0;
         int contadorL = 0;
+        int dimension;
+        string graph = "";
+        string errores = "";
         string TresD = "";
         string clase_actual = "";
         string fun_actual = "";
         bool retorna = false;
         bool operacion = false;
         Clases clases;
+
 
         public Form1()
         {
@@ -138,7 +140,7 @@ namespace Proyecto2_Compi2_CSharp
                 GramaticaTree gramatica = new GramaticaTree();
 
                 string respuesta = esCadenaValidaT(entrada, gramatica);
-
+                txtErrores.Text += respuesta;
                 MessageBox.Show("Arbol de Analisis Sintactico Constuido !!!");
 
             }
@@ -420,97 +422,7 @@ namespace Proyecto2_Compi2_CSharp
                     }
 
                 case "Global":
-                    {
-                        if (nodo.ChildNodes.Count == 3)
-                        {
-
-                            Clase temp = clases.Existe(clase_actual);
-
-                            string tipo = ActuarC(nodo.ChildNodes[0]);
-
-                            Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text);
-
-                            nuevo.SetVisibilidad("publico");
-
-                            temp.variables.Insertar(nuevo);
-
-                            
-                        }
-                        else if (nodo.ChildNodes.Count == 4)
-                        {
-
-                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
-                            {
-                                Clase temp = clases.Existe(clase_actual);
-
-                                String tipo = ActuarC(nodo.ChildNodes[1]);
-
-                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[2].Token.Text);
-
-                                nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));
-
-                                temp.variables.Insertar(nuevo);
-                            }
-                            else
-                            {
-                                //Arreglo
-                            }
-                        }
-                        else if (nodo.ChildNodes.Count == 5)
-                        {
-                            if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
-                            {
-
-                                Clase temp = clases.Existe(clase_actual);
-
-                                String tipo = nodo.ChildNodes[0].Token.Text;
-
-                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text, ActuarC(nodo.ChildNodes[3]));
-                                resultado = nodo.ChildNodes[1].Token.Text + " = " + ActuarC(nodo.ChildNodes[3]);
-
-                                nuevo.SetVisibilidad("publico");
-
-                                temp.variables.Insertar(nuevo);
-
-                            }
-                            else
-                            {
-                                //arreglo
-                            }
-                        }
-
-                        else if (nodo.ChildNodes.Count == 6)
-                        {
-                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
-                            {
-                                Clase temp = clases.Existe(clase_actual);
-
-                                String tipo = nodo.ChildNodes[0].Token.Text;
-
-                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text, ActuarC(nodo.ChildNodes[3]));
-                                resultado = nodo.ChildNodes[1].Token.Text + " = " + ActuarC(nodo.ChildNodes[3]);
-
-                                nuevo.SetValor(EvaluarC(nodo.ChildNodes[4]).ToString());
-                                nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));  
-
-                                temp.variables.Insertar(nuevo);
-
-                            }
-                        }
-
-                        else if (nodo.ChildNodes.Count == 8)
-                        {
-                            resultado = ActuarC(nodo.ChildNodes[0]);
-                        }
-
-                        else if (nodo.ChildNodes.Count == 9)
-                        {
-                            resultado = ActuarC(nodo.ChildNodes[0]);
-                        }
-
-                        break;
-                    }
-
+                    
                 case "Operacion":
                     {
                         if (nodo.ChildNodes.Count == 3)
@@ -980,12 +892,23 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 else
                                 {
-                                    string tipo = ActuarC(nodo.ChildNodes[0]);
+                                    string visi = ActuarC(nodo.ChildNodes[0]);
+                                    string tipo = ActuarC(nodo.ChildNodes[1]);
 
                                     if (!tipo.Equals("void"))
                                     {
-                                        retorna = true;
+                                        txtErrores.Text += "\r\nFalta Retorno";
                                     }
+                                    else
+                                    {
+                                        string x = nodo.ChildNodes[2].Token.Text;
+
+                                        Funcion nuevo = new Funcion(tipo, x, visi);
+
+                                        clases.Existe(clase_actual).funciones.Insertar(nuevo);
+
+                                    }
+
                                 }
                             }
                             else
@@ -1454,6 +1377,12 @@ namespace Proyecto2_Compi2_CSharp
                                             string visi = ActuarC(nodo.ChildNodes[1]);
                                             string tipo = ActuarC(nodo.ChildNodes[2]);
 
+                                            if (tipo != "void")
+                                            {
+                                                retorna = true;
+                                            }
+
+
                                             funcion.tipo = tipo;
                                             funcion.visibilidad = visi;
 
@@ -1477,6 +1406,12 @@ namespace Proyecto2_Compi2_CSharp
                             if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
                             {
                                 string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                if (tipo != "void")
+                                {
+                                    retorna = true;
+                                }
+
                                 string nombre = nodo.ChildNodes[0].Token.Text;
 
                                 Funcion funcion = new Funcion(tipo, nombre, "publico");
@@ -1552,34 +1487,49 @@ namespace Proyecto2_Compi2_CSharp
                                     {
                                         string visi = ActuarC(nodo.ChildNodes[0]);
                                         string tipo = ActuarC(nodo.ChildNodes[1]);
-                                        fun_actual = nodo.ChildNodes[3].Token.Text;
 
-                                        Funcion nuevo = new Funcion(tipo, fun_actual, visi);
-                                                                                
-                                        nuevo.SetArreglor(true);
-
-                                        string parametros = ActuarC(nodo.ChildNodes[4]);
-
-                                        string[] Sparametros = parametros.Split(',');
-
-                                        nuevo.parametros = new Parametros();
-
-                                        for (int y = 0; y < Sparametros.Length; y++)
+                                        if (tipo != "void")
                                         {
-                                            string[] param = Sparametros[y].Split(' ');
+                                            txtErrores.Text += "\r\nFalta Sentecia de retorno";
+                                        }
+                                        else
+                                        {
+                                            fun_actual = nodo.ChildNodes[3].Token.Text;
 
-                                            Parametro nP = new Parametro(param[0], param[1]);
+                                            Funcion nuevo = new Funcion(tipo, fun_actual, visi);
 
-                                            nuevo.parametros.Insertar(nP);
+                                            nuevo.SetArreglor(true);
 
+                                            string parametros = ActuarC(nodo.ChildNodes[4]);
+
+                                            string[] Sparametros = parametros.Split(',');
+
+                                            nuevo.parametros = new Parametros();
+
+                                            for (int y = 0; y < Sparametros.Length; y++)
+                                            {
+                                                string[] param = Sparametros[y].Split(' ');
+
+                                                Parametro nP = new Parametro(param[0], param[1]);
+
+                                                nuevo.parametros.Insertar(nP);
+
+                                            }
+
+                                            clases.Existe(clase_actual).funciones.Insertar(nuevo);
                                         }
 
-                                        clases.Existe(clase_actual).funciones.Insertar(nuevo);
+                                       
                                     }
                                     else
                                     {
                                         string visi = ActuarC(nodo.ChildNodes[0]);
                                         string tipo = ActuarC(nodo.ChildNodes[1]);
+                                        if (tipo != "void")
+                                        {
+                                            retorna = true;
+                                        }
+
                                         fun_actual = nodo.ChildNodes[3].Token.Text;
 
                                         Funcion nuevo = new Funcion(tipo, fun_actual, visi);
@@ -1593,8 +1543,575 @@ namespace Proyecto2_Compi2_CSharp
                                     }
                                 }
                             }
+                            else
+                            {
+
+                                if (nodo.ChildNodes[1].Term.Name.ToString() == "Tipo")
+                                {
+                                    if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                    {
+                                        string x = nodo.ChildNodes[2].Token.Text;
+
+                                        if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                        {
+                                            Clase clase = clases.Existe(clase_actual);
+                                            Funcion funcion = clase.funciones.Existe(x);
+
+                                            string tipo = ActuarC(nodo.ChildNodes[1]);
+
+                                            if (tipo != "void")
+                                            {
+                                                retorna = true;
+                                            }
+
+                                            funcion.visibilidad = "publico";
+                                            funcion.tipo = tipo;
+
+                                            funcion.nodo = nodo.ChildNodes[7];
+
+                                            funcion.variables = new Variables();
+
+                                            string parametros = ActuarC(nodo.ChildNodes[4]);
+
+                                            string[] Sparametros = parametros.Split(',');
+
+                                            funcion.parametros = new Parametros();
+
+                                            for (int y = 0; y < Sparametros.Length; y++)
+                                            {
+                                                string[] param = Sparametros[y].Split(' ');
+
+                                                Parametro nP = new Parametro(param[0], param[1]);
+
+                                                funcion.parametros.Insertar(nP);
+
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nNo Hay Función para sobrescribir";
+                                        }
+                                    }
+                                    else if (nodo.ChildNodes[5].Term.Name.ToString() == "Parametros")
+                                    {
+
+                                        string x = nodo.ChildNodes[3].Token.Text;
+
+                                        if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                        {
+                                            Clase clase = clases.Existe(clase_actual);
+                                            Funcion funcion = clase.funciones.Existe(x);
+
+                                            string tipo = ActuarC(nodo.ChildNodes[1]);
+
+                                            if (tipo != "void")
+                                            {
+                                                txtErrores.Text += "\r\nFalta Retorno";
+                                            }
+                                            else
+                                            {
+                                                funcion.visibilidad = "publico";
+                                                funcion.tipo = tipo;
+
+
+                                                funcion.variables = new Variables();
+                                                funcion.SetArreglor(true);
+
+                                                string parametros = ActuarC(nodo.ChildNodes[5]);
+
+                                                string[] Sparametros = parametros.Split(',');
+
+                                                funcion.parametros = new Parametros();
+
+                                                for (int y = 0; y < Sparametros.Length; y++)
+                                                {
+                                                    string[] param = Sparametros[y].Split(' ');
+
+                                                    Parametro nP = new Parametro(param[0], param[1]);
+
+                                                    funcion.parametros.Insertar(nP);
+
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nNo Hay Función para sobrescribir";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string x = nodo.ChildNodes[3].Token.Text;
+
+                                        if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                        {
+                                            Clase clase = clases.Existe(clase_actual);
+                                            Funcion funcion = clase.funciones.Existe(x);
+
+                                            string tipo = ActuarC(nodo.ChildNodes[1]);
+
+                                            if (tipo != "void")
+                                            {
+                                                retorna = true;
+                                            }
+
+                                            funcion.visibilidad = "publico";
+                                            funcion.tipo = tipo;
+
+
+                                            funcion.variables = new Variables();
+                                            funcion.SetArreglor(true);
+
+                                            funcion.nodo = nodo.ChildNodes[7];
+
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nNo Hay Función para sobrescribir";
+                                        }
+                                    }
+                                }
+                                else if (nodo.ChildNodes[1].Term.Name.ToString() == "Visibilidad")
+                                    {
+                                        if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                        {
+                                            string x = nodo.ChildNodes[2].Token.Text;
+
+                                            if (x.Equals(clase_actual))
+                                            {
+                                                if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                                {
+                                                    Clase clase = clases.Existe(clase_actual);
+
+                                                    Funcion funcion = clase.funciones.Existe(x);
+
+                                                    fun_actual = x;
+
+                                                    string visi = ActuarC(nodo.ChildNodes[1]);
+
+                                                    funcion.visibilidad = visi;
+
+                                                    funcion.nodo = nodo.ChildNodes[7];
+
+                                                    string parametros = ActuarC(nodo.ChildNodes[4]);
+
+                                                    string[] Sparametros = parametros.Split(',');
+
+                                                    funcion.parametros = new Parametros();
+
+                                                    for (int y = 0; y < Sparametros.Length; y++)
+                                                    {
+                                                        string[] param = Sparametros[y].Split(' ');
+
+                                                        Parametro nP = new Parametro(param[0], param[1]);
+
+                                                        funcion.parametros.Insertar(nP);
+
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nNo Existe la Funcion para sobrescribir";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nFalta Tipo";
+                                            }
+                                        }
+                                        else if (nodo.ChildNodes[2].Term.Name.ToString() == "Tipo")
+                                        {
+                                            if (nodo.ChildNodes[3].Term.Name.ToString() == "ID")
+                                            {
+                                                string x = nodo.ChildNodes[2].Token.Text;
+
+                                                if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                                {
+                                                    if (nodo.ChildNodes[5].Term.Name.ToString() == "Parametros")
+                                                    {
+                                                        string visi = ActuarC(nodo.ChildNodes[1]);
+                                                        string tipo = ActuarC(nodo.ChildNodes[2]);
+
+                                                        fun_actual = x;
+
+                                                        if (!tipo.Equals("void"))
+                                                        {
+                                                            fun_actual = x;
+
+                                                            Funcion funcion = clases.Existe(clase_actual).funciones.Existe(x);
+
+                                                            funcion.parametros = null;
+                                                            funcion.visibilidad = visi;
+
+                                                            funcion.tipo = tipo;
+
+                                                            funcion.variables = new Variables();
+
+                                                            string parametros = ActuarC(nodo.ChildNodes[5]);
+
+                                                            string[] Sparametros = parametros.Split(',');
+
+                                                            funcion.parametros = new Parametros();
+
+                                                            for (int y = 0; y < Sparametros.Length; y++)
+                                                            {
+                                                                string[] param = Sparametros[y].Split(' ');
+
+                                                                Parametro nP = new Parametro(param[0], param[1]);
+
+                                                                funcion.parametros.Insertar(nP);
+
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            txtErrores.Text += "\r\nFalta Retorno";
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        string visi = ActuarC(nodo.ChildNodes[1]);
+                                                        string tipo = ActuarC(nodo.ChildNodes[2]);
+
+                                                        fun_actual = x;
+
+                                                        Funcion funcion = clases.Existe(clase_actual).funciones.Existe(x);
+
+                                                        funcion.parametros = null;
+                                                        funcion.visibilidad = visi;
+
+                                                        funcion.tipo = tipo;
+
+                                                        funcion.variables = new Variables();
+
+                                                        funcion.nodo = nodo.ChildNodes[7];
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nNo existe la funcion a sobrescribir";
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                            string x = nodo.ChildNodes[2].Token.Text;
+                                            string visi = ActuarC(nodo.ChildNodes[1]);
+                                            string tipo = ActuarC(nodo.ChildNodes[2]);
+                                           
+
+                                            if (!tipo.Equals("void")){
+
+                                                fun_actual = x;
+
+                                                Funcion funcion = clases.Existe(clase_actual).funciones.Existe(x);
+
+                                                funcion.parametros = null;
+                                                funcion.visibilidad = visi;
+                                                funcion.tipo = tipo;
+
+                                                funcion.variables = new Variables();
+
+                                                funcion.SetArreglor(true);
+
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nFalta Retorno";
+                                            }
+
+                                           
+
+                                            }
+                                            
+                                        }
+                                    }
+                            }
                         }
-                        break;
+                        else if (nodo.ChildNodes.Count == 10)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                            {
+                                string visi= ActuarC(nodo.ChildNodes[0]);
+                                string tipo = ActuarC(nodo.ChildNodes[1]);
+                                string nombre = nodo.ChildNodes[3].Token.Text;
+
+                                if (clases.Existe(clase_actual).funciones.ExisteF(nombre)){
+
+                                    Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
+
+                                    funcion.tipo = tipo;
+                                    funcion.visibilidad = visi;
+
+                                    if (tipo != "void")
+                                    {
+                                        retorna = true;
+                                    }
+
+                                    funcion.SetArreglor(true);
+
+                                    funcion.nodo = nodo.ChildNodes[8];
+
+                                    funcion.variables = new Variables();
+
+                                    string parametros = ActuarC(nodo.ChildNodes[5]);
+
+                                    string[] Sparametros = parametros.Split(',');
+
+                                    funcion.parametros = new Parametros();
+
+                                    for (int y = 0; y < Sparametros.Length; y++)
+                                    {
+                                        string[] param = Sparametros[y].Split(' ');
+
+                                        Parametro nP = new Parametro(param[0], param[1]);
+
+                                        funcion.parametros.Insertar(nP);
+
+                                    }
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\n\rNo existe funcion para sobrescribir";
+                                }
+
+                                
+                            }
+                            else
+                            {
+                                if (nodo.ChildNodes[1].Term.Name.ToString() == "Visibilidad")
+                                {
+                                    if (nodo.ChildNodes[3].Term.Name.ToString() == "ID")
+                                    {
+                                        string nombre = nodo.ChildNodes[3].Token.Text;
+                                        string tipo = ActuarC(nodo.ChildNodes[1]);
+                                        string visi = ActuarC(nodo.ChildNodes[0]);
+
+                                        if (clases.Existe(clase_actual).funciones.ExisteF(nombre))
+                                        {
+                                            Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
+
+                                            funcion.visibilidad = visi;
+                                            funcion.tipo = tipo;
+
+                                            if (tipo != "void")
+                                            {
+                                                retorna = true;
+                                            }
+
+                                            funcion.variables = new Variables();
+                                            funcion.SetArreglor(true);
+                                            funcion.visibilidad = "publico";
+
+                                            funcion.nodo = nodo.ChildNodes[8];
+
+                                            string parametros = ActuarC(nodo.ChildNodes[5]);
+
+                                            string[] Sparametros = parametros.Split(',');
+
+                                            funcion.parametros = new Parametros();
+
+                                            for (int y = 0; y < Sparametros.Length; y++)
+                                            {
+                                                string[] param = Sparametros[y].Split(' ');
+
+                                                Parametro nP = new Parametro(param[0], param[1]);
+
+                                                funcion.parametros.Insertar(nP);
+
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nNo Existe la Funcion que Desea Sobrescribir";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (nodo.ChildNodes[6].Term.Name.ToString() == "Parametros")
+                                        {
+                                            string nombre = nodo.ChildNodes[4].Token.Text;
+                                            string tipo = ActuarC(nodo.ChildNodes[2]);
+                                            string visi = ActuarC(nodo.ChildNodes[1]);
+
+                                            if (clases.Existe(clase_actual).funciones.ExisteF(nombre))
+                                            {
+                                                Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
+
+                                                funcion.visibilidad = visi;
+                                                funcion.tipo = tipo;
+
+                                                if (tipo != "void")
+                                                {
+                                                    retorna = true;
+                                                    funcion.SetArreglor(true);
+                                                    funcion.variables = new Variables();
+
+                                                    string parametros = ActuarC(nodo.ChildNodes[6]);
+
+                                                    string[] Sparametros = parametros.Split(',');
+
+                                                    funcion.parametros = new Parametros();
+
+                                                    for (int y = 0; y < Sparametros.Length; y++)
+                                                    {
+                                                        string[] param = Sparametros[y].Split(' ');
+
+                                                        Parametro nP = new Parametro(param[0], param[1]);
+
+                                                        funcion.parametros.Insertar(nP);
+
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nFalta Retorno";
+                                                }
+
+                                                
+
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nNo Existe la funcion a sobrescribir";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            string nombre = nodo.ChildNodes[4].Token.Text;
+                                            string tipo = ActuarC(nodo.ChildNodes[2]);
+                                            string visi = ActuarC(nodo.ChildNodes[1]);
+
+                                            if (clases.Existe(clase_actual).funciones.ExisteF(nombre))
+                                            {
+                                                Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
+
+                                                funcion.visibilidad = visi;
+                                                funcion.tipo = tipo;
+
+                                                if (tipo != "void")
+                                                {
+                                                    retorna = true;
+                                                }
+
+                                                funcion.SetArreglor(true);
+
+                                                funcion.nodo = nodo.ChildNodes[8];
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nNo Existe la funcion a sobrescribir";
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    string nombre = nodo.ChildNodes[3].Token.Text;
+                                    string tipo = ActuarC(nodo.ChildNodes[1]);
+
+                                    if (clases.Existe(clase_actual).funciones.ExisteF(nombre))
+                                    {
+
+                                        Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
+
+                                        funcion.tipo = tipo;
+                                        funcion.visibilidad = "publico";
+
+                                        if (tipo != "void")
+                                        {
+                                            retorna = true;
+                                        }
+
+                                        funcion.variables = new Variables();
+
+                                        funcion.SetArreglor(true);
+
+                                        funcion.nodo = nodo.ChildNodes[8];
+
+                                        string parametros = ActuarC(nodo.ChildNodes[5]);
+
+                                        string[] Sparametros = parametros.Split(',');
+
+                                        funcion.parametros = new Parametros();
+
+                                        for (int y = 0; y < Sparametros.Length; y++)
+                                        {
+                                            string[] param = Sparametros[y].Split(' ');
+
+                                            Parametro nP = new Parametro(param[0], param[1]);
+
+                                            funcion.parametros.Insertar(nP);
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nNo Existe la funcion a sobrescribir";
+                                    }
+
+                                }
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 11)
+                        {
+                            string nombre = nodo.ChildNodes[4].Token.Text;
+                            string tipo = ActuarC(nodo.ChildNodes[2]);
+                            string visi = ActuarC(nodo.ChildNodes[1]);
+
+                            if (clases.Existe(clase_actual).funciones.ExisteF(nombre))
+                            {
+
+                                Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
+
+                                funcion.tipo = tipo;
+                                funcion.visibilidad = visi;
+
+                                funcion.variables = new Variables();
+
+                                funcion.nodo = nodo.ChildNodes[9];
+                                funcion.SetArreglor(true);
+
+                                if (tipo != "void")
+                                {
+                                    retorna = true;
+                                }
+
+
+                                string parametros = ActuarC(nodo.ChildNodes[6]);
+
+                                string[] Sparametros = parametros.Split(',');
+
+                                funcion.parametros = new Parametros();
+
+                                for (int y = 0; y < Sparametros.Length; y++)
+                                {
+                                    string[] param = Sparametros[y].Split(' ');
+
+                                    Parametro nP = new Parametro(param[0], param[1]);
+
+                                    funcion.parametros.Insertar(nP);
+
+                                }
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nNo Existe la Funcion a Sobrescribir";
+                            }
+                        }
+                            break;
                     }
 
                 case "Visibilidad":
@@ -1692,7 +2209,20 @@ namespace Proyecto2_Compi2_CSharp
                         }
                         else if (nodo.ChildNodes.Count == 4)
                         {
-                            //Arreglo
+                            dimension = 0;
+
+                            Clase tempoC = clases.Existe(clase_actual);
+
+                            Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                            string tipo = ActuarC(nodo.ChildNodes[0]);
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            string dimeniones = ActuarC(nodo.ChildNodes[2]);
+
+                            Variable nuevo = new Variable(tipo, nombre, "", dimension, dimeniones);
+                            temp.variables.Insertar(nuevo);
+
                         }
                         else if (nodo.ChildNodes.Count == 5)
                         {
@@ -1717,7 +2247,22 @@ namespace Proyecto2_Compi2_CSharp
                         }
                         else if (nodo.ChildNodes.Count == 6)
                         {
-                            //Arreglo
+
+                            Clase tempoC = clases.Existe(clase_actual);
+
+                            Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                            string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            string valor = EvaluarC(nodo.ChildNodes[4]).ToString();
+
+                            string dimeniones = ActuarC(nodo.ChildNodes[2]);
+
+                            Variable nuevo = new Variable(tipo, nombre, "valor", dimension, dimeniones);
+                            temp.variables.Insertar(nuevo);
+
                         }
                         else if (nodo.ChildNodes.Count == 7)
                         {
@@ -1729,10 +2274,291 @@ namespace Proyecto2_Compi2_CSharp
 
                             string nombre = nodo.ChildNodes[1].Token.Text;
 
+                            string funcion = nodo.ChildNodes[3].Token.Text;
+
+                            if (tempoC.funciones.ExisteF(funcion))
+                            {
+                                Funcion aux = tempoC.funciones.Existe(funcion);
+
+                                string temporal = fun_actual;
+
+                                if (aux.TieneParametros())
+                                {
+                                    txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                }
+                                else
+                                {
+                                    if (aux.tipo.Equals(tipo))
+                                    {
+                                        fun_actual = aux.GetNombre();
+                                        ActuarC(aux.nodo);
+                                        fun_actual = temporal;
+                                        string valor = aux.GetRetorno();
+
+                                        Variable nuevo = new Variable(tipo, nombre, valor);
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nError de Tipos";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                            }
+
+
+
+
                         }
                         else if (nodo.ChildNodes.Count == 8)
                         {
-                            //Arreglo
+                            if (nodo.ChildNodes[2].Token.Text.Equals("="))
+                            {
+                                Clase tempoC = clases.Existe(clase_actual);
+
+                                Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                                string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                string funcion = nodo.ChildNodes[3].Token.Text;
+
+                                if (tempoC.funciones.ExisteF(funcion))
+                                {
+                                    string temporal = fun_actual;
+
+                                    Funcion aux = tempoC.funciones.Existe(funcion);
+                                    string param = ActuarC(nodo.ChildNodes[5]);
+                                    string[] variables = param.Split(',');
+
+                                    fun_actual = funcion;
+                                    tempoC.funciones.Existe(funcion);
+
+                                    if (variables.Length == aux.nParametros)
+                                    {
+                                        for (int x = 0; x < variables.Length; x++)
+                                        {
+                                            string n = aux.parametros.GetNOmbreP(x + 1);
+
+                                            aux.variables.Buscar(n);
+
+                                            aux.variables.aux.SetValor(variables[x]);
+
+                                        }
+
+                                        ActuarC(aux.nodo);
+
+                                        string valor = aux.GetRetorno();
+
+                                        fun_actual = temporal;
+                                        Variable nuevo = new Variable(tipo, nombre, valor);
+                                        // Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                        temp.variables.Insertar(nuevo);
+
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nNo Coinciden los Parametros";
+                                    }
+
+
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                }
+                            }
+                            else
+                            {
+                                if (nodo.ChildNodes[4].Term.Name.ToString() == "ID")
+                                {
+                                    Clase tempoC = clases.Existe(clase_actual);
+
+                                    Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                                    string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    string funcion = nodo.ChildNodes[4].Token.Text;
+
+
+                                    if (tempoC.funciones.ExisteF(funcion))
+                                    {
+                                        Funcion aux = tempoC.funciones.Existe(funcion);
+
+                                        if (aux.tipo.Equals(tipo))
+                                        {
+
+                                            if (!aux.TieneParametros())
+                                            {
+
+                                                if (aux.IsArreglo())
+                                                {
+                                                    string dimeniones = ActuarC(nodo.ChildNodes[2]);
+                                                    string temporal = fun_actual;
+                                                    fun_actual = funcion;
+
+                                                    ActuarC(aux.nodo);
+
+                                                    fun_actual = temporal;
+
+                                                    string valor = aux.GetRetorno();
+
+                                                    Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                                    temp.variables.Insertar(nuevo);
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nLa Funcion no es un arreglo";
+                                                }
+
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nFaltan Parametros";
+                                            }
+
+
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nError de Tipos";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nNO existe la Funcion " + funcion;
+                                    }
+                                }
+                                else
+                                {
+                                    if (nodo.ChildNodes[5].Term.Name.ToString().Equals("AsignacionesArreglo"))
+                                    {
+                                        dimension = 0;
+
+                                        Clase tempoC = clases.Existe(clase_actual);
+
+                                        Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                                        string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                        string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                        string dimeniones = ActuarC(nodo.ChildNodes[2]);
+
+                                        string valor = ActuarC(nodo.ChildNodes[5]);
+
+                                        Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                        temp.variables.Insertar(nuevo);
+                                    }
+                                    else if (nodo.ChildNodes[5].Term.Name.ToString().Equals("AsignacionArreglo"))
+                                    {
+                                        dimension = 0;
+
+                                        Clase tempoC = clases.Existe(clase_actual);
+
+                                        Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                                        string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                        string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                        string dimeniones = ActuarC(nodo.ChildNodes[2]);
+
+                                        string valor = ActuarC(nodo.ChildNodes[5]);
+
+                                        Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                        temp.variables.Insertar(nuevo);
+
+
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Clase tempoC = clases.Existe(clase_actual);
+
+                            Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                            string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            string funcion = nodo.ChildNodes[4].Token.Text;
+                            
+                            Funcion aux = tempoC.funciones.Existe(funcion);
+
+                            string dimeniones = ActuarC(nodo.ChildNodes[2]);
+
+                            if (aux.tipo.Equals(tipo))
+                            {
+                                if (aux.IsArreglo())
+                                {
+                                    string temporal = fun_actual;
+                                    fun_actual = funcion;
+                                  
+
+                                
+                                    string param = ActuarC(nodo.ChildNodes[6]);
+                                    string[] variables = param.Split(',');
+
+                                    fun_actual = funcion;
+                                    tempoC.funciones.Existe(funcion);
+
+                                    if (variables.Length == aux.nParametros)
+                                    {
+                                        for (int x = 0; x < variables.Length; x++)
+                                        {
+                                            string n = aux.parametros.GetNOmbreP(x + 1);
+
+                                            aux.variables.Buscar(n);
+
+                                            aux.variables.aux.SetValor(variables[x]);
+
+                                        }
+
+                                        ActuarC(aux.nodo);
+
+                                        string valor = aux.GetRetorno();
+
+                                        fun_actual = temporal;
+                                        
+                                        Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                        temp.variables.Insertar(nuevo);
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nNo Coinciden los Parametros";
+                                    }
+
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nLa Funcion "+ funcion+" NO es Arreglo";
+                                }
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nError de Tipos";
+                            }
+
                         }
                         break;
                     }
@@ -2038,6 +2864,7 @@ namespace Proyecto2_Compi2_CSharp
                         }
                         break;
                     }
+
                 case "If":
                     {
                         string logica;
@@ -2668,6 +3495,56 @@ namespace Proyecto2_Compi2_CSharp
 
                         break;
                     }
+
+                case "Retorno":
+                    {
+                        Clase clase_n = clases.Existe(clase_actual);
+                        clase_n.funciones.Existe(fun_actual);
+
+                        if (retorna)
+                        {
+
+                            clase_n.funciones.aux.SetRetorno(ActuarC(nodo.ChildNodes[1]));
+                            retorna = false;
+                        }
+
+                        break;
+                    }
+
+
+                case "AsignacionArreglo":
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            resultado += ActuarC(nodo.ChildNodes[0]) + ",";
+                            resultado += ActuarC(nodo.ChildNodes[2]);
+                        }
+                        else
+                        {
+                            resultado += ActuarC(nodo.ChildNodes[0]);
+
+                        }
+
+                        break;
+                    }
+
+                case "AsignacionesArreglo":
+                    {
+                        if (nodo.ChildNodes.Count == 4)
+                        {
+                            resultado += ActuarC(nodo.ChildNodes[0]) + ";";
+                            resultado += ActuarC(nodo.ChildNodes[3]);
+                        }
+                        else
+                        {
+                            resultado += ActuarC(nodo.ChildNodes[1]);
+
+                        }
+
+
+                        break;
+                    }
+
             }
 
             return resultado;
@@ -2797,6 +3674,136 @@ namespace Proyecto2_Compi2_CSharp
             return resultado;
         }
 
+        string ActuarT(ParseTreeNode nodo)
+        {
+            string resultado = "";
+
+            switch (nodo.Term.Name.ToString())
+            {
+                case "S":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            ActuarC(nodo.ChildNodes[0]);
+
+                            resultado = ActuarC(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            resultado = ActuarC(nodo.ChildNodes[0]);
+                        }
+
+
+                        break;
+                    }
+
+                case "Cabeza":
+                    {
+                        ActuarT(nodo.ChildNodes[1]);
+                        break;
+                    }
+
+
+                case "importaciones":
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                            ActuarT(nodo.ChildNodes[3]);
+                        }
+                        else
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                        }
+                        break;
+                    }
+
+                case "Cuerpo":
+                    {
+                        if (nodo.ChildNodes.Count == 7)
+                        {
+                            clase_actual = nodo.ChildNodes[1].Token.Text;
+
+                            Clase nuevo = new Clase(clase_actual, "publico");
+                            
+
+                            clases.Insertar(nuevo);
+
+                            ActuarT(nodo.ChildNodes[5]);
+
+
+                        }
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+                            string visi = ActuarT(nodo.ChildNodes[0]);
+                            clase_actual = nodo.ChildNodes[2].Token.Text;
+
+                            Clase nuevo = new Clase(clase_actual, visi);
+
+
+                            clases.Insertar(nuevo);
+
+                            ActuarT(nodo.ChildNodes[6]);
+
+
+                        }
+                        else if (nodo.ChildNodes.Count == 9)
+                        {
+                            clase_actual = nodo.ChildNodes[1].Token.Text;
+
+                            string herencia= nodo.ChildNodes[3].Token.Text;
+
+                            Clase heredada = clases.Existe(herencia);
+
+                            if (heredada!=null)
+                            {
+
+                                Clase nuevo = new Clase(clase_actual, "publico");
+                                Heredar(heredada,nuevo);
+
+                                clases.Insertar(nuevo);
+
+
+                                ActuarT(nodo.ChildNodes[7]);
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nNo Existe la clase "+ heredada;
+                            }
+                        }
+                        else
+                        {
+                            string visi = ActuarT(nodo.ChildNodes[0]);
+                            clase_actual = nodo.ChildNodes[2].Token.Text;
+
+                            string herencia = nodo.ChildNodes[4].Token.Text;
+
+                            Clase heredada = clases.Existe(herencia);
+
+                            if (heredada != null)
+                            {
+
+                                Clase nuevo = new Clase(clase_actual, "publico");
+                                Heredar(heredada, nuevo);
+
+                                clases.Insertar(nuevo);
+
+
+                                ActuarT(nodo.ChildNodes[8]);
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nNo Existe la clase " + heredada;
+                            }
+
+                        }
+                        break;
+                    }
+            }
+
+            return resultado;
+        }
+
         private void toolStripButton6_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -2893,6 +3900,56 @@ namespace Proyecto2_Compi2_CSharp
             
         }
 
-        
+        private void Heredar(Clase padre, Clase hijo)
+        {
+            //variables
+
+            bool seguir = true;
+
+            padre.variables.aux = padre.variables.cabeza;
+
+            while (seguir)
+            {
+                if (padre.variables.aux.visibilidad.Equals("publico"))
+                {
+                    hijo.variables.Insertar(padre.variables.aux);
+                }
+
+
+                if (padre.variables.aux.siguiente != null)
+                {
+                    padre.variables.aux = padre.variables.aux.siguiente;
+                }
+                else
+                {
+                    seguir = false;
+                }
+
+            }
+
+
+            seguir = true;
+
+            padre.funciones.aux = padre.funciones.cabeza;
+
+            while (seguir)
+            {
+                if (padre.funciones.aux.visibilidad.Equals("publico"))
+                {
+                    hijo.funciones.Insertar(padre.funciones.aux);
+                }
+
+
+                if (padre.funciones.aux.siguiente != null)
+                {
+                    padre.funciones.aux = padre.funciones.aux.siguiente;
+                }
+                else
+                {
+                    seguir = false;
+                }
+
+            }
+        }
     }
 }
