@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componentes
 {
-    class Clases
+    public class Clases
     {
         Clase cabeza;
         Clase ultimo;

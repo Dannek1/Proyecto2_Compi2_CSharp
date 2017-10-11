@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componentes
 {
-    class Valores
+    public class Valores
     {
         private string valor;
         private int indice;

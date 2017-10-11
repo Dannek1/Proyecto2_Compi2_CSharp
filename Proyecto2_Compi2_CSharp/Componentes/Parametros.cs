@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componentes
 {
-    class Parametros
+    public class Parametros
     {
         private int contador;
         Parametro cabeza;

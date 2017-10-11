@@ -28,8 +28,13 @@ namespace Proyecto2_Compi2_CSharp
         string TresD = "";
         string clase_actual = "";
         string fun_actual = "";
+        string condicionswith = "";
+        ParseTreeNode op_switch;
+
         bool retorna = false;
         bool operacion = false;
+        bool salir = false;
+        bool sino_operado = false;
         Clases clases;
 
 
@@ -363,18 +368,33 @@ namespace Proyecto2_Compi2_CSharp
 
                 case "Cuerpo":
                     {
-                        if (nodo.ChildNodes.Count == 6)
+                        if (nodo.ChildNodes.Count == 7)
                         {
-                            clase_actual = nodo.ChildNodes[2].Token.Text;
-                            string visible = ActuarC(nodo.ChildNodes[0]);
+                            clase_actual = nodo.ChildNodes[1].Token.Text;
 
-                            Clase clase = new Clase(clase_actual, visible);
+                            Clase clase = new Clase(clase_actual, "publico");
 
-                            clases.Insertar(clase);
+                            string cpadre = nodo.ChildNodes[3].Token.Text;
 
-                            resultado = "class " + nodo.ChildNodes[2].Token.Text + "\r\n{" + ActuarC(nodo.ChildNodes[4]) + "\r\n}";
+                            Clase padre = clases.Existe(cpadre);
 
-                            txtConsola.Text += "Se ha creado la Clase " + clase_actual;
+                            if (padre != null)
+                            {
+                                Heredar(padre, clase);
+
+                                clases.Insertar(clase);
+
+                                resultado = "class " + nodo.ChildNodes[1].Token.Text + "{" + ActuarC(nodo.ChildNodes[5]) + "}";
+
+                                txtConsola.Text += "Se ha creado la Clase " + clase_actual;
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nError No Existe la Clase " + cpadre;
+                            }
+
+                            
                         }
                         else
                         {
@@ -422,7 +442,97 @@ namespace Proyecto2_Compi2_CSharp
                     }
 
                 case "Global":
-                    
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+
+                            Clase temp = clases.Existe(clase_actual);
+
+                            String tipo = ActuarC(nodo.ChildNodes[0]);
+
+                            Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text);
+
+                            nuevo.SetVisibilidad("publico");
+
+                            temp.variables.Insertar(nuevo);
+
+                        }
+                        else if (nodo.ChildNodes.Count == 4)
+                        {
+
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+                                Clase temp = clases.Existe(clase_actual);
+
+                                String tipo = ActuarC(nodo.ChildNodes[1]);
+
+                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[2].Token.Text);
+
+                                nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));
+
+                                temp.variables.Insertar(nuevo);
+                            }
+                            else
+                            {
+                                //Arreglo
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 5)
+                        {
+                            if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                            {
+
+                                Clase temp = clases.Existe(clase_actual);
+
+                                String tipo = nodo.ChildNodes[0].Token.Text;
+
+                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text, ActuarC(nodo.ChildNodes[3]));
+                                resultado = nodo.ChildNodes[1].Token.Text + " = " + ActuarC(nodo.ChildNodes[3]);
+
+                                nuevo.SetVisibilidad("publico");
+
+                                temp.variables.Insertar(nuevo);
+
+                            }
+                            else
+                            {
+                                //arreglo
+                            }
+                        }
+
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+                                Clase temp = clases.Existe(clase_actual);
+
+                                String tipo = nodo.ChildNodes[0].Token.Text;
+
+                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text, ActuarC(nodo.ChildNodes[3]));
+                                resultado = nodo.ChildNodes[1].Token.Text + " = " + ActuarC(nodo.ChildNodes[3]);
+
+                                nuevo.SetValor(ActuarC(nodo.ChildNodes[4]));
+                                nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));
+
+                                temp.variables.Insertar(nuevo);
+
+                                resultado = nodo.ChildNodes[2].Token.Text + " = " + ActuarC(nodo.ChildNodes[4]);
+                            }
+                        }
+
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+                            resultado = ActuarC(nodo.ChildNodes[0]);
+                        }
+
+                        else if (nodo.ChildNodes.Count == 9)
+                        {
+                            resultado = ActuarC(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
                 case "Operacion":
                     {
                         if (nodo.ChildNodes.Count == 3)
@@ -434,7 +544,26 @@ namespace Proyecto2_Compi2_CSharp
                             }
                             else
                             {
-                                resultado = Convert.ToString(EvaluarC(nodo));
+                                if (nodo.ChildNodes[1].Term.Name != "suma")
+                                {
+                                    resultado = Operaciones(ActuarC(nodo.ChildNodes[0]), ActuarC( nodo.ChildNodes[2]),"+");
+                                }
+                                else if (nodo.ChildNodes[1].Term.Name != "resta")
+                                {
+                                    resultado = Operaciones(ActuarC(nodo.ChildNodes[0]), ActuarC(nodo.ChildNodes[2]), "-");
+                                }
+                                else if (nodo.ChildNodes[1].Term.Name != "multi")
+                                {
+                                    resultado = Operaciones(ActuarC(nodo.ChildNodes[0]), ActuarC(nodo.ChildNodes[2]), "*");
+                                }
+                                else if (nodo.ChildNodes[1].Term.Name != "div")
+                                {
+                                    resultado = Operaciones(ActuarC(nodo.ChildNodes[0]), ActuarC(nodo.ChildNodes[2]), "/");
+                                }
+                                else if (nodo.ChildNodes[1].Term.Name != "power")
+                                {
+                                    resultado = Operaciones(ActuarC(nodo.ChildNodes[0]), ActuarC(nodo.ChildNodes[2]), "^");
+                                }
                             }
 
                         }
@@ -452,7 +581,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                 if (clase_n.variables.aux.IsArreglo())
                                 {
-                                    Double lugar = EvaluarC(nodo.ChildNodes[2]);
+                                    string lugar = ActuarC(nodo.ChildNodes[2]);
 
                                     resultado = clase_n.variables.aux.GetValor_Arr(0, Convert.ToInt32(lugar));
                                 }
@@ -467,7 +596,7 @@ namespace Proyecto2_Compi2_CSharp
                                 clase_n.funciones.aux.variables.Buscar(nodo.ChildNodes[0].Token.Text);
                                 if (clase_n.funciones.aux.variables.aux.IsArreglo())
                                 {
-                                    Double lugar = EvaluarC(nodo.ChildNodes[2]);
+                                    string lugar = ActuarC(nodo.ChildNodes[2]);
 
                                     resultado = clase_n.funciones.aux.variables.aux.GetValor_Arr(0, Convert.ToInt32(lugar));
                                 }
@@ -626,7 +755,7 @@ namespace Proyecto2_Compi2_CSharp
                                         nuevo.nodo = nodo.ChildNodes[4];
                                         temp.funciones.Insertar(nuevo);
 
-                                        resultado = x + "()" + "{\r\n" + ActuarC(nodo.ChildNodes[4]) + "\r\n}";
+                                       // resultado = x + "()" + "{\r\n" + ActuarC(nodo.ChildNodes[4]) + "\r\n}";
 
                                     }
                                     else
@@ -721,7 +850,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     temp.funciones.Insertar(nuevo);
 
-                                    resultado = x + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
+                                    //resultado = x + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
 
                                 }
                                 else
@@ -790,7 +919,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                         temp.funciones.Insertar(nuevo);
 
-                                        resultado = tipo + " " + fun_actual + "()" + "\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
+                                        //resultado = tipo + " " + fun_actual + "()" + "\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
 
                                         retorna = false;
                                     }
@@ -881,7 +1010,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                             temp.funciones.Insertar(nuevo);
 
-                                            resultado = visi + " " + x + "()\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
+                                            //resultado = visi + " " + x + "()\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
 
                                         }
                                         else
@@ -1006,7 +1135,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     temp.funciones.Insertar(nuevo);
 
-                                    resultado = tipo + " " + nombre + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
+                                    //resultado = tipo + " " + nombre + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
 
                                 }
                                 else
@@ -1115,7 +1244,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                         temp.funciones.Insertar(nuevo);
 
-                                        resultado = visi + " " + x + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
+                                        //resultado = visi + " " + x + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
                                     }
                                     else
                                     {
@@ -1184,7 +1313,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                             temp.funciones.Insertar(nuevo);
 
-                                            resultado = visi + " " + tipo + " " + fun_actual + "()" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
+                                            //resultado = visi + " " + tipo + " " + fun_actual + "()" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
                                         }
                                     }
                                     else
@@ -1479,7 +1608,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     temp.funciones.Insertar(nuevo);
 
-                                    resultado = visi + " " + tipo + " " + fun_actual + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[7]) + "\r\n}";
+                                    //resultado = visi + " " + tipo + " " + fun_actual + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[7]) + "\r\n}";
                                 }
                                 else
                                 {
@@ -2234,7 +2363,7 @@ namespace Proyecto2_Compi2_CSharp
 
                             string nombre = nodo.ChildNodes[1].Token.Text;
 
-                            string valor = EvaluarC(nodo.ChildNodes[3]).ToString();
+                            string valor = ActuarC(nodo.ChildNodes[3]);
 
 
                             Variable nuevo = new Variable(tipo, nombre, valor);
@@ -2256,7 +2385,7 @@ namespace Proyecto2_Compi2_CSharp
 
                             string nombre = nodo.ChildNodes[1].Token.Text;
 
-                            string valor = EvaluarC(nodo.ChildNodes[4]).ToString();
+                            string valor = ActuarC(nodo.ChildNodes[4]);
 
                             string dimeniones = ActuarC(nodo.ChildNodes[2]);
 
@@ -2589,7 +2718,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
                                     else
                                     {
-                                        valor = EvaluarC(nodo.ChildNodes[2]).ToString();
+                                        valor = ActuarC(nodo.ChildNodes[2]).ToString();
                                     }
 
                                     temp.SetValor(valor);
@@ -2802,7 +2931,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
                                     else
                                     {
-                                        valor = EvaluarC(nodo.ChildNodes[4]).ToString();
+                                        valor = ActuarC(nodo.ChildNodes[4]).ToString();
                                     }
 
                                     temp.SetValor(valor);
@@ -3231,8 +3360,8 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 Variable aux = clase_n.variables.Buscar(nombre);
 
-                                aux.SetValor(Convert.ToString(EvaluarC(nodo.ChildNodes[3])));
-                                double control = EvaluarC(nodo.ChildNodes[3]);
+                                aux.SetValor(ActuarC(nodo.ChildNodes[3]));
+                                double control = double.Parse(ActuarC(nodo.ChildNodes[3]));
                                 string logica_inicial = "true";
 
                                 logica_inicial = ActuarC(nodo.ChildNodes[5]);
@@ -3258,8 +3387,8 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 Variable aux = nuevo_f.variables.Buscar(nombre);
 
-                                aux.SetValor(Convert.ToString(EvaluarC(nodo.ChildNodes[3])));
-                                double control = EvaluarC(nodo.ChildNodes[3]);
+                                aux.SetValor(ActuarC(nodo.ChildNodes[3]));
+                                double control =double.Parse( ActuarC(nodo.ChildNodes[3]));
                                 string logica_inicial = "true";
 
                                 logica_inicial = ActuarC(nodo.ChildNodes[5]);
@@ -3299,8 +3428,8 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     Variable aux = clase_n.variables.Buscar(nombre);
 
-                                    aux.SetValor(Convert.ToString(EvaluarC(nodo.ChildNodes[3])));
-                                    double control = EvaluarC(nodo.ChildNodes[3]);
+                                    aux.SetValor(ActuarC(nodo.ChildNodes[3]));
+                                    double control = double.Parse(ActuarC(nodo.ChildNodes[3]));
                                     string logica_inicial = "true";
 
                                     logica_inicial = ActuarC(nodo.ChildNodes[5]);
@@ -3327,8 +3456,8 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     Variable aux = nuevo_f.variables.Buscar(nombre);
 
-                                    aux.SetValor(Convert.ToString(EvaluarC(nodo.ChildNodes[3])));
-                                    double control = EvaluarC(nodo.ChildNodes[3]);
+                                    aux.SetValor(ActuarC(nodo.ChildNodes[3]));
+                                    double control = double.Parse(ActuarC(nodo.ChildNodes[3]));
                                     string logica_inicial = "true";
 
                                     logica_inicial = ActuarC(nodo.ChildNodes[5]);
@@ -3378,7 +3507,7 @@ namespace Proyecto2_Compi2_CSharp
 
 
 
-                                    double control = EvaluarC(nodo.ChildNodes[4]);
+                                    double control =double.Parse( ActuarC(nodo.ChildNodes[4]));
                                     nuevo.SetValor(Convert.ToString(control));
 
                                     clase_n.funciones.Existe(fun_actual);
@@ -3434,7 +3563,7 @@ namespace Proyecto2_Compi2_CSharp
 
 
 
-                                double control = EvaluarC(nodo.ChildNodes[4]);
+                                double control = double.Parse(ActuarC(nodo.ChildNodes[4]));
                                 nuevo.SetValor(Convert.ToString(control));
 
                                 clase_n.funciones.Existe(fun_actual);
@@ -3550,130 +3679,6 @@ namespace Proyecto2_Compi2_CSharp
             return resultado;
         }
 
-        double EvaluarC(ParseTreeNode nodo)
-        {
-            double resultado = 0;
-
-            switch (nodo.Term.Name.ToString())
-            {
-                case "Operacion":
-                    {
-                        if (nodo.ChildNodes.Count == 3)
-                        {
-
-                            if (nodo.ChildNodes[0].Term.Name != "Operacion")
-                            {
-                                resultado = EvaluarC(nodo.ChildNodes[1]);
-
-                            }
-                            else
-                            {
-                                if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "suma")
-                                {
-
-                                    double numero1 = EvaluarC(nodo.ChildNodes[0]);
-                                    double numero2 = EvaluarC(nodo.ChildNodes[2]);
-                                    Console.WriteLine(numero1 + "+" + numero2);
-                                    resultado = numero1 + numero2;
-
-                                }
-                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "resta")
-                                {
-                                    double numero1 = EvaluarC(nodo.ChildNodes[0]);
-                                    double numero2 = EvaluarC(nodo.ChildNodes[2]);
-                                    Console.WriteLine(numero1 + "-" + numero2);
-                                    resultado = numero1 - numero2;
-
-                                }
-                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "multi")
-                                {
-                                    double numero1 = EvaluarC(nodo.ChildNodes[0]);
-                                    double numero2 = EvaluarC(nodo.ChildNodes[2]);
-                                    Console.WriteLine(numero1 + "*" + numero2);
-                                    resultado = numero1 * numero2;
-
-                                }
-                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "div")
-                                {
-                                    double numero1 = EvaluarC(nodo.ChildNodes[0]);
-                                    double numero2 = EvaluarC(nodo.ChildNodes[2]);
-                                    Console.WriteLine(numero1 + "/" + numero2);
-                                    resultado = numero1 / numero2;
-
-
-                                }
-                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "power")
-                                {
-                                    double numero1 = EvaluarC(nodo.ChildNodes[0]);
-                                    double numero2 = EvaluarC(nodo.ChildNodes[2]);
-                                    Console.WriteLine(numero1 + "^" + numero2);
-                                    resultado = Math.Pow(numero1, numero2);
-
-
-
-                                }
-                                else
-                                {
-
-                                }
-                            }
-
-
-
-                        }
-                        else
-                        {
-                            resultado = EvaluarC(nodo.ChildNodes[0]);
-
-                        }
-                        break;
-                    }
-
-                case "Valor":
-
-                    {
-                        resultado = Convert.ToDouble(nodo.ChildNodes[0].Token.Text);
-                        break;
-                    }
-
-                case "ID":
-                    {
-                        Clase clase_n = clases.Existe(clase_actual);
-                        clase_n.funciones.Existe(fun_actual);
-
-
-                        if (clase_n.variables.Buscar_existe(nodo.Token.Text))
-                        {
-                            clase_n.variables.Buscar(nodo.Token.Text);
-
-
-                            resultado = Convert.ToDouble(clase_n.variables.aux.GetValor());
-
-                        }
-                        else if (clase_n.funciones.aux.variables.Buscar_existe(nodo.Token.Text))
-                        {
-                            clase_n.funciones.aux.variables.Buscar(nodo.Token.Text);
-                            resultado = Convert.ToDouble(clase_n.funciones.aux.variables.aux.GetValor());
-                        }
-                        else
-                        {
-                            txtErrores.Text += "No existe variable :\"" + nodo.Token.Text + "\"";
-                        }
-
-                        break;
-                    }
-
-
-
-
-
-
-            }
-
-
-            return resultado;
-        }
-
         string ActuarT(ParseTreeNode nodo)
         {
             string resultado = "";
@@ -3702,7 +3707,6 @@ namespace Proyecto2_Compi2_CSharp
                         ActuarT(nodo.ChildNodes[1]);
                         break;
                     }
-
 
                 case "importaciones":
                     {
@@ -3797,6 +3801,778 @@ namespace Proyecto2_Compi2_CSharp
                             }
 
                         }
+                        break;
+                    }
+
+                case "Partes":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                            ActuarT(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                        }
+                        break;
+                    }
+
+                case "Globales":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                            ActuarT(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Global":
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            string tipo = ActuarT(nodo.ChildNodes[0]);
+                            string nombres= ActuarT(nodo.ChildNodes[1]);
+
+                            string[] nombre = nombres.Split(',');
+                            Clase actual = clases.Existe(clase_actual);
+                            
+                            for(int x = 0; x < nombre.Length; x++)
+                            {
+                                Variable nuevo = new Variable(tipo, nombre[x]);
+                                actual.variables.Insertar(nuevo);
+                            }
+
+                        }
+                        else if(nodo.ChildNodes.Count == 4){
+
+                            string visi = ActuarT(nodo.ChildNodes[0]);
+                            string tipo = ActuarT(nodo.ChildNodes[1]);
+                            string nombres = ActuarT(nodo.ChildNodes[2]);
+
+                            string[] nombre = nombres.Split(',');
+                            Clase actual = clases.Existe(clase_actual);
+
+                            for (int x = 0; x < nombre.Length; x++)
+                            {
+                                Variable nuevo = new Variable(tipo, nombre[x]);
+                                nuevo.SetVisibilidad(visi);
+                                actual.variables.Insertar(nuevo);
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 5)
+                        {
+                            string tipo = ActuarT(nodo.ChildNodes[0]);
+                            string nombres = ActuarT(nodo.ChildNodes[1]);
+
+                            string[] nombre = nombres.Split(',');
+
+                            string valor = ActuarT(nodo.ChildNodes[3]);
+                            Clase actual = clases.Existe(clase_actual);
+
+                            for (int x = 0; x < nombre.Length; x++)
+                            {
+                                Variable nuevo = new Variable(tipo, nombre[x],valor);
+                                actual.variables.Insertar(nuevo);
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+                            string visi = ActuarT(nodo.ChildNodes[0]);
+                            string tipo = ActuarT(nodo.ChildNodes[1]);
+                            string nombres = ActuarT(nodo.ChildNodes[2]);
+
+                            string[] nombre = nombres.Split(',');
+
+                            string valor = ActuarT(nodo.ChildNodes[4]);
+                            Clase actual = clases.Existe(clase_actual);
+
+                            for (int x = 0; x < nombre.Length; x++)
+                            {
+                                Variable nuevo = new Variable(tipo, nombre[x], valor);
+                                nuevo.SetVisibilidad(visi);
+                                
+                                actual.variables.Insertar(nuevo);
+                            }
+                        }
+
+                        break;
+                    }
+
+                case "Visibilidad":
+                    {
+                        if (nodo.ChildNodes[0].Term.Name.ToString() == "publico")
+                        {
+                            resultado = "publico";
+                        }
+                        else if (nodo.ChildNodes[0].Term.Name.ToString() == "privado")
+                        {
+                            resultado = "privado";
+                        }
+                        else if (nodo.ChildNodes[0].Term.Name.ToString() == "protegido")
+                        {
+                            resultado = "protegido";
+                        }
+
+
+                        break;
+                    }
+
+                case "Nombres":
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            resultado = ActuarT(nodo.ChildNodes[0])+","+nodo.ChildNodes[2].Token.Text;
+                        }
+                        else
+                        {
+                            resultado= nodo.ChildNodes[0].Token.Text;
+                        }
+
+                            break;
+                    }
+
+                case "Componentes":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                            ActuarT(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                        }
+                        break;
+                    }
+
+                case "Componente":
+                    {
+                        if (nodo.ChildNodes.Count == 6)
+                        {
+                            fun_actual = nodo.ChildNodes[0].Token.Text;
+
+                            if (fun_actual.Equals(clase_actual))
+                            {
+                                Clase clase = clases.Existe(clase_actual);
+
+                                Funcion nuevo = new Funcion("constructor", fun_actual, "publico");
+                                nuevo.nodo = nodo.ChildNodes[4];
+
+                                clase.funciones.Insertar(nuevo);
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\n\rFalta Tipo";
+                            }
+
+
+                        }
+                        else if (nodo.ChildNodes.Count == 7)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                            {
+                                string tipo = ActuarT(nodo.ChildNodes[0]);
+                                fun_actual = nodo.ChildNodes[1].Token.Text;
+
+                                Clase clase = clases.Existe(clase_actual);
+
+                                Funcion nuevo = new Funcion(tipo, fun_actual, "publico");
+                                nuevo.nodo = nodo.ChildNodes[5];
+
+                                clase.funciones.Insertar(nuevo);
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                            {
+                                string visi = ActuarT(nodo.ChildNodes[0]);
+                                fun_actual = nodo.ChildNodes[1].Token.Text;
+
+                                if (fun_actual.Equals(clase_actual))
+                                {
+                                    Clase clase = clases.Existe(clase_actual);
+
+                                    Funcion nuevo = new Funcion("constructor", fun_actual, visi);
+                                    nuevo.nodo = nodo.ChildNodes[5];
+
+                                    clase.funciones.Insertar(nuevo);
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nError Falta Tipo";
+                                }
+
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                            {
+                                string visi = ActuarT(nodo.ChildNodes[0]);
+                                string tipo = ActuarT(nodo.ChildNodes[1]);
+                                fun_actual = nodo.ChildNodes[2].Token.Text;
+
+                                Clase clase = clases.Existe(clase_actual);
+
+                                Funcion nuevo = new Funcion(tipo, fun_actual, visi);
+                                nuevo.nodo = nodo.ChildNodes[6];
+
+                                clase.funciones.Insertar(nuevo);
+                            }
+                            else
+                            {
+                                fun_actual = nodo.ChildNodes[0].Token.Text;
+
+                                if (fun_actual.Equals(clase_actual))
+                                {
+                                    Clase temp = clases.Existe(clase_actual);
+
+                                    string parametros = ActuarC(nodo.ChildNodes[2]);
+
+                                    string[] Sparametros = parametros.Split(',');
+
+                                    string nombre = fun_actual;
+
+                                    for (int y = 0; y < Sparametros.Length; y++)
+                                    {
+                                        string[] param = Sparametros[y].Split(' ');
+
+                                        nombre += "_" + param[0];
+                                    }
+
+                                    Funcion nuevo = new Funcion("constructor", nombre, "publico");
+
+
+
+                                    nuevo.parametros = new Parametros();
+
+                                    for (int y = 0; y < Sparametros.Length; y++)
+                                    {
+                                        string[] param = Sparametros[y].Split(' ');
+
+                                        Parametro nP = new Parametro(param[0], param[1]);
+
+                                        nuevo.parametros.Insertar(nP);
+
+                                    }
+
+                                    nuevo.nodo = nodo.ChildNodes[6];
+                                    fun_actual = nombre;
+
+                                    temp.funciones.Insertar(nuevo);
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nError Falta Tipo";
+                                }
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 9)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                            {
+                                fun_actual = nodo.ChildNodes[1].Token.Text;
+
+                                if (fun_actual.Equals(clase_actual))
+                                {
+                                    string visi = ActuarT(nodo.ChildNodes[0]);
+
+                                    Clase temp = clases.Existe(clase_actual);
+
+                                    string parametros = ActuarC(nodo.ChildNodes[3]);
+
+                                    string[] Sparametros = parametros.Split(',');
+
+                                    string nombre = fun_actual;
+
+                                    for (int y = 0; y < Sparametros.Length; y++)
+                                    {
+                                        string[] param = Sparametros[y].Split(' ');
+
+                                        nombre += "_" + param[0];
+                                    }
+
+                                    Funcion nuevo = new Funcion("constructor", nombre, visi);
+
+
+
+                                    nuevo.parametros = new Parametros();
+
+                                    for (int y = 0; y < Sparametros.Length; y++)
+                                    {
+                                        string[] param = Sparametros[y].Split(' ');
+
+                                        Parametro nP = new Parametro(param[0], param[1]);
+
+                                        nuevo.parametros.Insertar(nP);
+
+                                    }
+
+                                    nuevo.nodo = nodo.ChildNodes[7];
+                                    fun_actual = nombre;
+
+                                    temp.funciones.Insertar(nuevo);
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nErro Falta Tipo";
+                                }
+                            }
+                            else
+                            {
+                                fun_actual = nodo.ChildNodes[1].Token.Text;
+                                string tipo = ActuarT(nodo.ChildNodes[0]);
+
+                                Clase temp = clases.Existe(clase_actual);
+
+                                string parametros = ActuarC(nodo.ChildNodes[3]);
+
+                                string[] Sparametros = parametros.Split(',');
+
+                                string nombre = fun_actual;
+
+                                Funcion nuevo = new Funcion(tipo, nombre, "publico");
+
+                                nuevo.parametros = new Parametros();
+
+                                for (int y = 0; y < Sparametros.Length; y++)
+                                {
+                                    string[] param = Sparametros[y].Split(' ');
+
+                                    Parametro nP = new Parametro(param[0], param[1]);
+
+                                    nuevo.parametros.Insertar(nP);
+
+                                }
+
+                                nuevo.nodo = nodo.ChildNodes[7];
+                                fun_actual = nombre;
+
+                                temp.funciones.Insertar(nuevo);
+
+                            }
+                        }
+                        else
+                        {
+                            fun_actual = nodo.ChildNodes[2].Token.Text;
+                            string visi = ActuarT(nodo.ChildNodes[0]);
+                            string tipo = ActuarT(nodo.ChildNodes[1]);
+
+                            Clase temp = clases.Existe(clase_actual);
+
+                            string parametros = ActuarC(nodo.ChildNodes[4]);
+
+                            string[] Sparametros = parametros.Split(',');
+
+                            string nombre = fun_actual;
+
+                            Funcion nuevo = new Funcion(tipo, nombre, "visi");
+
+                            nuevo.parametros = new Parametros();
+
+                            for (int y = 0; y < Sparametros.Length; y++)
+                            {
+                                string[] param = Sparametros[y].Split(' ');
+
+                                Parametro nP = new Parametro(param[0], param[1]);
+
+                                nuevo.parametros.Insertar(nP);
+
+                            }
+
+                            nuevo.nodo = nodo.ChildNodes[8];
+                            fun_actual = nombre;
+
+                            temp.funciones.Insertar(nuevo);
+                        }
+                       break;
+                    }
+
+                case "Tipo":
+                    {
+                        resultado = nodo.ChildNodes[0].Token.Value.ToString();
+                        break;
+                    }
+
+                case "Sentencias":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                            ActuarT(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+                        }
+                        break;
+                    }
+
+                case "Sentencia":
+                    {
+                        ActuarT(nodo.ChildNodes[0]);
+                        break;
+                    }
+
+                case "Asignacion":
+                    {
+                        if (nodo.ChildNodes.Count == 4)
+                        {
+                            string nombre= nodo.ChildNodes[0].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                            if (clase.variables.Buscar_existe(nombre)){
+                                Variable variable = clase.variables.Buscar(nombre);
+
+                                string valor = ActuarT(nodo.ChildNodes[2]);
+
+                                variable.SetValor(valor);
+                            }
+                            else if (funcion.variables.Buscar_existe(nombre))
+                            {
+                                Variable variable = funcion.variables.Buscar(nombre);
+
+                                string valor = ActuarT(nodo.ChildNodes[2]);
+
+                                variable.SetValor(valor);
+                            }
+                        }
+
+                        break;
+                    }
+
+                case "Declaracion":
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            string tipo = ActuarT(nodo.ChildNodes[0]);
+                            string nombres= ActuarT(nodo.ChildNodes[1]);
+
+                            string[] Nombre = nombres.Split(',');
+
+                            Funcion funcion = clases.Existe(clase_actual).funciones.Existe(fun_actual);
+
+                            for(int x = 0; x < Nombre.Length; x++)
+                            {
+                                Variable nuevo = new Variable(tipo, Nombre[x]);
+                                funcion.variables.Insertar(nuevo);
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 4)
+                        {
+
+                        }
+                        else
+                        {
+                            string tipo = ActuarT(nodo.ChildNodes[0]);
+                            string nombres = ActuarT(nodo.ChildNodes[1]);
+
+                            string valor= ActuarT(nodo.ChildNodes[3]);
+
+                            string[] Nombre = nombres.Split(',');
+
+                            Funcion funcion = clases.Existe(clase_actual).funciones.Existe(fun_actual);
+
+                            for (int x = 0; x < Nombre.Length; x++)
+                            {
+                                Variable nuevo = new Variable(tipo, Nombre[x]);
+                                nuevo.SetValor(valor);
+                                funcion.variables.Insertar(nuevo);
+                            }
+                        }
+                        break;
+                    }
+
+                case "If":
+                    {
+                        if (nodo.ChildNodes.Count == 9)
+                        {
+                            string condicion = ActuarT(nodo.ChildNodes[2]);
+
+                            if (condicion.Equals("true"))
+                            {
+                                ActuarT(nodo.ChildNodes[7]);
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 10)
+                        {
+                            string condicion = ActuarT(nodo.ChildNodes[2]);
+
+                            if (condicion.Equals("true"))
+                            {
+                                ActuarT(nodo.ChildNodes[7]);
+                            }
+                            else
+                            {
+                                ActuarT(nodo.ChildNodes[9]);
+                            }
+                            sino_operado = false;
+                        }
+                        else if (nodo.ChildNodes.Count == 11)
+                        {
+                            string condicion = ActuarT(nodo.ChildNodes[2]);
+
+                            if (condicion.Equals("true"))
+                            {
+                                ActuarT(nodo.ChildNodes[7]);
+                            }
+                            else
+                            {
+                                ActuarT(nodo.ChildNodes[9]);
+
+                                if (sino_operado == false)
+                                {
+                                    ActuarT(nodo.ChildNodes[10]);
+                                }
+
+                                sino_operado = false;
+                            }
+                        }
+
+                        break;
+                    }
+
+                case "SinoS":
+                    {
+                        if (nodo.ChildNodes.Count == 9)
+                        {
+                            string condicion = ActuarT(nodo.ChildNodes[2]);
+
+                            if (condicion.Equals("true"))
+                            {
+                                ActuarT(nodo.ChildNodes[7]);
+                                sino_operado = true;
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 10)
+                        {
+                            ActuarT(nodo.ChildNodes[0]);
+
+                            if (sino_operado == false)
+                            {
+                                string condicion = ActuarT(nodo.ChildNodes[3]);
+
+                                if (condicion.Equals("true"))
+                                {
+                                    ActuarT(nodo.ChildNodes[8]);
+                                    sino_operado = true;
+                                }
+                                
+                            }
+                            
+                        }
+                        break;
+                    }
+
+                case "Sino":
+                    {
+                        ActuarT(nodo.ChildNodes[4]);
+                        break;
+                    }
+
+                case "for":
+                    {
+                        if (nodo.ChildNodes.Count == 15)
+                        {
+                            string variable = nodo.ChildNodes[1].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                            if (clase.variables.Buscar_existe(variable))
+                            {
+                                Variable vcontrol = clase.variables.Buscar(variable);
+                                string vinicial = ActuarT(nodo.ChildNodes[3]);
+
+                                vcontrol.SetValor(vinicial);
+
+                                string condicion = ActuarT(nodo.ChildNodes[5]);
+
+                                while (condicion.Equals("true"))
+                                {
+                                    ActuarT(nodo.ChildNodes[13]);
+
+                                    if (nodo.ChildNodes[8].Term.Name.ToString() == "aumentar")
+                                    {
+                                        string valorS = vcontrol.GetValor();
+
+                                        int valori = int.Parse(valorS)+1;
+                                        vcontrol.SetValor(valori.ToString());
+
+                                        condicion = ActuarT(nodo.ChildNodes[5]);
+                                    }
+                                    else
+                                    {
+                                        string valorS = vcontrol.GetValor();
+
+                                        int valori = int.Parse(valorS) - 1;
+                                        vcontrol.SetValor(valori.ToString());
+
+                                        condicion = ActuarT(nodo.ChildNodes[5]);
+                                    }
+
+
+
+                                }
+
+
+                            }
+                            else if (funcion.variables.Buscar_existe(variable))
+                            {
+                                Variable vcontrol = funcion.variables.Buscar(variable);
+                                string vinicial = ActuarT(nodo.ChildNodes[3]);
+
+                                vcontrol.SetValor(vinicial);
+
+                                string condicion = ActuarT(nodo.ChildNodes[5]);
+
+                                while (condicion.Equals("true"))
+                                {
+                                    ActuarT(nodo.ChildNodes[13]);
+
+                                    if (nodo.ChildNodes[8].Term.Name.ToString() == "aumentar")
+                                    {
+                                        string valorS = vcontrol.GetValor();
+
+                                        int valori = int.Parse(valorS) + 1;
+                                        vcontrol.SetValor(valori.ToString());
+
+                                        condicion = ActuarT(nodo.ChildNodes[5]);
+                                    }
+                                    else
+                                    {
+                                        string valorS = vcontrol.GetValor();
+
+                                        int valori = int.Parse(valorS) - 1;
+                                        vcontrol.SetValor(valori.ToString());
+
+                                        condicion = ActuarT(nodo.ChildNodes[5]);
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nNo Existe variable " + variable;
+                            }
+                            
+                        }
+                        else if (nodo.ChildNodes.Count == 16)
+                        {
+                            string tipo = ActuarT(nodo.ChildNodes[1]);
+                            string variable = nodo.ChildNodes[1].Token.Text;
+
+
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                            Variable vcontrol = new Variable(tipo, variable);
+
+                            funcion.variables.Insertar(vcontrol);
+
+                            string vinicial = ActuarT(nodo.ChildNodes[4]);                           
+
+                            vcontrol.SetValor(vinicial);
+
+                            string condicion = ActuarT(nodo.ChildNodes[6]);
+
+                            while (condicion.Equals("true"))
+                            {
+                                ActuarT(nodo.ChildNodes[14]);
+
+                                if (nodo.ChildNodes[9].Term.Name.ToString() == "aumentar")
+                                {
+                                    string valorS = vcontrol.GetValor();
+
+                                    int valori = int.Parse(valorS) + 1;
+                                    vcontrol.SetValor(valori.ToString());
+
+                                    condicion = ActuarT(nodo.ChildNodes[6]);
+                                }
+                                else
+                                {
+                                    string valorS = vcontrol.GetValor();
+
+                                    int valori = int.Parse(valorS) - 1;
+                                    vcontrol.SetValor(valori.ToString());
+
+                                    condicion = ActuarT(nodo.ChildNodes[6]);
+                                }
+
+                            }
+
+                            funcion.variables.ELiminar(variable);
+
+
+                        }
+                        break;
+                    }
+
+                case "While":
+                    {
+                        string condicion = ActuarT(nodo.ChildNodes[1]);
+
+                        while (condicion.Equals("true"))
+                        {
+                            ActuarT(nodo.ChildNodes[6]);
+                            condicion = ActuarT(nodo.ChildNodes[1]);
+                        }
+                        break;
+                    }
+
+                case "Do_While":
+                    {
+                        ActuarT(nodo.ChildNodes[4]);
+                        string condicion = ActuarT(nodo.ChildNodes[7]);
+
+                        while (condicion.Equals("true"))
+                        {
+                            ActuarT(nodo.ChildNodes[4]);
+                            condicion = ActuarT(nodo.ChildNodes[7]);
+                        }
+                        break;
+                    }
+
+                case "Repetir":
+                    {
+                        ActuarT(nodo.ChildNodes[4]);
+                        string condicion = ActuarT(nodo.ChildNodes[7]);
+
+                        while (condicion.Equals("false"))
+                        {
+                            ActuarT(nodo.ChildNodes[4]);
+                            condicion = ActuarT(nodo.ChildNodes[7]);
+                        }
+                        break;
+                    }
+
+                case "Loop":
+                    {
+
+                        while (salir==false)
+                        {
+                            ActuarT(nodo.ChildNodes[4]);
+                        }
+                        salir = false;
+                        break;
+                    }
+
+                case "Elegir":
+                    {
+
+                        break;
+                    }
+
+                case "Salir":
+                    {
+                        salir = true;
                         break;
                     }
             }
@@ -3894,6 +4670,7 @@ namespace Proyecto2_Compi2_CSharp
         {
             uml u = new uml();
             u.padre = this;
+            
             u.Show();
             this.Hide();
 
@@ -3950,6 +4727,878 @@ namespace Proyecto2_Compi2_CSharp
                 }
 
             }
+        }
+
+        public bool IsEntero(string x)
+        {
+            bool respuesta = false;
+            try
+            {
+                int test = Int32.Parse(x);
+                respuesta = true;
+            }
+            catch(Exception ex)
+            {
+                respuesta = false;
+            }
+
+            return respuesta;
+        }
+
+        public bool IsDouble(string x)
+        {
+            bool respuesta = false;
+            try
+            {
+                double test = Double.Parse(x);
+                respuesta = true;
+            }
+            catch (Exception ex)
+            {
+                respuesta = false;
+            }
+
+            return respuesta;
+        }
+
+        public string Operaciones(string op1,string op2,string sim)
+        {
+            string respuesta = "";
+
+            switch (sim)
+            {
+                case "+":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = Int32.Parse(op1) + Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Double.Parse(op1) + Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                int operacion = Int32.Parse(op1) + (int)Char.GetNumericValue(op2[0]);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                int operacion = Int32.Parse(op1) + 1;
+
+                                respuesta = operacion.ToString();
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                int operacion = Int32.Parse(op1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else
+                            {
+                                respuesta = op1 + op2;
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                double operacion = double.Parse(op1) + double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = double.Parse(op1) + double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                double operacion = double.Parse(op1) + (double)Char.GetNumericValue(op2[0]);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                double operacion = double.Parse(op1) + 1;
+
+                                respuesta = operacion.ToString();
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                double operacion = double.Parse(op1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else
+                            {
+                                respuesta = op1 + op2;
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                int operacion = (int)Char.GetNumericValue(op2[1]) + Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = (double)Char.GetNumericValue(op2[1]) + Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                            else if (op1.Equals("verdadero") || op1.Equals("true"))
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                            else if (op1.Equals("falso") || op1.Equals("false"))
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                            else
+                            {
+                                respuesta = op1 + op2;
+
+                            }
+
+                        }
+                        else if (op1.Equals("verdadero") || op1.Equals("true"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = 1 + Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = 1 + Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                respuesta = "true";
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                respuesta = "true";
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+
+                            }
+                        }
+                        else if (op1.Equals("falso") || op1.Equals("false"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion =Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                respuesta = "true";
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                respuesta = "false";
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+
+                            }
+                        }
+                        else
+                        {
+                            if (IsEntero(op2))
+                            {
+                                respuesta = op1 + op2;
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                respuesta = op1 + op2;
+
+                            }
+                            else if (op1.Equals("verdadero") || op1.Equals("true"))
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                            else if (op1.Equals("falso") || op1.Equals("false"))
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                            else 
+                            {
+                                respuesta = op1 + op2;
+                            }
+                        }
+
+                        break;
+                    }
+
+                case "-":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = Int32.Parse(op1) - Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Double.Parse(op1) - Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                int operacion = Int32.Parse(op1) - (int)Char.GetNumericValue(op2[0]);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                int operacion = Int32.Parse(op1) - 1;
+
+                                respuesta = operacion.ToString();
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                int operacion = Int32.Parse(op1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                double operacion = double.Parse(op1) - double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = double.Parse(op1) - double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                double operacion = double.Parse(op1) - (double)Char.GetNumericValue(op2[0]);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                double operacion = double.Parse(op1) - 1;
+
+                                respuesta = operacion.ToString();
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                double operacion = double.Parse(op1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                int operacion = (int)Char.GetNumericValue(op2[1]) - Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = (double)Char.GetNumericValue(op2[1]) - Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+
+                        }
+                        else if (op1.Equals("verdadero") || op1.Equals("true"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = 1 - Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = 1 - Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+
+                            }
+                        }
+                        else if (op1.Equals("falso") || op1.Equals("false"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+
+                            }
+                        }
+                        else
+                        {
+
+
+                            txtErrores.Text += "Error de Tipos";
+                        }
+
+                        break;
+                    }
+
+                case "*":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = Int32.Parse(op1) * Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Double.Parse(op1) * Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                int operacion = Int32.Parse(op1) * (int)Char.GetNumericValue(op2[0]);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                int operacion = Int32.Parse(op1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                int operacion = 0;
+
+                                respuesta = operacion.ToString();
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                double operacion = double.Parse(op1) * double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = double.Parse(op1) * double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                double operacion = double.Parse(op1) * (double)Char.GetNumericValue(op2[0]);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                double operacion = double.Parse(op1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                double operacion = 0;
+
+                                respuesta = operacion.ToString();
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                int operacion = (int)Char.GetNumericValue(op2[1]) * Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = (double)Char.GetNumericValue(op2[1]) * Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+
+                        }
+                        else if (op1.Equals("verdadero") || op1.Equals("true"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                respuesta = "true";
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                respuesta = "false";
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+
+                            }
+                        }
+                        else if (op1.Equals("falso") || op1.Equals("false"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = 0;
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = 0;
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                respuesta = "false";
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                respuesta = "false";
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+
+                            }
+                        }
+                        else
+                        {
+
+
+                            txtErrores.Text += "Error de Tipos";
+                        }
+
+                        break;
+                    }
+
+                case "/":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                double operacion = Int32.Parse(op1) / Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Double.Parse(op1) / Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                double operacion = Int32.Parse(op1) / (int)Char.GetNumericValue(op2[0]);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                int operacion = Int32.Parse(op1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                double operacion = double.Parse(op1) / double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = double.Parse(op1) / double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                double operacion = double.Parse(op1) / (double)Char.GetNumericValue(op2[0]);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                double operacion = double.Parse(op1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                double operacion = (int)Char.GetNumericValue(op2[1]) / Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = (double)Char.GetNumericValue(op2[1]) / Double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+
+                        }
+                        else if (op1.Equals("verdadero") || op1.Equals("true"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                double operacion =1/ Int32.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = 1 / double.Parse(op2);
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+
+                            }
+                        }
+                        else
+                        {
+
+
+                            txtErrores.Text += "Error de Tipos";
+                        }
+
+                        break;
+                    }
+
+                case "^":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                int operacion = (int)Math.Pow(Int32.Parse(op1), Int32.Parse(op2));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Math.Pow(Int32.Parse(op1), double.Parse(op2));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                int operacion =(int) Math.Pow(Int32.Parse(op1) , (int)Char.GetNumericValue(op2[0]));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                int operacion = (int)Math.Pow(Int32.Parse(op1),1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else if (op1.Equals("falso") || op1.Equals("false"))
+                            {
+                                respuesta = "0";
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                double operacion =Math.Pow (double.Parse(op1) , double.Parse(op2));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Math.Pow(double.Parse(op1), double.Parse(op2));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                double operacion = Math.Pow(double.Parse(op1) , (double)Char.GetNumericValue(op2[0]));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                double operacion = double.Parse(op1);
+
+                                respuesta = operacion.ToString();
+                            }
+                            else if (op1.Equals("falso") || op1.Equals("false"))
+                            {
+                                respuesta = "0";
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                int operacion = (int)Math.Pow((int)Char.GetNumericValue(op2[1]), Int32.Parse(op2));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Math.Pow((double)Char.GetNumericValue(op2[1]), double.Parse(op2));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+
+                        }
+                        else if (op1.Equals("verdadero") || op1.Equals("true"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                double operacion = Math.Pow(1, Int32.Parse(op2));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                double operacion = Math.Pow(1, double.Parse(op2));
+
+                                respuesta = operacion.ToString();
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "Error de Tipos";
+
+                            }
+                        }
+                        else
+                        {
+
+
+                            txtErrores.Text += "Error de Tipos";
+                        }
+
+                        break;
+                    }
+            }
+
+
+            return respuesta;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

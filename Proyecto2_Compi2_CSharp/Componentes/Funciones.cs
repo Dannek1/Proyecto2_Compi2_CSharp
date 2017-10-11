@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componentes
 {
-    class Funciones
+    public class Funciones
     {
         public Funcion cabeza;
         public Funcion ultimo;

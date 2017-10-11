@@ -241,8 +241,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                       | Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS
                       | Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
-            SinoS.Rule = SinoS + Rsinosi + "[" + Logica + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
-                         | Rsinosi + "[" + Logica + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
+            SinoS.Rule = SinoS + Rsinosi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
+                         | Rsinosi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
             Sino.Rule = Rsino + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
@@ -295,11 +295,11 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | "(" + Relacional + ")"
                             | Operacion;
 
-            Operacion.Rule = Operacion + Operacion +suma
-                            | Operacion + Operacion + resta
-                            | Operacion  + Operacion + division
-                            | Operacion  + Operacion + multiplicacion
-                            | Operacion + potencia + Operacion
+            Operacion.Rule =  Operacion + Operacion + suma 
+                            | Operacion + Operacion + resta 
+                            | Operacion + Operacion + division 
+                            | Operacion + Operacion + multiplicacion
+                            | Operacion + Operacion + potencia
                             | "(" + Operacion + ")"
                             | ID
                             | ID + "[" + Operacion + "]"

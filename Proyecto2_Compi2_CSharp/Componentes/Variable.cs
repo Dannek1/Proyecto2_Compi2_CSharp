@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componentes
 {
-    class Variable
+    public class Variable
     {
         Arreglo[] valores;
         public bool arreglo;
@@ -25,6 +25,7 @@ namespace Proyecto2_Compi2_CSharp.Componentes
         {
             nombre = n;
             tipo = t;
+            visibilidad = "publico";
 
             siguiente = null;
             anterior = null;
@@ -39,6 +40,7 @@ namespace Proyecto2_Compi2_CSharp.Componentes
             nombre = n;
             tipo = t;
             valor = v;
+            visibilidad = "publico";
 
             siguiente = null;
             anterior = null;
@@ -48,12 +50,13 @@ namespace Proyecto2_Compi2_CSharp.Componentes
 
         }
 
+
         public Variable(string t, string n, string v, int dimensiones,string valoresN)
         {
             nombre = n;
             tipo = t;
             valor = v;
-
+            visibilidad = "publico";
             siguiente = null;
             anterior = null;
 

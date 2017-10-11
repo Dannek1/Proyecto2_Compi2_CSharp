@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componentes
 {
-    class Clase
+    public class Clase
     {
         public string Nombre;
         public string Visibilidad;

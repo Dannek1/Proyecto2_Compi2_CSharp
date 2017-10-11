@@ -159,8 +159,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | Importar + Cadena + ")" + finSentencia;
 
 
-            Cuerpo.Rule = Visibilidad + Clase + ID + iniCuerpo + Contenido + finCuerpo
-                        | Clase + ID + iniCuerpo + Contenido + finCuerpo;
+            Cuerpo.Rule = Clase + ID + iniCuerpo + Contenido + finCuerpo
+                        | Clase + ID + Herencia + ID + iniCuerpo + Contenido + finCuerpo;
 
 
             Visibilidad.Rule = publico

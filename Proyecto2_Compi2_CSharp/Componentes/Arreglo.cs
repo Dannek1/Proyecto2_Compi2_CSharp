@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componentes
 {
-    class Arreglo
+    public class Arreglo
     {
         private int maximo;
         private int llenos = 0;

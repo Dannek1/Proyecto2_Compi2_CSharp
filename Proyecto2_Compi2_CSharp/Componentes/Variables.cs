@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componentes
 {
-    class Variables
+    public class Variables
     {
         public Variable cabeza;
         public Variable ultimo;

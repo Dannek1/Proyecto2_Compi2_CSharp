@@ -30,12 +30,19 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.uMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.depurarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.códigoCompartidoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.tabCtrlSalidas = new System.Windows.Forms.TabControl();
             this.tabPConsolaS = new System.Windows.Forms.TabPage();
             this.txtConsola = new System.Windows.Forms.TextBox();
@@ -48,13 +55,6 @@
             this.tabP3Dop = new System.Windows.Forms.TabPage();
             this.txt3Dop = new System.Windows.Forms.TextBox();
             this.TabCEntradas = new System.Windows.Forms.TabControl();
-            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
-            this.treeView1 = new System.Windows.Forms.TreeView();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -75,6 +75,14 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Explorador de Solución";
+            // 
+            // treeView1
+            // 
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(3, 16);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(186, 285);
+            this.treeView1.TabIndex = 0;
             // 
             // menuStrip1
             // 
@@ -128,6 +136,60 @@
             this.toolStrip1.Size = new System.Drawing.Size(743, 25);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // toolStripButton6
+            // 
+            this.toolStripButton6.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.Documents;
+            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton6.Name = "toolStripButton6";
+            this.toolStripButton6.Size = new System.Drawing.Size(53, 22);
+            this.toolStripButton6.Text = "Abrir";
+            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.document_new;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(62, 22);
+            this.toolStripButton1.Text = "Nuevo";
+            this.toolStripButton1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.Close;
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(125, 22);
+            this.toolStripButton5.Text = "Cerrar Documento";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.document_save;
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(69, 22);
+            this.toolStripButton2.Text = "Guardar";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.Folder__3_;
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(99, 22);
+            this.toolStripButton3.Text = "Crear Carpeta";
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.Media_WMP;
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(76, 22);
+            this.toolStripButton4.Text = "Compilar";
+            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
             // tabCtrlSalidas
             // 
@@ -257,68 +319,6 @@
             this.TabCEntradas.Size = new System.Drawing.Size(524, 331);
             this.TabCEntradas.TabIndex = 4;
             // 
-            // toolStripButton6
-            // 
-            this.toolStripButton6.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.Documents;
-            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(53, 22);
-            this.toolStripButton6.Text = "Abrir";
-            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.document_new;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(62, 22);
-            this.toolStripButton1.Text = "Nuevo";
-            this.toolStripButton1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // toolStripButton5
-            // 
-            this.toolStripButton5.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.Close;
-            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(125, 22);
-            this.toolStripButton5.Text = "Cerrar Documento";
-            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.document_save;
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(69, 22);
-            this.toolStripButton2.Text = "Guardar";
-            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
-            // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.Folder__3_;
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(99, 22);
-            this.toolStripButton3.Text = "Crear Carpeta";
-            // 
-            // toolStripButton4
-            // 
-            this.toolStripButton4.Image = global::Proyecto2_Compi2_CSharp.Properties.Resources.Media_WMP;
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(76, 22);
-            this.toolStripButton4.Text = "Compilar";
-            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
-            // 
-            // treeView1
-            // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Location = new System.Drawing.Point(3, 16);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(186, 285);
-            this.treeView1.TabIndex = 0;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -334,6 +334,7 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Proyecto 2";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

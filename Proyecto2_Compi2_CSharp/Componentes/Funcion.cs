@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componentes
 {
-    class Funcion
+    public class Funcion
     {
         public string tipo;
         public string nombre;
