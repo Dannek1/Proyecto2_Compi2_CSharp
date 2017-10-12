@@ -396,7 +396,47 @@ namespace Proyecto2_Compi2_CSharp
 
                             
                         }
-                        else
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+                            string visi = ActuarC(nodo.ChildNodes[0]);
+                            clase_actual = nodo.ChildNodes[2].Token.Text;
+
+                            Clase clase = new Clase(clase_actual, visi);
+
+                            string cpadre = nodo.ChildNodes[4].Token.Text;
+
+                            Clase padre = clases.Existe(cpadre);
+
+                            if (padre != null)
+                            {
+                                Heredar(padre, clase);
+
+                                clases.Insertar(clase);
+
+                                resultado = "class " + nodo.ChildNodes[1].Token.Text + "{" + ActuarC(nodo.ChildNodes[6]) + "}";
+
+                                txtConsola.Text += "Se ha creado la Clase " + clase_actual;
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nError No Existe la Clase " + cpadre;
+                            }
+
+
+                        }
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+                            string visi = ActuarC(nodo.ChildNodes[0]);
+                            clase_actual = nodo.ChildNodes[2].Token.Text;
+                            Clase clase = new Clase(clase_actual, visi);
+                            clases.Insertar(clase);
+                            resultado = "class " + nodo.ChildNodes[2].Token.Text + "{" + ActuarC(nodo.ChildNodes[4]) + "}";
+                            txtConsola.Text += "Se ha creado la Clase " + clase_actual;
+
+
+                        }
+                        else //5
                         {
 
                             clase_actual = nodo.ChildNodes[1].Token.Text;
@@ -4670,7 +4710,8 @@ namespace Proyecto2_Compi2_CSharp
         {
             uml u = new uml();
             u.padre = this;
-            
+            u.clases = clases;
+
             u.Show();
             this.Hide();
 

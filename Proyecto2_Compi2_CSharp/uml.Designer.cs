@@ -30,6 +30,9 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.uMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.analisisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.diagramaCodigoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.codigoDiagramaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -49,7 +52,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.uMLToolStripMenuItem});
+            this.uMLToolStripMenuItem,
+            this.analisisToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1258, 24);
@@ -63,6 +67,28 @@
             this.uMLToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
             this.uMLToolStripMenuItem.Text = "Regresar";
             this.uMLToolStripMenuItem.Click += new System.EventHandler(this.uMLToolStripMenuItem_Click);
+            // 
+            // analisisToolStripMenuItem
+            // 
+            this.analisisToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.diagramaCodigoToolStripMenuItem,
+            this.codigoDiagramaToolStripMenuItem});
+            this.analisisToolStripMenuItem.Name = "analisisToolStripMenuItem";
+            this.analisisToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.analisisToolStripMenuItem.Text = "Analisis";
+            // 
+            // diagramaCodigoToolStripMenuItem
+            // 
+            this.diagramaCodigoToolStripMenuItem.Name = "diagramaCodigoToolStripMenuItem";
+            this.diagramaCodigoToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.diagramaCodigoToolStripMenuItem.Text = "Diagrama-Codigo";
+            // 
+            // codigoDiagramaToolStripMenuItem
+            // 
+            this.codigoDiagramaToolStripMenuItem.Name = "codigoDiagramaToolStripMenuItem";
+            this.codigoDiagramaToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.codigoDiagramaToolStripMenuItem.Text = "Codigo-Diagrama";
+            this.codigoDiagramaToolStripMenuItem.Click += new System.EventHandler(this.codigoDiagramaToolStripMenuItem_Click);
             // 
             // groupBox1
             // 
@@ -130,6 +156,7 @@
             this.pictureBox1.Location = new System.Drawing.Point(3, 16);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(666, 419);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
@@ -146,10 +173,9 @@
             // 
             // txtCodigo
             // 
-            this.txtCodigo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtCodigo.Location = new System.Drawing.Point(3, 16);
             this.txtCodigo.Name = "txtCodigo";
-            this.txtCodigo.Size = new System.Drawing.Size(354, 419);
+            this.txtCodigo.Size = new System.Drawing.Size(345, 419);
             this.txtCodigo.TabIndex = 0;
             // 
             // uml
@@ -157,6 +183,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1258, 462);
+            this.ControlBox = false;
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -188,5 +215,8 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.GroupBox groupBox3;
         private ScintillaNET.Scintilla txtCodigo;
+        private System.Windows.Forms.ToolStripMenuItem analisisToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem diagramaCodigoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem codigoDiagramaToolStripMenuItem;
     }
 }

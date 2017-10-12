@@ -11,17 +11,17 @@ using Proyecto2_Compi2_CSharp.Analizadores;
 using ScintillaNET;
 using Irony.Parsing;
 using Proyecto2_Compi2_CSharp.Componentes;
+using System.Diagnostics;
 
 namespace Proyecto2_Compi2_CSharp
 {
     public partial class uml : Form
     {
         public Form1 padre;
-
         public Clases clases;
-
-
         string grafo="";
+        string clase_actual = "";
+        string param = "";
 
        
         public uml()
@@ -76,8 +76,6 @@ namespace Proyecto2_Compi2_CSharp
 
         }
 
-
-
         public string esCadenaValidaC(string cadenaEntrada, Grammar gramatica)
         {
             LanguageData lenguaje = new LanguageData(gramatica);
@@ -112,13 +110,52 @@ namespace Proyecto2_Compi2_CSharp
             {
                 if (arbol.Root != null)
                 {
-
-                    grafo += "digraph UML {\n";
+                    grafo = "";
+                    grafo += "digraph UML {\nnode [shape = record,height=.1]\nrankdir=\"LR\";";
                     ImaginarC(arbol.Root);
+                    grafo += "}";
+                    Generar();
+                    pictureBox1.Image = Image.FromFile("C:/Arboles/UML.png");
+                    
                 }
             }
 
             return a;
+        }
+
+        private void Generar()
+        {
+            try
+            {
+                System.IO.StreamWriter f = new System.IO.StreamWriter("C:/Arboles/UML.txt");
+                f.Write(grafo);
+                f.Close();
+                //String dotPath = "C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe";
+                String archivoEntrada = "C:/Arboles/UML.txt";
+                String archivoSalida = "C:/Arboles/UML.png";
+
+                string comando = "dot " + archivoEntrada + " -o " + archivoSalida + " -Tpng";
+
+                Process cmd = new Process();
+                cmd.StartInfo.FileName = "cmd.exe";
+                cmd.StartInfo.RedirectStandardInput = true;
+                cmd.StartInfo.RedirectStandardOutput = true;
+                cmd.StartInfo.CreateNoWindow = true;
+                cmd.StartInfo.UseShellExecute = false;
+
+                cmd.Start();
+                cmd.StandardInput.WriteLine(comando);
+                cmd.StandardInput.Flush();
+                cmd.StandardInput.Close();
+                cmd.WaitForExit();
+                cmd.StandardOutput.ReadToEnd();
+
+
+            }
+            catch (Exception e)
+            {
+
+            }
         }
 
         public string esCadenaValidaT(string cadenaEntrada, Grammar gramatica)
@@ -186,18 +223,803 @@ namespace Proyecto2_Compi2_CSharp
                     {
                         if (nodo.ChildNodes.Count == 7)
                         {
-                            
 
+                            clase_actual= nodo.ChildNodes[1].Token.Text;
+                            grafo += "node0[label = \"<f0> " + nodo.ChildNodes[1].Token.Text;
 
+                            ImaginarC(nodo.ChildNodes[3]);
+                        }
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+
+                            clase_actual = nodo.ChildNodes[2].Token.Text;
+                            grafo += "node0[label = \"<f0> " + nodo.ChildNodes[2].Token.Text;
+
+                            ImaginarC(nodo.ChildNodes[6]);
+                        }
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+
+                            clase_actual = nodo.ChildNodes[2].Token.Text;
+                            grafo += "node0[label = \"<f0> " + nodo.ChildNodes[2].Token.Text;
+
+                            ImaginarC(nodo.ChildNodes[4]);
                         }
                         else
                         {
-                            
+                            clase_actual = nodo.ChildNodes[1].Token.Text;
+                            grafo +="node0[label = \"<f0> "+ nodo.ChildNodes[1].Token.Text ;
+
+                            ImaginarC(nodo.ChildNodes[3]);
+                            grafo += "]";
+
                         }
 
                         break;
                     }
+
+                case "Contenido":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            grafo += "|<f1> ";
+                            ImaginarC(nodo.ChildNodes[0]);
+                            grafo += "|<f2> ";
+                            ImaginarC(nodo.ChildNodes[1]);
+                            grafo += "\"];";
+                        }
+                        else
+                        {
+                            ImaginarC(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Globales":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            ImaginarC(nodo.ChildNodes[0]);
+
+                            ImaginarC(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            ImaginarC(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Global":
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+
+                            string tipo = nodo.ChildNodes[0].Token.Value.ToString();
+
+                            string nombre= nodo.ChildNodes[1].Token.Text;
+
+                            grafo += "\\+" + nombre + ": " + tipo + "\\n";
+                        }
+                        else if (nodo.ChildNodes.Count == 4)
+                        {
+
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+                                string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Value.ToString();
+
+                                string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                string visi = "";
+
+                                if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                {
+                                    visi = "\\+";
+                                }
+                                else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                {
+                                    visi = "-";
+                                }
+                                else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                {
+                                    visi = "#";
+                                }
+
+                                grafo += visi + nombre + ": " + tipo +  "\\n";
+                            }
+                            else
+                            {
+                                string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Value.ToString();
+
+                                string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                grafo += "\\+" + nombre + "[]: " + tipo +  "\\n";
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 5)
+                        {
+                            if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                            {
+
+                                string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text;
+
+                                string nombre = nodo.ChildNodes[1].Token.Text;
+                              
+                                grafo +="\\+" + nombre + ": " + tipo + "\\n";
+
+                            }
+                            else
+                            {
+                                string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Value.ToString();
+
+                                string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                string visi = "";
+
+                                if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                {
+                                    visi = "\\+";
+                                }
+                                else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                {
+                                    visi = "-";
+                                }
+                                else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                {
+                                    visi = "#";
+                                }
+
+                                grafo += visi + nombre + "[]: " + tipo + "\\n";
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+                            string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Value.ToString();
+
+                            string nombre = nodo.ChildNodes[2].Token.Text;
+
+                            string visi = "";
+
+                            if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                            {
+                                visi = "\\+";
+                            }
+                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                            {
+                                visi = "-";
+                            }
+                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                            {
+                                visi = "#";
+                            }
+
+                            grafo += visi + nombre + ": " + tipo + "\\n";
+                        }
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+                            string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Value.ToString();
+
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            grafo += "\\+" + nombre + "[]: " + tipo + "\\n";
+                        }
+                        else if (nodo.ChildNodes.Count == 9)
+                        {
+                            string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Value.ToString();
+
+                            string nombre = nodo.ChildNodes[2].Token.Text;
+
+                            string visi = "";
+
+                            if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                            {
+                                visi = "\\+";
+                            }
+                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                            {
+                                visi = "-";
+                            }
+                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                            {
+                                visi = "#";
+                            }
+
+                            grafo += visi + nombre + "[]: " + tipo + "\\n";
+                        }
+
+                        break;
+                    }
+
+                case "Componentes":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            ImaginarC(nodo.ChildNodes[0]);
+
+                            ImaginarC(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            ImaginarC(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Componente":
+                    {
+                        if (nodo.ChildNodes.Count == 5)
+                        {
+                            string x = nodo.ChildNodes[0].Token.Text;
+
+                            if (x.Equals(clase_actual))
+                            {
+    
+                                grafo += "\\+" + x + "(): constructor " + "\\n";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Erro Falta Tipo", "Error",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+
+
+                        }
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                if (nodo.ChildNodes[2].Term.Name.ToString() == "Parametros")
+                                {
+                                    string x = nodo.ChildNodes[0].Token.Text;
+                                    if (x.Equals(clase_actual))
+                                    {
+                                        //parametros
+                                        ImaginarC(nodo.ChildNodes[2]);
+                                        string parametros = param;
+                                        
+                                        string[] Sparametros = parametros.Split(',');
+
+                                        grafo += "\\+" + x + "("+parametros+"): constructor " + "\\n";
+                                        param = "";
+
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Erro Falta Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                }
+                                else
+                                {
+                                    string x = nodo.ChildNodes[0].Token.Text;
+                                    if (x.Equals(clase_actual))
+                                    {
+                                        grafo += "\\+" + x + "(): constructor " + "\\n";
+
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Erro Falta Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                }
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                            {
+                                string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text;
+                                string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                grafo += "\\+" + nombre + "(): "+ tipo + "\\n";
+                            }
+                            else
+                            {
+                                string x = nodo.ChildNodes[1].Token.Text;
+
+                                if (x.Equals(clase_actual))
+                                {
+                                    string visi = "";
+
+                                    if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                    {
+                                        visi = "\\+";
+                                    }
+                                    else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                    {
+                                        visi = "-";
+                                    }
+                                    else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                    {
+                                        visi = "#";
+                                    }
+
+                                    grafo += visi + x + "(): constructor \\n";
+
+
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Erro Falta Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+
+                        }
+                        else if (nodo.ChildNodes.Count == 7)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                string x = nodo.ChildNodes[0].Token.Text;
+
+                                if (x.Equals(clase_actual))
+                                {
+                                    ImaginarC(nodo.ChildNodes[2]);
+                                    string parametros = param;
+
+                                    string[] Sparametros = parametros.Split(',');
+
+                                    grafo += "\\+" + x + "("+parametros+"): constructor\\n";
+                                    param = "";
+
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Erro Falta Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                            {
+                                if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                                {
+                                    if (nodo.ChildNodes[3].Term.Name.ToString() == "Parametros")
+                                    {
+                                        string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text;
+                                        string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                        ImaginarC(nodo.ChildNodes[3]);
+                                        string parametros = param;
+
+                                        grafo += "\\+" + nombre + "("+parametros+"):"+tipo+"\\n";
+                                        param = "";
+
+
+                                    }
+                                    else
+                                    {
+                                        string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text;
+                                        string nombre = nodo.ChildNodes[1].Token.Text;                                    
+
+                                        grafo += "\\+" + nombre + "():" + tipo + "\\n";
+                                    }
+
+                                }
+                                else
+                                {
+                                    string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text;
+                                    string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                    grafo += "\\+" + nombre + "[]():" + tipo + "\\n";
+                                }
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                            {
+                                if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                                {
+                                    if (nodo.ChildNodes[3].Term.Name.ToString() == "Parametros")
+                                    {
+                                        string x = nodo.ChildNodes[1].Token.Text;
+
+                                        if (x.Equals(clase_actual))
+                                        {
+
+                                            string visi = "";
+
+                                            if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                            {
+                                                visi = "\\+";
+                                            }
+                                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                            {
+                                                visi = "-";
+                                            }
+                                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                            {
+                                                visi = "#";
+                                            }
+
+                                            ImaginarC(nodo.ChildNodes[3]);
+                                            string parametros = param;
+                                            grafo += visi + x + "(" + parametros + "): constructor\\n";
+                                            param = "";
+
+                                        }
+                                        else
+                                        {
+                                            MessageBox.Show("Erro Falta Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string visi = "";
+
+                                        if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                        {
+                                            visi = "\\+";
+                                        }
+                                        else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                        {
+                                            visi = "-";
+                                        }
+                                        else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                        {
+                                            visi = "#";
+                                        }
+
+                                        string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                        if (nombre.Equals(clase_actual))
+                                        {
+                                            grafo += visi + nombre + "(): constructor\\n";
+
+                                        }
+                                        else
+                                        {
+                                            MessageBox.Show("Erro Falta Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    string visi = "";
+
+                                    if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                    {
+                                        visi = "\\+";
+                                    }
+                                    else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                    {
+                                        visi = "-";
+                                    }
+                                    else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                    {
+                                        visi = "#";
+                                    }
+
+                                    string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Text;
+                                    string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                    grafo += visi + nombre + "():"+tipo+"\\n";
+
+                                }
+                            }
+                           
+
+                        }
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                            {
+                                if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                                {
+                                    string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text;
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    
+                                    ImaginarC(nodo.ChildNodes[3]);
+                                    string parametros = param;
+
+                                    grafo += "\\+" + nombre + "(" + parametros + "):" + tipo + "\\n";
+
+                                }
+                                else
+                                {
+                                    if (nodo.ChildNodes[4].Term.Name.ToString() == "Parametros")
+                                    {
+                                        string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text;
+
+                                        string nombre = nodo.ChildNodes[2].Token.Text;
+
+
+                                        ImaginarC(nodo.ChildNodes[4]);
+                                        string parametros = param;
+
+                                        grafo += "\\+" + nombre + "[](" + parametros + "):" + tipo + "\\n";
+
+                                        
+                                    }
+                                    else
+                                    {
+                                        string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text;
+
+                                        string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                        grafo += "\\+" + nombre + "[]():" + tipo + "\\n";
+                                    }
+                                }
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                            {
+                                if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                                {
+                                    string visi = "";
+
+                                    if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                    {
+                                        visi = "\\+";
+                                    }
+                                    else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                    {
+                                        visi = "-";
+                                    }
+                                    else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                    {
+                                        visi = "#";
+                                    }
+
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    if (nombre.Equals(clase_actual))
+                                    {
+                                        ImaginarC(nodo.ChildNodes[3]);
+                                        string parametros = param;
+
+                                        grafo +=visi + nombre + "(): Constructor\\n";
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Erro Falta Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                    {
+                                        if (nodo.ChildNodes[4].Term.Name.ToString() == "Parametros")
+                                        {
+                                            string visi = "";
+
+                                            if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                            {
+                                                visi = "\\+";
+                                            }
+                                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                            {
+                                                visi = "-";
+                                            }
+                                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                            {
+                                                visi = "#";
+                                            }
+                                            string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Text;
+
+
+
+                                            string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                            ImaginarC(nodo.ChildNodes[4]);
+                                            string parametros = param;
+
+                                            grafo += visi + nombre + "(" +parametros+"):" + tipo + "\\n";
+
+                                        }
+                                        else
+                                        {
+                                            string visi = "";
+
+                                            if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                            {
+                                                visi = "\\+";
+                                            }
+                                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                            {
+                                                visi = "-";
+                                            }
+                                            else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                            {
+                                                visi = "#";
+                                            }
+                                            string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Text;
+                                            string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                            grafo += visi + nombre + "():" + tipo + "\\n";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string visi = "";
+
+                                        if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                        {
+                                            visi = "\\+";
+                                        }
+                                        else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                        {
+                                            visi = "-";
+                                        }
+                                        else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                        {
+                                            visi = "#";
+                                        }
+
+
+                                        string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Text;
+                                        string nombre = nodo.ChildNodes[3].Token.Text;
+
+                                        grafo += visi + nombre + "[]():" + tipo + "\\n";
+                                    }
+                                }
+                            }
+                            
+                        }
+                        else if (nodo.ChildNodes.Count == 9)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                            {
+                                string tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text;
+
+                             
+                                string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                ImaginarC(nodo.ChildNodes[4]);
+                                string parametros = param;
+
+                                grafo += "\\+" + nombre + "[]():" + tipo + "\\n";
+
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                            {
+                                if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                {
+                                    string visi = "";
+
+                                    if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                    {
+                                        visi = "\\+";
+                                    }
+                                    else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                    {
+                                        visi = "-";
+                                    }
+                                    else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                    {
+                                        visi = "#";
+                                    }
+
+                                    string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Text;
+                                    
+
+                                    string nombre = nodo.ChildNodes[2].Token.Text;
+
+
+                                    ImaginarC(nodo.ChildNodes[4]);
+                                    string parametros = param;
+
+                                    grafo += visi + nombre + "("+parametros+"):" + tipo + "\\n";
+                                    param = "";
+                                }
+                                else
+                                {
+                                    if (nodo.ChildNodes[5].Term.Name.ToString() == "Parametros")
+                                    {
+                                        string visi = "";
+
+                                        if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                        {
+                                            visi = "\\+";
+                                        }
+                                        else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                        {
+                                            visi = "-";
+                                        }
+                                        else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                        {
+                                            visi = "#";
+
+                                        }
+                                        string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Text;
+                                        string nombre = nodo.ChildNodes[3].Token.Text;
+
+                                        ImaginarC(nodo.ChildNodes[4]);
+                                        string parametros = param;
+
+                                        grafo += visi + nombre + "("+parametros+"):" + tipo + "\\n";
+                                    }
+                                    else
+                                    {
+                                        string visi = "";
+
+                                        if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                        {
+                                            visi = "\\+";
+                                        }
+                                        else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                        {
+                                            visi = "-";
+                                        }
+                                        else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                        {
+                                            visi = "#";
+
+                                        }
+
+                                        string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Text;
+                                        string nombre = nodo.ChildNodes[3].Token.Text;
+
+                                        grafo += visi + nombre + "():" + tipo + "\\n";
+
+                                    }
+                                }
+                            }
+                           
+                        }
+                        else if (nodo.ChildNodes.Count == 10)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                            {
+                                string visi = "";
+
+                                if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "publico")
+                                {
+                                    visi = "\\+";
+                                }
+                                else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "privado")
+                                {
+                                    visi = "-";
+                                }
+                                else if (nodo.ChildNodes[0].ChildNodes[0].Term.Name.ToString() == "protegido")
+                                {
+                                    visi = "#";
+                                }
+
+                                string tipo = nodo.ChildNodes[1].ChildNodes[0].Token.Text;
+                                string nombre = nodo.ChildNodes[3].Token.Text;
+
+                                
+                                ImaginarC(nodo.ChildNodes[5]);
+                                string parametros = param;
+
+                                grafo += visi + nombre + "[]("+parametros+"):" + tipo + "\\n";
+                            }
+                            
+                        }
+                        break;
+                    }
+
+                case "Parametros":
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            ImaginarC(nodo.ChildNodes[0]);
+                            param += ",";
+                            ImaginarC(nodo.ChildNodes[2]);
+                        }
+                        else
+                        {
+                            ImaginarC(nodo.ChildNodes[0]);
+
+                        }
+
+                        break;
+                    }
+
+                case "Parametro":
+                    {
+                        string tipo;
+                        string nombre;
+
+                        tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Value.ToString();
+                        nombre = nodo.ChildNodes[1].Token.Value.ToString();
+
+                        param += tipo + " " + nombre;
+
+                        break;
+                    }
             }
+        }
+
+        private void codigoDiagramaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Analizar(txtCodigo.Text);
         }
     }
 }
