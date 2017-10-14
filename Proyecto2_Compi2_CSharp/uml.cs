@@ -22,8 +22,15 @@ namespace Proyecto2_Compi2_CSharp
         string grafo="";
         string clase_actual = "";
         string param = "";
+        public string objetos = "";
+        public string herencias = "";
+        public string agregaciones = "";
+        public string composiciones = "";
+        public string asociaciones = "";
+        public string dependencias = "";
 
-       
+        string Codigo="";
+        
         public uml()
         {
             InitializeComponent();
@@ -1020,6 +1027,104 @@ namespace Proyecto2_Compi2_CSharp
         private void codigoDiagramaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Analizar(txtCodigo.Text);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            FormClase Nclase = new FormClase();
+            Nclase.padre = this;
+            Nclase.Show();
+            
+
+        }
+
+        public void Generagraph()
+        {
+            grafo = "";
+            grafo += "digraph UML {\nnode [shape = record,height=.1]\nrankdir=\"LR\";";
+
+            if (!objetos.Equals(""))
+            {
+                string[] lclases = objetos.Split(';');
+
+                string partes;
+
+                for (int x = 0; x < lclases.Length; x++)
+                {
+
+
+                    string[] definciones = lclases[x].Split('|');
+                    partes = x + " " + definciones[0];
+                    grafo += "\nnodo" + x + "[label = \"<f0>" + definciones[0] + "|<f1>";
+
+                    string[] atributos = definciones[1].Split(',');
+
+                    for (int y = 0; y < atributos.Length; y++)
+                    {
+                        grafo += atributos[y] + "\\n";
+                    }
+
+                    grafo += "|<f2> ";
+
+                    string[] funciones = definciones[2].Split(',');
+
+                    for (int y = 0; y < funciones.Length; y++)
+                    {
+                        grafo += funciones[y] + "\\n";
+                    }
+
+                    grafo += "\"]";
+                }
+
+                if (!herencias.Equals(""))
+                {
+
+                }
+
+
+                if (!agregaciones.Equals(""))
+                {
+
+                }
+
+                if (!composiciones.Equals(""))
+                {
+
+                }
+
+                if (!asociaciones.Equals(""))
+                {
+
+                }
+
+                if (!dependencias.Equals(""))
+                {
+
+                }
+
+                grafo += "}";
+
+                Generar();
+                pictureBox1.Image = Image.FromFile("C:/Arboles/UML.png");
+
+            }
+            else
+            {
+                MessageBox.Show("No Hay clases ingresadas", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            
+
+        }
+
+        private void oLCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!herencias.Equals(""))
+            {
+
+            }
+
+            
         }
     }
 }

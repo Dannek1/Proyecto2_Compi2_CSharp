@@ -69,6 +69,18 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormClase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormClase.Designer.cs">
+      <DependentUpon>FormClase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FParametros.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FParametros.Designer.cs">
+      <DependentUpon>FParametros.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="uml.cs">
@@ -79,6 +91,12 @@
     </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormClase.resx">
+      <DependentUpon>FormClase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FParametros.resx">
+      <DependentUpon>FParametros.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -128,6 +146,9 @@
     <None Include="Resources\clase.png" />
     <None Include="Resources\herencia.png" />
     <None Include="Resources\herencia1.png" />
+    <None Include="Resources\Composision.png" />
+    <None Include="Resources\Asociacion 2.png" />
+    <None Include="Resources\Dependencia.png" />
     <Content Include="Resources\world.ico" />
   </ItemGroup>
   <ItemGroup />

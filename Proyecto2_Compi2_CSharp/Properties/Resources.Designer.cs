@@ -63,6 +63,16 @@ namespace Proyecto2_Compi2_CSharp.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Asociacion_2 {
+            get {
+                object obj = ResourceManager.GetObject("Asociacion 2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap clase {
             get {
                 object obj = ResourceManager.GetObject("clase", resourceCulture);
@@ -86,6 +96,26 @@ namespace Proyecto2_Compi2_CSharp.Properties {
         internal static System.Drawing.Bitmap Close {
             get {
                 object obj = ResourceManager.GetObject("Close", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Composision {
+            get {
+                object obj = ResourceManager.GetObject("Composision", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Dependencia {
+            get {
+                object obj = ResourceManager.GetObject("Dependencia", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
