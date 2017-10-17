@@ -233,6 +233,7 @@
             this.tREEToolStripMenuItem.Name = "tREEToolStripMenuItem";
             this.tREEToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.tREEToolStripMenuItem.Text = "TREE";
+            this.tREEToolStripMenuItem.Click += new System.EventHandler(this.tREEToolStripMenuItem_Click);
             // 
             // uml
             // 

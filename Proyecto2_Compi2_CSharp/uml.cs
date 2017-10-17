@@ -1124,7 +1124,65 @@ namespace Proyecto2_Compi2_CSharp
 
             }
 
-            
+            string[] lclases = objetos.Split(';');
+
+            for(int x = 0; x < lclases.Length; x++)
+            {
+                string[] definciones = lclases[x].Split('|');
+                Codigo += "clase " + definciones[0]+"{\n";
+
+                string[] atributos = definciones[1].Split(',');
+
+                for (int y = 0; y < atributos.Length; y++)
+                {
+                    Codigo += atributos[y] + ";\n";
+                }
+
+                string[] funciones = definciones[2].Split(',');
+
+                for (int y = 0; y < funciones.Length; y++)
+                {
+                    grafo += funciones[y] + "{\n    \n}";
+                }
+
+                Codigo += "}";
+
+            }
+
+        }
+
+        private void tREEToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string identacion = "   ";
+            if (!herencias.Equals(""))
+            {
+
+            }
+
+            string[] lclases = objetos.Split(';');
+
+            for (int x = 0; x < lclases.Length; x++)
+            {
+                string[] definciones = lclases[x].Split('|');
+                Codigo += "clase " + definciones[0] + ":\n"+identacion;
+
+                string[] atributos = definciones[1].Split(',');
+
+                for (int y = 0; y < atributos.Length; y++)
+                {
+                    Codigo += atributos[y] + ":\n" + identacion;
+                }
+
+                string[] funciones = definciones[2].Split(',');
+
+                for (int y = 0; y < funciones.Length; y++)
+                {
+                    grafo += funciones[y] + ":\n" + identacion;
+                }
+
+                
+
+            }
         }
     }
 }

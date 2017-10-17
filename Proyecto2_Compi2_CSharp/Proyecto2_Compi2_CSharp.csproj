@@ -63,6 +63,12 @@
     <Compile Include="Componentes\Valores.cs" />
     <Compile Include="Componentes\Variable.cs" />
     <Compile Include="Componentes\Variables.cs" />
+    <Compile Include="FCompartir.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FCompartir.Designer.cs">
+      <DependentUpon>FCompartir.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,6 +87,12 @@
     <Compile Include="FParametros.Designer.cs">
       <DependentUpon>FParametros.cs</DependentUpon>
     </Compile>
+    <Compile Include="InicioS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InicioS.Designer.cs">
+      <DependentUpon>InicioS.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="uml.cs">
@@ -89,6 +101,9 @@
     <Compile Include="uml.Designer.cs">
       <DependentUpon>uml.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="FCompartir.resx">
+      <DependentUpon>FCompartir.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -97,6 +112,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FParametros.resx">
       <DependentUpon>FParametros.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InicioS.resx">
+      <DependentUpon>InicioS.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

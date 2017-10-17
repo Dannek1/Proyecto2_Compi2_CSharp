@@ -35,6 +35,9 @@
             this.uMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.depurarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.códigoCompartidoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.iniciarSesiónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compartirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cerrarSesiónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
@@ -112,9 +115,36 @@
             // 
             // códigoCompartidoToolStripMenuItem
             // 
+            this.códigoCompartidoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.iniciarSesiónToolStripMenuItem,
+            this.compartirToolStripMenuItem,
+            this.cerrarSesiónToolStripMenuItem});
             this.códigoCompartidoToolStripMenuItem.Name = "códigoCompartidoToolStripMenuItem";
             this.códigoCompartidoToolStripMenuItem.Size = new System.Drawing.Size(125, 20);
             this.códigoCompartidoToolStripMenuItem.Text = "Código Compartido";
+            // 
+            // iniciarSesiónToolStripMenuItem
+            // 
+            this.iniciarSesiónToolStripMenuItem.Name = "iniciarSesiónToolStripMenuItem";
+            this.iniciarSesiónToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.iniciarSesiónToolStripMenuItem.Text = "Iniciar Sesión";
+            this.iniciarSesiónToolStripMenuItem.Click += new System.EventHandler(this.iniciarSesiónToolStripMenuItem_Click);
+            // 
+            // compartirToolStripMenuItem
+            // 
+            this.compartirToolStripMenuItem.Enabled = false;
+            this.compartirToolStripMenuItem.Name = "compartirToolStripMenuItem";
+            this.compartirToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.compartirToolStripMenuItem.Text = "Compartir";
+            this.compartirToolStripMenuItem.Click += new System.EventHandler(this.compartirToolStripMenuItem_Click);
+            // 
+            // cerrarSesiónToolStripMenuItem
+            // 
+            this.cerrarSesiónToolStripMenuItem.Enabled = false;
+            this.cerrarSesiónToolStripMenuItem.Name = "cerrarSesiónToolStripMenuItem";
+            this.cerrarSesiónToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cerrarSesiónToolStripMenuItem.Text = "Cerrar Sesión";
+            this.cerrarSesiónToolStripMenuItem.Click += new System.EventHandler(this.cerrarSesiónToolStripMenuItem_Click);
             // 
             // reportesToolStripMenuItem
             // 
@@ -384,6 +414,9 @@
         private System.Windows.Forms.TextBox txt3Dop;
         private System.Windows.Forms.ToolStripButton toolStripButton6;
         private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.ToolStripMenuItem iniciarSesiónToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem compartirToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cerrarSesiónToolStripMenuItem;
     }
 }
 
