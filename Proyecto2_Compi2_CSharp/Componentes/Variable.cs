@@ -15,6 +15,8 @@ namespace Proyecto2_Compi2_CSharp.Componentes
         public string tipo;
         public string visibilidad;
 
+        public int posicion = 0;
+
         int dimensiones;
         int dim_ocupadas;
 

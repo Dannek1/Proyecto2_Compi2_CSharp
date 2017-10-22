@@ -286,7 +286,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             Operaciones.Rule = Operaciones + "," + Operacion
                               | Operacion;
-
+                
             Asignacion.Rule = ID + "=" + Operacion + finSentencia//4
                             | ID + aumentar + finSentencia//3
                             | ID + disminuir + finSentencia//3

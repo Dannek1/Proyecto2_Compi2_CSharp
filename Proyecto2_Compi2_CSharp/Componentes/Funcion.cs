@@ -15,6 +15,8 @@ namespace Proyecto2_Compi2_CSharp.Componentes
         public string visibilidad;
         public bool arreglo;
 
+        public int tamaño = 0;
+        public int correlactivo_var = 0;
 
         public Variables variables;
         public ParseTreeNode nodo;
@@ -27,6 +29,7 @@ namespace Proyecto2_Compi2_CSharp.Componentes
         public Funcion anterior;
 
         public Parametros parametros;
+        public IFS Ifs;
 
         
 
@@ -38,6 +41,7 @@ namespace Proyecto2_Compi2_CSharp.Componentes
 
             nParametros = 0;
             variables = new Variables();
+            Ifs = new IFS();
             parametros = null;
 
             siguiente = null;
@@ -54,6 +58,7 @@ namespace Proyecto2_Compi2_CSharp.Componentes
             nParametros = 0;
 
             variables = new Variables();
+            Ifs = new IFS();
             parametros = null;
 
             siguiente = null;

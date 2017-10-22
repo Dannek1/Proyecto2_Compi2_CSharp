@@ -58,6 +58,8 @@
     <Compile Include="Componentes\Clases.cs" />
     <Compile Include="Componentes\Funcion.cs" />
     <Compile Include="Componentes\Funciones.cs" />
+    <Compile Include="Componentes\IF.cs" />
+    <Compile Include="Componentes\IFS.cs" />
     <Compile Include="Componentes\Parametro.cs" />
     <Compile Include="Componentes\Parametros.cs" />
     <Compile Include="Componentes\Valores.cs" />

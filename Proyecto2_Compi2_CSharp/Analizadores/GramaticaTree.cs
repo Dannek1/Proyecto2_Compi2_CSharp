@@ -172,6 +172,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | importacion;
 
             importacion.Rule = ID + "." + ID
+                            |Cadena
                             | ruta;
 
             Cuerpo.Rule =   RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent

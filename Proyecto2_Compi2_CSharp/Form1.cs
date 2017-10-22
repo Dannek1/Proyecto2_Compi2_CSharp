@@ -24,20 +24,25 @@ namespace Proyecto2_Compi2_CSharp
         int contadorTemp = 0;
         int contadorL = 0;
         int dimension;
+        int puntero = 0;
         string graph = "";
         string errores = "";
         string TresD = "";
         string clase_actual = "";
         string fun_actual = "";
         string condicionswith = "";
+        string importaciones = "";
         public string Usuario = "";
         ParseTreeNode op_switch;
-
+        bool importacion = false;
         bool retorna = false;
         bool operacion = false;
         bool salir = false;
         bool sino_operado = false;
         Clases clases;
+
+        Object[] Stack;
+        Object[] Heap;
 
 
         public Form1()
@@ -49,6 +54,9 @@ namespace Proyecto2_Compi2_CSharp
             inicial.Name = "inicial";
 
             treeView1.Nodes.Add(inicial);
+
+            Stack = new Object[10000];
+            Heap = new Object[10000];
         }
 
         private void tabCtrlSalidas_SelectedIndexChanged(object sender, EventArgs e)
@@ -124,8 +132,9 @@ namespace Proyecto2_Compi2_CSharp
                 Control[] prueba = TabCEntradas.SelectedTab.Controls.Find("Entrada", false);
                 String Entrda = prueba[0].Text;
                 Analizar(Entrda);
+                
 
-                //txt3D.Text = TresD;
+                txt3D.Text = TresD;
 
             }
             else
@@ -159,7 +168,7 @@ namespace Proyecto2_Compi2_CSharp
                 MessageBox.Show("Arbol de Analisis Sintactico Constuido !!!");
 
                 string respuesta = esCadenaValidaC(entrada, gramatica);
-
+                
                 txtErrores.Text += respuesta;
 
             }
@@ -208,8 +217,8 @@ namespace Proyecto2_Compi2_CSharp
                     GenarbolC(arbol.Root);
                     GenerateGraphC("Entrada.txt", "C:/Fuentes/");
 
-
-                    TresD = ActuarC(arbol.Root);
+                    ActuarC(arbol.Root);
+                    TresD = TraduccionC(arbol.Root);
 
                 }
             }
@@ -366,13 +375,87 @@ namespace Proyecto2_Compi2_CSharp
                         break;
                     }
 
+                case "Cabeza":
+                    {
+                        resultado = ActuarC(nodo.ChildNodes[0]);
+                        break;
+                    }
+
+                case "Importaciones":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            ActuarC(nodo.ChildNodes[0]);
+
+                            resultado = ActuarC(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            resultado = ActuarC(nodo.ChildNodes[0]);
+                        }
+                        break;
+                    }
+
+                case "Importacion":
+                    {
+                        importacion = true;
+                        if (nodo.ChildNodes[0].Term.Name.ToString() == "llamar")
+                        {
+                            string path = nodo.ChildNodes[1].Token.Text;
+
+                            if (path.Contains("http"))
+                            {
+                                LLamada_repositorio(path);
+                            }
+                            else
+                            {
+                                LLamada_local(path);
+                            }
+
+                        }
+                        else
+                        {
+                            string path = nodo.ChildNodes[1].Token.Text;
+
+                            if (path.Contains("http"))
+                            {
+                                Importa_repositorio(path);
+                            }
+                            else
+                            {
+                                Importa_local(path);
+                            }
+
+                        }
+                        importacion = false;
+                        break;
+                    }
+
                 case "Cuerpo":
                     {
                         if (nodo.ChildNodes.Count == 7)
                         {
+                            Clase clase = new Clase(clase_actual, "publico");
+
                             clase_actual = nodo.ChildNodes[1].Token.Text;
 
-                            Clase clase = new Clase(clase_actual, "publico");
+                            if (importacion)
+                            {
+                                importaciones += clase_actual + ";";
+
+                            }
+                            else if (!importaciones.Equals(""))
+                            {
+                                string[] imports = importaciones.Split(';');
+
+                                for (int x = 0; x < imports.Length; x++)
+                                {
+                                    Clase tempI = clases.Existe(imports[x]);
+
+                                    Heredar(tempI, clase);
+                                }
+                                importaciones = "";
+                            }
 
                             string cpadre = nodo.ChildNodes[3].Token.Text;
 
@@ -403,6 +486,24 @@ namespace Proyecto2_Compi2_CSharp
 
                             Clase clase = new Clase(clase_actual, visi);
 
+                            if (importacion)
+                            {
+                                importaciones += clase_actual + ";";
+                            }
+                            else if (!importaciones.Equals(""))
+                            {
+                                string[] imports = importaciones.Split(';');
+
+                                for (int x = 0; x < imports.Length; x++)
+                                {
+                                    Clase tempI = clases.Existe(imports[x]);
+
+                                    Heredar(tempI, clase);
+                                }
+
+                                importaciones = "";
+                            }
+
                             string cpadre = nodo.ChildNodes[4].Token.Text;
 
                             Clase padre = clases.Existe(cpadre);
@@ -430,8 +531,28 @@ namespace Proyecto2_Compi2_CSharp
                             string visi = ActuarC(nodo.ChildNodes[0]);
                             clase_actual = nodo.ChildNodes[2].Token.Text;
                             Clase clase = new Clase(clase_actual, visi);
+
+                            if (importacion)
+                            {
+                                importaciones += clase_actual + ";";
+                            }
+                            else if (!importaciones.Equals(""))
+                            {
+                                string[] imports = importaciones.Split(';');
+
+                                for (int x = 0; x < imports.Length; x++)
+                                {
+                                    Clase tempI = clases.Existe(imports[x]);
+
+                                    Heredar(tempI, clase);
+                                }
+                                importaciones = "";
+                            }
+
                             clases.Insertar(clase);
+
                             resultado = "class " + nodo.ChildNodes[2].Token.Text + "{" + ActuarC(nodo.ChildNodes[4]) + "}";
+
                             txtConsola.Text += "Se ha creado la Clase " + clase_actual;
 
 
@@ -442,6 +563,24 @@ namespace Proyecto2_Compi2_CSharp
                             clase_actual = nodo.ChildNodes[1].Token.Text;
                             Clase clase = new Clase(clase_actual, "publico");
                             clases.Insertar(clase);
+
+                            if (importacion)
+                            {
+                                importaciones += clase_actual + ";";
+                            }
+                            else if (!importaciones.Equals(""))
+                            {
+                                string[] imports = importaciones.Split(';');
+
+                                for (int x = 0; x < imports.Length; x++)
+                                {
+                                    Clase tempI = clases.Existe(imports[x]);
+
+                                    Heredar(tempI, clase);
+                                }
+                                importaciones = "";
+                            }
+
                             resultado = "class " + nodo.ChildNodes[1].Token.Text + "{" + ActuarC(nodo.ChildNodes[3]) + "}";
                             txtConsola.Text += "Se ha creado la Clase " + clase_actual;
                         }
@@ -539,7 +678,6 @@ namespace Proyecto2_Compi2_CSharp
                                 //arreglo
                             }
                         }
-
                         else if (nodo.ChildNodes.Count == 6)
                         {
                             if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
@@ -559,12 +697,10 @@ namespace Proyecto2_Compi2_CSharp
                                 resultado = nodo.ChildNodes[2].Token.Text + " = " + ActuarC(nodo.ChildNodes[4]);
                             }
                         }
-
                         else if (nodo.ChildNodes.Count == 8)
                         {
                             resultado = ActuarC(nodo.ChildNodes[0]);
                         }
-
                         else if (nodo.ChildNodes.Count == 9)
                         {
                             resultado = ActuarC(nodo.ChildNodes[0]);
@@ -575,6 +711,7 @@ namespace Proyecto2_Compi2_CSharp
 
                 case "Operacion":
                     {
+                        /*
                         if (nodo.ChildNodes.Count == 3)
                         {
 
@@ -683,6 +820,33 @@ namespace Proyecto2_Compi2_CSharp
 
 
                         }
+                        */
+
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name != "Operacion")
+                            {
+                                resultado = "(" + ActuarC(nodo.ChildNodes[1]) + ")";
+                            }
+                            else
+                            {
+                                resultado = ActuarC(nodo.ChildNodes[0]) + nodo.ChildNodes[1].Token.Text + ActuarC(nodo.ChildNodes[2]);
+                            }
+                        }
+                        else
+                        {
+                            if(nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                resultado = nodo.ChildNodes[0].Token.Text;
+                            }
+                            else
+                            {
+                                resultado = ActuarC(nodo.ChildNodes[0]);
+                            }
+                            
+                        }
+
+
                         break;
                     }
 
@@ -758,8 +922,6 @@ namespace Proyecto2_Compi2_CSharp
 
                                         Funcion nuevo = new Funcion("constructor", nombre, "publico");
 
-
-
                                         nuevo.parametros = new Parametros();
 
                                         for (int y = 0; y < Sparametros.Length; y++)
@@ -770,6 +932,11 @@ namespace Proyecto2_Compi2_CSharp
 
                                             nuevo.parametros.Insertar(nP);
 
+                                            Variable variable = new Variable(param[0], param[1]);
+                                            variable.posicion = nuevo.correlactivo_var;
+                                            nuevo.correlactivo_var++;
+
+                                            nuevo.variables.Insertar(variable);
                                         }
 
                                         temp.funciones.Insertar(nuevo);
@@ -795,7 +962,7 @@ namespace Proyecto2_Compi2_CSharp
                                         nuevo.nodo = nodo.ChildNodes[4];
                                         temp.funciones.Insertar(nuevo);
 
-                                        // resultado = x + "()" + "{\r\n" + ActuarC(nodo.ChildNodes[4]) + "\r\n}";
+                                        resultado = x + "()" + "{\r\n" + ActuarC(nodo.ChildNodes[4]) + "\r\n}";
 
                                     }
                                     else
@@ -884,13 +1051,19 @@ namespace Proyecto2_Compi2_CSharp
 
                                         nuevo.parametros.Insertar(nP);
 
+                                        Variable variable = new Variable(param[0], param[1]);
+                                        variable.posicion = nuevo.correlactivo_var;
+                                        nuevo.correlactivo_var++;
+
+                                        nuevo.variables.Insertar(variable);
+
                                     }
 
                                     nuevo.nodo = nodo.ChildNodes[5];
 
                                     temp.funciones.Insertar(nuevo);
 
-                                    //resultado = x + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
+                                    resultado = x + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
 
                                 }
                                 else
@@ -932,6 +1105,11 @@ namespace Proyecto2_Compi2_CSharp
 
                                             nuevo.parametros.Insertar(nP);
 
+                                            Variable variable = new Variable(param[0], param[1]);
+                                            variable.posicion = nuevo.correlactivo_var;
+                                            nuevo.correlactivo_var++;
+
+                                            nuevo.variables.Insertar(variable);
                                         }
 
                                         temp.funciones.Insertar(nuevo);
@@ -959,7 +1137,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                         temp.funciones.Insertar(nuevo);
 
-                                        //resultado = tipo + " " + fun_actual + "()" + "\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
+                                        resultado = tipo + " " + fun_actual + "()" + "\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
 
                                         retorna = false;
                                     }
@@ -1024,6 +1202,11 @@ namespace Proyecto2_Compi2_CSharp
 
                                                 nuevo.parametros.Insertar(nP);
 
+                                                Variable variable = new Variable(param[0], param[1]);
+                                                variable.posicion = nuevo.correlactivo_var;
+                                                nuevo.correlactivo_var++;
+
+                                                nuevo.variables.Insertar(variable);
                                             }
 
                                             resultado = visi + " " + x + "(" + parametros + "){}";
@@ -1050,7 +1233,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                             temp.funciones.Insertar(nuevo);
 
-                                            //resultado = visi + " " + x + "()\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
+                                            resultado = visi + " " + x + "()\r\n{" + ActuarC(nodo.ChildNodes[5]) + "\r\n}";
 
                                         }
                                         else
@@ -1098,6 +1281,8 @@ namespace Proyecto2_Compi2_CSharp
                                         funcion.nodo = null;
                                         funcion.variables = new Variables();
                                         funcion.tipo = tipo;
+                                        funcion.correlactivo_var = 0;
+                                        funcion.tamaño = 0;
 
 
                                     }
@@ -1123,6 +1308,8 @@ namespace Proyecto2_Compi2_CSharp
                                         funcion.nodo = null;
                                         funcion.visibilidad = visi;
                                         funcion.variables = new Variables();
+                                        funcion.correlactivo_var = 0;
+                                        funcion.tamaño = 0;
 
                                     }
                                     else
@@ -1146,9 +1333,9 @@ namespace Proyecto2_Compi2_CSharp
                                         retorna = true;
                                     }
 
-                                    string nombre = nodo.ChildNodes[0].Token.Text;
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
 
-                                    Clase temp = clases.Existe(nombre);
+                                    Clase temp = clases.Existe(clase_actual);
 
                                     string parametros = ActuarC(nodo.ChildNodes[3]);
 
@@ -1169,13 +1356,18 @@ namespace Proyecto2_Compi2_CSharp
 
                                         nuevo.parametros.Insertar(nP);
 
+                                        Variable variable = new Variable(param[0], param[1]);
+                                        variable.posicion = nuevo.correlactivo_var;
+                                        nuevo.correlactivo_var++;
+
+                                        nuevo.variables.Insertar(variable);
                                     }
 
                                     nuevo.nodo = nodo.ChildNodes[6];
 
                                     temp.funciones.Insertar(nuevo);
 
-                                    //resultado = tipo + " " + nombre + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
+                                    resultado = tipo + " " + nombre + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
 
                                 }
                                 else
@@ -1211,6 +1403,11 @@ namespace Proyecto2_Compi2_CSharp
 
                                             nuevo_f.parametros.Insertar(nP);
 
+                                            Variable variable = new Variable(param[0], param[1]);
+                                            variable.posicion = nuevo_f.correlactivo_var;
+                                            nuevo_f.correlactivo_var++;
+
+                                            nuevo_f.variables.Insertar(variable);
                                         }
 
 
@@ -1265,7 +1462,7 @@ namespace Proyecto2_Compi2_CSharp
                                             nombre += "_" + param[0];
                                         }
 
-                                        Funcion nuevo = new Funcion(visi, nombre, "publico");
+                                        Funcion nuevo = new Funcion("constructor", nombre, visi);
 
                                         nuevo.parametros = new Parametros();
 
@@ -1277,6 +1474,11 @@ namespace Proyecto2_Compi2_CSharp
 
                                             nuevo.parametros.Insertar(nP);
 
+                                            Variable variable = new Variable(param[0], param[1]);
+                                            variable.posicion = nuevo.correlactivo_var;
+                                            nuevo.correlactivo_var++;
+
+                                            nuevo.variables.Insertar(variable);
                                         }
 
                                         fun_actual = nombre;
@@ -1284,7 +1486,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                         temp.funciones.Insertar(nuevo);
 
-                                        //resultado = visi + " " + x + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
+                                        resultado = visi + " " + x + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
                                     }
                                     else
                                     {
@@ -1326,6 +1528,11 @@ namespace Proyecto2_Compi2_CSharp
 
                                                 nuevo.parametros.Insertar(nP);
 
+                                                Variable variable = new Variable(param[0], param[1]);
+                                                variable.posicion = nuevo.correlactivo_var;
+                                                nuevo.correlactivo_var++;
+
+                                                nuevo.variables.Insertar(variable);
                                             }
 
                                             temp.funciones.Insertar(nuevo);
@@ -1353,7 +1560,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                             temp.funciones.Insertar(nuevo);
 
-                                            //resultado = visi + " " + tipo + " " + fun_actual + "()" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
+                                            resultado = visi + " " + tipo + " " + fun_actual + "()" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
                                         }
                                     }
                                     else
@@ -1405,6 +1612,8 @@ namespace Proyecto2_Compi2_CSharp
 
                                                 fun.parametros = null;
                                                 fun.variables = new Variables();
+                                                fun.tamaño = 0;
+                                                fun.correlactivo_var = 0;
 
                                                 string parametros = ActuarC(nodo.ChildNodes[2]);
 
@@ -1419,6 +1628,12 @@ namespace Proyecto2_Compi2_CSharp
                                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                                     fun.parametros.Insertar(nP);
+
+                                                    Variable variable = new Variable(param[0], param[1]);
+                                                    variable.posicion = fun.correlactivo_var;
+                                                    fun.correlactivo_var++;
+
+                                                    fun.variables.Insertar(variable);
 
                                                 }
 
@@ -1436,6 +1651,8 @@ namespace Proyecto2_Compi2_CSharp
                                                 fun.parametros = null;
                                                 fun.variables = new Variables();
                                                 fun.nodo = nodo.ChildNodes[6];
+                                                fun.correlactivo_var = 0;
+                                                fun.tamaño = 0;
 
 
                                             }
@@ -1459,6 +1676,8 @@ namespace Proyecto2_Compi2_CSharp
                                             fun.variables = new Variables();
                                             fun.nodo = null;
                                             fun.SetArreglor(true);
+                                            fun.tamaño = 0;
+                                            fun.correlactivo_var = 0;
                                         }
                                         else
                                         {
@@ -1486,6 +1705,8 @@ namespace Proyecto2_Compi2_CSharp
                                                 funcion.nodo = null;
                                                 funcion.visibilidad = visi;
                                                 funcion.variables = new Variables();
+                                                funcion.correlactivo_var = 0;
+                                                funcion.tamaño = 0;
 
                                                 string parametros = ActuarC(nodo.ChildNodes[4]);
 
@@ -1501,6 +1722,12 @@ namespace Proyecto2_Compi2_CSharp
                                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                                     funcion.parametros.Insertar(nP);
+
+                                                    Variable variable = new Variable(param[0], param[1]);
+                                                    variable.posicion = funcion.correlactivo_var;
+                                                    funcion.correlactivo_var++;
+
+                                                    funcion.variables.Insertar(variable);
 
                                                 }
                                             }
@@ -1523,6 +1750,8 @@ namespace Proyecto2_Compi2_CSharp
                                                 funcion.nodo = nodo.ChildNodes[6];
                                                 funcion.visibilidad = visi;
                                                 funcion.variables = new Variables();
+                                                funcion.tamaño = 0;
+                                                funcion.correlactivo_var = 0;
                                                 fun_actual = x;
                                             }
                                             else
@@ -1556,6 +1785,8 @@ namespace Proyecto2_Compi2_CSharp
                                             funcion.visibilidad = visi;
 
                                             funcion.variables = new Variables();
+                                            funcion.correlactivo_var = 0;
+                                            funcion.tamaño = 0;
 
                                             funcion.nodo = null;
 
@@ -1605,6 +1836,12 @@ namespace Proyecto2_Compi2_CSharp
 
                                     funcion.parametros.Insertar(nP);
 
+                                    Variable variable = new Variable(param[0], param[1]);
+                                    variable.posicion = funcion.correlactivo_var;
+                                    funcion.correlactivo_var++;
+
+                                    funcion.variables.Insertar(variable);
+
                                 }
 
 
@@ -1642,13 +1879,19 @@ namespace Proyecto2_Compi2_CSharp
 
                                         nuevo.parametros.Insertar(nP);
 
+                                        Variable variable = new Variable(param[0], param[1]);
+                                        variable.posicion = nuevo.correlactivo_var;
+                                        nuevo.correlactivo_var++;
+
+                                        nuevo.variables.Insertar(variable);
+
                                     }
 
                                     nuevo.nodo = nodo.ChildNodes[7];
 
                                     temp.funciones.Insertar(nuevo);
 
-                                    //resultado = visi + " " + tipo + " " + fun_actual + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[7]) + "\r\n}";
+                                    resultado = visi + " " + tipo + " " + fun_actual + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[7]) + "\r\n}";
                                 }
                                 else
                                 {
@@ -1682,6 +1925,12 @@ namespace Proyecto2_Compi2_CSharp
                                                 Parametro nP = new Parametro(param[0], param[1]);
 
                                                 nuevo.parametros.Insertar(nP);
+
+                                                Variable variable = new Variable(param[0], param[1]);
+                                                variable.posicion = nuevo.correlactivo_var;
+                                                nuevo.correlactivo_var++;
+
+                                                nuevo.variables.Insertar(variable);
 
                                             }
 
@@ -1739,6 +1988,8 @@ namespace Proyecto2_Compi2_CSharp
                                             funcion.nodo = nodo.ChildNodes[7];
 
                                             funcion.variables = new Variables();
+                                            funcion.correlactivo_var = 0;
+                                            funcion.tamaño = 0;
 
                                             string parametros = ActuarC(nodo.ChildNodes[4]);
 
@@ -1753,6 +2004,12 @@ namespace Proyecto2_Compi2_CSharp
                                                 Parametro nP = new Parametro(param[0], param[1]);
 
                                                 funcion.parametros.Insertar(nP);
+
+                                                Variable variable = new Variable(param[0], param[1]);
+                                                variable.posicion = funcion.correlactivo_var;
+                                                funcion.correlactivo_var++;
+
+                                                funcion.variables.Insertar(variable);
 
                                             }
 
@@ -1786,6 +2043,8 @@ namespace Proyecto2_Compi2_CSharp
 
 
                                                 funcion.variables = new Variables();
+                                                funcion.correlactivo_var = 0;
+                                                funcion.tamaño = 0;
                                                 funcion.SetArreglor(true);
 
                                                 string parametros = ActuarC(nodo.ChildNodes[5]);
@@ -1801,6 +2060,12 @@ namespace Proyecto2_Compi2_CSharp
                                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                                     funcion.parametros.Insertar(nP);
+
+                                                    Variable variable = new Variable(param[0], param[1]);
+                                                    variable.posicion = funcion.correlactivo_var;
+                                                    funcion.correlactivo_var++;
+
+                                                    funcion.variables.Insertar(variable);
 
                                                 }
                                             }
@@ -1833,6 +2098,8 @@ namespace Proyecto2_Compi2_CSharp
 
 
                                             funcion.variables = new Variables();
+                                            funcion.correlactivo_var = 0;
+                                            funcion.tamaño = 0;
                                             funcion.SetArreglor(true);
 
                                             funcion.nodo = nodo.ChildNodes[7];
@@ -1866,6 +2133,10 @@ namespace Proyecto2_Compi2_CSharp
                                                 funcion.visibilidad = visi;
 
                                                 funcion.nodo = nodo.ChildNodes[7];
+                                                funcion.variables = new Variables();
+
+                                                funcion.correlactivo_var = 0;
+                                                funcion.tamaño = 0;
 
                                                 string parametros = ActuarC(nodo.ChildNodes[4]);
 
@@ -1880,6 +2151,12 @@ namespace Proyecto2_Compi2_CSharp
                                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                                     funcion.parametros.Insertar(nP);
+
+                                                    Variable variable = new Variable(param[0], param[1]);
+                                                    variable.posicion = funcion.correlactivo_var;
+                                                    funcion.correlactivo_var++;
+
+                                                    funcion.variables.Insertar(variable);
 
                                                 }
 
@@ -1921,6 +2198,8 @@ namespace Proyecto2_Compi2_CSharp
                                                         funcion.tipo = tipo;
 
                                                         funcion.variables = new Variables();
+                                                        funcion.correlactivo_var = 0;
+                                                        funcion.tamaño = 0;
 
                                                         string parametros = ActuarC(nodo.ChildNodes[5]);
 
@@ -1935,6 +2214,12 @@ namespace Proyecto2_Compi2_CSharp
                                                             Parametro nP = new Parametro(param[0], param[1]);
 
                                                             funcion.parametros.Insertar(nP);
+
+                                                            Variable variable = new Variable(param[0], param[1]);
+                                                            variable.posicion = funcion.correlactivo_var;
+                                                            funcion.correlactivo_var++;
+
+                                                            funcion.variables.Insertar(variable);
 
                                                         }
                                                     }
@@ -1958,6 +2243,8 @@ namespace Proyecto2_Compi2_CSharp
                                                     funcion.tipo = tipo;
 
                                                     funcion.variables = new Variables();
+                                                    funcion.correlactivo_var = 0;
+                                                    funcion.tamaño = 0;
 
                                                     funcion.nodo = nodo.ChildNodes[7];
                                                 }
@@ -1986,6 +2273,8 @@ namespace Proyecto2_Compi2_CSharp
                                                 funcion.tipo = tipo;
 
                                                 funcion.variables = new Variables();
+                                                funcion.correlactivo_var = 0;
+                                                funcion.tamaño = 0;
 
                                                 funcion.SetArreglor(true);
 
@@ -2029,6 +2318,8 @@ namespace Proyecto2_Compi2_CSharp
                                     funcion.nodo = nodo.ChildNodes[8];
 
                                     funcion.variables = new Variables();
+                                    funcion.correlactivo_var = 0;
+                                    funcion.tamaño = 0;
 
                                     string parametros = ActuarC(nodo.ChildNodes[5]);
 
@@ -2043,6 +2334,12 @@ namespace Proyecto2_Compi2_CSharp
                                         Parametro nP = new Parametro(param[0], param[1]);
 
                                         funcion.parametros.Insertar(nP);
+
+                                        Variable variable = new Variable(param[0], param[1]);
+                                        variable.posicion = funcion.correlactivo_var;
+                                        funcion.correlactivo_var++;
+
+                                        funcion.variables.Insertar(variable);
 
                                     }
 
@@ -2077,6 +2374,10 @@ namespace Proyecto2_Compi2_CSharp
                                             }
 
                                             funcion.variables = new Variables();
+
+                                            funcion.correlactivo_var = 0;
+                                            funcion.tamaño = 0;
+
                                             funcion.SetArreglor(true);
                                             funcion.visibilidad = "publico";
 
@@ -2095,6 +2396,12 @@ namespace Proyecto2_Compi2_CSharp
                                                 Parametro nP = new Parametro(param[0], param[1]);
 
                                                 funcion.parametros.Insertar(nP);
+
+                                                Variable variable = new Variable(param[0], param[1]);
+                                                variable.posicion = funcion.correlactivo_var;
+                                                funcion.correlactivo_var++;
+
+                                                funcion.variables.Insertar(variable);
 
                                             }
 
@@ -2125,6 +2432,9 @@ namespace Proyecto2_Compi2_CSharp
                                                     funcion.SetArreglor(true);
                                                     funcion.variables = new Variables();
 
+                                                    funcion.correlactivo_var = 0;
+                                                    funcion.tamaño = 0;
+
                                                     string parametros = ActuarC(nodo.ChildNodes[6]);
 
                                                     string[] Sparametros = parametros.Split(',');
@@ -2139,6 +2449,11 @@ namespace Proyecto2_Compi2_CSharp
 
                                                         funcion.parametros.Insertar(nP);
 
+                                                        Variable variable = new Variable(param[0], param[1]);
+                                                        variable.posicion = funcion.correlactivo_var;
+                                                        funcion.correlactivo_var++;
+
+                                                        funcion.variables.Insertar(variable);
                                                     }
                                                 }
                                                 else
@@ -2167,6 +2482,10 @@ namespace Proyecto2_Compi2_CSharp
 
                                                 funcion.visibilidad = visi;
                                                 funcion.tipo = tipo;
+
+                                                funcion.variables = new Variables();
+                                                funcion.correlactivo_var = 0;
+                                                funcion.tamaño = 0;
 
                                                 if (tipo != "void")
                                                 {
@@ -2204,6 +2523,8 @@ namespace Proyecto2_Compi2_CSharp
                                         }
 
                                         funcion.variables = new Variables();
+                                        funcion.correlactivo_var = 0;
+                                        funcion.tamaño = 0;
 
                                         funcion.SetArreglor(true);
 
@@ -2222,6 +2543,12 @@ namespace Proyecto2_Compi2_CSharp
                                             Parametro nP = new Parametro(param[0], param[1]);
 
                                             funcion.parametros.Insertar(nP);
+
+                                            Variable variable = new Variable(param[0], param[1]);
+                                            variable.posicion = funcion.correlactivo_var;
+                                            funcion.correlactivo_var++;
+
+                                            funcion.variables.Insertar(variable);
 
                                         }
                                     }
@@ -2248,6 +2575,8 @@ namespace Proyecto2_Compi2_CSharp
                                 funcion.visibilidad = visi;
 
                                 funcion.variables = new Variables();
+                                funcion.correlactivo_var = 0;
+                                funcion.tamaño = 0;
 
                                 funcion.nodo = nodo.ChildNodes[9];
                                 funcion.SetArreglor(true);
@@ -2271,6 +2600,12 @@ namespace Proyecto2_Compi2_CSharp
                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                     funcion.parametros.Insertar(nP);
+
+                                    Variable variable = new Variable(param[0], param[1]);
+                                    variable.posicion = funcion.correlactivo_var;
+                                    funcion.correlactivo_var++;
+
+                                    funcion.variables.Insertar(variable);
 
                                 }
 
@@ -2373,6 +2708,9 @@ namespace Proyecto2_Compi2_CSharp
 
                             Variable nuevo = new Variable(tipo, nombre);
 
+                            nuevo.posicion = temp.correlactivo_var;
+                            temp.correlactivo_var++;
+
                             temp.variables.Insertar(nuevo);
 
                         }
@@ -2390,6 +2728,10 @@ namespace Proyecto2_Compi2_CSharp
                             string dimeniones = ActuarC(nodo.ChildNodes[2]);
 
                             Variable nuevo = new Variable(tipo, nombre, "", dimension, dimeniones);
+
+                            nuevo.posicion = temp.correlactivo_var;
+                            temp.correlactivo_var++;
+
                             temp.variables.Insertar(nuevo);
 
                         }
@@ -2407,6 +2749,9 @@ namespace Proyecto2_Compi2_CSharp
 
 
                             Variable nuevo = new Variable(tipo, nombre, valor);
+
+                            nuevo.posicion = temp.correlactivo_var;
+                            temp.correlactivo_var++;
 
                             temp.variables.Insertar(nuevo);
 
@@ -2430,6 +2775,9 @@ namespace Proyecto2_Compi2_CSharp
                             string dimeniones = ActuarC(nodo.ChildNodes[2]);
 
                             Variable nuevo = new Variable(tipo, nombre, "valor", dimension, dimeniones);
+                            nuevo.posicion = temp.correlactivo_var;
+                            temp.correlactivo_var++;
+
                             temp.variables.Insertar(nuevo);
 
                         }
@@ -2465,6 +2813,10 @@ namespace Proyecto2_Compi2_CSharp
                                         string valor = aux.GetRetorno();
 
                                         Variable nuevo = new Variable(tipo, nombre, valor);
+                                        nuevo.posicion = temp.correlactivo_var;
+                                        temp.correlactivo_var++;
+
+                                        temp.variables.Insertar(nuevo);
 
                                     }
                                     else
@@ -2525,6 +2877,8 @@ namespace Proyecto2_Compi2_CSharp
 
                                         fun_actual = temporal;
                                         Variable nuevo = new Variable(tipo, nombre, valor);
+                                        nuevo.posicion = temp.correlactivo_var;
+                                        temp.correlactivo_var++;
                                         // Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
 
                                         temp.variables.Insertar(nuevo);
@@ -2582,6 +2936,9 @@ namespace Proyecto2_Compi2_CSharp
                                                     string valor = aux.GetRetorno();
 
                                                     Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                                    nuevo.posicion = temp.correlactivo_var;
+                                                    temp.correlactivo_var++;
 
                                                     temp.variables.Insertar(nuevo);
                                                 }
@@ -2708,6 +3065,9 @@ namespace Proyecto2_Compi2_CSharp
 
                                         Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
 
+                                        nuevo.posicion = temp.correlactivo_var;
+                                        temp.correlactivo_var++;
+
                                         temp.variables.Insertar(nuevo);
                                     }
                                     else
@@ -2731,7 +3091,8 @@ namespace Proyecto2_Compi2_CSharp
                         }
                         break;
                     }
-
+            
+                    /*
                 case "Asignacion":
                     {
                         Clase claset = clases.Existe(clase_actual);
@@ -2747,6 +3108,7 @@ namespace Proyecto2_Compi2_CSharp
                             if (claset.variables.Buscar_existe(variable))
                             {
                                 if (nodo.ChildNodes.Count == 4)
+
                                 {
                                     Variable temp = claset.variables.Buscar(variable);
                                     string valor;
@@ -2990,6 +3352,7 @@ namespace Proyecto2_Compi2_CSharp
 
                         break;
                     }
+                    */
 
                 case "Funciones":
                     {
@@ -3036,30 +3399,25 @@ namespace Proyecto2_Compi2_CSharp
 
                 case "If":
                     {
+
+                        Funcion funcion = clases.Existe(clase_actual).funciones.Existe(fun_actual);
                         string logica;
+
                         bool hacer = false;
                         logica = ActuarC(nodo.ChildNodes[1]);
 
-                        if (logica.Equals("true"))
-                        {
-                            hacer = true;
-                        }
-                        else
-                        {
-                            hacer = false;
-                        }
-
                         if (nodo.ChildNodes.Count == 5)
                         {
-                            if (hacer)
-                            {
-                                txtConsola.Text += "\n\r Condicion verdadera";
-                            }
+
+                            IF nuevo = new IF(logica);
+                            funcion.Ifs.Insertar(nuevo);
                         }
                         else if (nodo.ChildNodes.Count == 6)
                         {
                             if (nodo.ChildNodes[4].Term.ToString().Equals("Sentencias"))
                             {
+                                IF nuevo = new IF(logica, nodo.ChildNodes[4]);
+                                funcion.Ifs.Insertar(nuevo);
                                 if (hacer)
                                 {
                                     resultado = ActuarC(nodo.ChildNodes[4]);
@@ -3068,10 +3426,10 @@ namespace Proyecto2_Compi2_CSharp
                             }
                             else
                             {
-                                if (!hacer)
-                                {
-                                    resultado = ActuarC(nodo.ChildNodes[5]);
-                                }
+                                IF nuevo = new IF(logica, nodo.ChildNodes[4]);
+                                funcion.Ifs.Insertar(nuevo);
+                                resultado = ActuarC(nodo.ChildNodes[5]);
+                               
                             }
 
 
@@ -3081,50 +3439,33 @@ namespace Proyecto2_Compi2_CSharp
                         {
                             if (nodo.ChildNodes[4].Term.ToString().Equals("Sentencias"))
                             {
-                                if (hacer)
-                                {
-                                    resultado = ActuarC(nodo.ChildNodes[4]);
-                                }
-                                else
-                                {
-                                    resultado = ActuarC(nodo.ChildNodes[6]);
-                                }
+
+                                IF nuevo = new IF(logica, nodo.ChildNodes[4]);
+                                funcion.Ifs.Insertar(nuevo);
+
+                                resultado = ActuarC(nodo.ChildNodes[6]);
+                               
                             }
                             else
                             {
-                                if (hacer)
-                                {
-                                    txtConsola.Text += "\r\n Validacion Correcta";
-                                }
-                                else
-                                {
-                                    txtConsola.Text += "\r\n Validacion Incorecta";
-                                }
+                                IF nuevo = new IF(logica);
+                                funcion.Ifs.Insertar(nuevo);
                             }
                         }
                         else if (nodo.ChildNodes.Count == 8)
                         {
-                            if (hacer)
-                            {
-                                txtConsola.Text += "\r\n Validacion Correcta";
-                            }
-                            else
-                            {
-                                resultado = ActuarC(nodo.ChildNodes[6]);
-                            }
+
+                            IF nuevo = new IF(logica, null,nodo.ChildNodes[6]);
+                            funcion.Ifs.Insertar(nuevo);
 
                         }
                         else
                         {
-                            if (hacer)
-                            {
-                                resultado = ActuarC(nodo.ChildNodes[4]);
-                            }
-                            else
-                            {
-                                resultado = ActuarC(nodo.ChildNodes[7]);
-                            }
+
+                            IF nuevo = new IF(logica, nodo.ChildNodes[4], nodo.ChildNodes[6]);
+                            funcion.Ifs.Insertar(nuevo);
                         }
+
 
 
                         break;
@@ -3138,6 +3479,7 @@ namespace Proyecto2_Compi2_CSharp
 
                 case "Logica":
                     {
+                        /*
                         if (nodo.ChildNodes.Count == 3)
                         {
                             if (nodo.ChildNodes[0].Term.Name != "Logica")
@@ -3210,12 +3552,29 @@ namespace Proyecto2_Compi2_CSharp
                             resultado = ActuarC(nodo.ChildNodes[0]);
 
                         }
+                        */
 
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name != "Logica")
+                            {
+                                resultado = "(" + ActuarC(nodo.ChildNodes[1]) + ")";
+                            }
+                            else
+                            {
+                                resultado = ActuarC(nodo.ChildNodes[0]) + nodo.ChildNodes[1].Token.Text + ActuarC(nodo.ChildNodes[2]);
+                            }
+                        }
+                        else
+                        {
+                            resultado = ActuarC(nodo.ChildNodes[0]);
+                        }
                         break;
                     }
 
                 case "Relacional":
                     {
+                        /*
                         if (nodo.ChildNodes.Count == 3)
                         {
                             if (nodo.ChildNodes[0].Term.Name != "Relacional")
@@ -3309,7 +3668,26 @@ namespace Proyecto2_Compi2_CSharp
                             resultado = ActuarC(nodo.ChildNodes[0]);
 
                         }
+                        */
+
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name != "Relacional")
+                            {
+                                resultado = "(" + ActuarC(nodo.ChildNodes[1]) + ")";
+                            }
+                            else
+                            {
+                                resultado = ActuarC(nodo.ChildNodes[0]) + nodo.ChildNodes[1].Token.Text+ ActuarC(nodo.ChildNodes[2]);
+                            }
+                        }
+                        else
+                        {
+                            resultado = ActuarC(nodo.ChildNodes[0]);
+                        }
+
                         break;
+
                     }
 
                 case "While":
@@ -3680,7 +4058,6 @@ namespace Proyecto2_Compi2_CSharp
                         break;
                     }
 
-
                 case "AsignacionArreglo":
                     {
                         if (nodo.ChildNodes.Count == 3)
@@ -3762,6 +4139,43 @@ namespace Proyecto2_Compi2_CSharp
                         break;
                     }
 
+                case "importacion":
+                    {
+                        if (nodo.ChildNodes.Count==3)
+                        {
+
+                        }
+                        else
+                        {
+                            string path= nodo.ChildNodes[0].Token.Text;
+
+                            if (path.Contains(".olc"))
+                            {
+                                if (path.Contains("http"))
+                                {
+                                    LLamada_repositorio(path);
+                                }
+                                else
+                                {
+                                    LLamada_local(path);
+                                }
+                            }
+                            else
+                            {
+                                if (path.Contains("http"))
+                                {
+                                    Importa_repositorio(path);
+                                }
+                                else
+                                {
+                                    Importa_local(path);
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+
                 case "Cuerpo":
                     {
                         if (nodo.ChildNodes.Count == 7)
@@ -3769,6 +4183,24 @@ namespace Proyecto2_Compi2_CSharp
                             clase_actual = nodo.ChildNodes[1].Token.Text;
 
                             Clase nuevo = new Clase(clase_actual, "publico");
+
+                            if (importacion)
+                            {
+                                importaciones += clase_actual + ";";
+
+                            }
+                            else if (!importaciones.Equals(""))
+                            {
+                                string[] imports = importaciones.Split(';');
+
+                                for (int x = 0; x < imports.Length; x++)
+                                {
+                                    Clase tempI = clases.Existe(imports[x]);
+
+                                    Heredar(tempI, nuevo);
+                                }
+                                importaciones = "";
+                            }
 
 
                             clases.Insertar(nuevo);
@@ -3784,6 +4216,23 @@ namespace Proyecto2_Compi2_CSharp
 
                             Clase nuevo = new Clase(clase_actual, visi);
 
+                            if (importacion)
+                            {
+                                importaciones += clase_actual + ";";
+
+                            }
+                            else if (!importaciones.Equals(""))
+                            {
+                                string[] imports = importaciones.Split(';');
+
+                                for (int x = 0; x < imports.Length; x++)
+                                {
+                                    Clase tempI = clases.Existe(imports[x]);
+
+                                    Heredar(tempI, nuevo);
+                                }
+                                importaciones = "";
+                            }
 
                             clases.Insertar(nuevo);
 
@@ -3803,6 +4252,25 @@ namespace Proyecto2_Compi2_CSharp
                             {
 
                                 Clase nuevo = new Clase(clase_actual, "publico");
+
+                                if (importacion)
+                                {
+                                    importaciones += clase_actual + ";";
+
+                                }
+                                else if (!importaciones.Equals(""))
+                                {
+                                    string[] imports = importaciones.Split(';');
+
+                                    for (int x = 0; x < imports.Length; x++)
+                                    {
+                                        Clase tempI = clases.Existe(imports[x]);
+
+                                        Heredar(tempI, nuevo);
+                                    }
+                                    importaciones = "";
+                                }
+
                                 Heredar(heredada, nuevo);
 
                                 clases.Insertar(nuevo);
@@ -3828,6 +4296,26 @@ namespace Proyecto2_Compi2_CSharp
                             {
 
                                 Clase nuevo = new Clase(clase_actual, "publico");
+
+                                if (importacion)
+                                {
+                                    importaciones += clase_actual + ";";
+
+                                }
+                                else if (!importaciones.Equals(""))
+                                {
+                                    string[] imports = importaciones.Split(';');
+
+                                    for (int x = 0; x < imports.Length; x++)
+                                    {
+                                        Clase tempI = clases.Existe(imports[x]);
+
+                                        Heredar(tempI, nuevo);
+                                    }
+                                    importaciones = "";
+                                }
+
+
                                 Heredar(heredada, nuevo);
 
                                 clases.Insertar(nuevo);
@@ -5711,9 +6199,1677 @@ namespace Proyecto2_Compi2_CSharp
            
         }
 
-       void Importar_ruta(string path)
+        void Importa_local(string path)
         {
+            if (path.Contains(".tree"))
+            {
+                System.IO.StreamReader sr = new System.IO.StreamReader(path);
+                string archivo = sr.ReadToEnd();
+                
+                sr.Close();
+                Analizar(archivo);
+            }
+            else
+            {
+                txtErrores.Text += "\r\nError en Imporatcion, archivo no compatible";
+            }
+        }
+ 
+        void Importa_repositorio(string path)
+        {
+            string archivo = "";
+            if (path.Contains(".tree"))
+            {
+                SqlConnection conexion = new SqlConnection("Data Source=DANNEK-PC\\DANNEK;Initial Catalog=Repositorio_Compi2;Integrated Security=True");
 
+                conexion.Open();
+
+                SqlCommand comando = new SqlCommand("SELECT Codigo FROM ARCHIVO WHERE path= '" + path + "'", conexion);
+
+                SqlDataReader lector = comando.ExecuteReader();
+                while (lector.Read())
+                {
+                    archivo = lector.GetString(0);
+                }
+
+                conexion.Close();
+
+                if (!archivo.Equals(""))
+                {
+                    Analizar(archivo);
+
+                }
+                else
+                {
+                    MessageBox.Show("Usuario o Contraseña Invalidos", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+               
+            }
+            else
+            {
+                txtErrores.Text += "\r\nError en Imporatcion, archivo no compatible";
+            }
+        }
+
+        void LLamada_local(string path)
+        {
+            if (path.Contains(".olc"))
+            {
+                System.IO.StreamReader sr = new System.IO.StreamReader(path);
+                string archivo = sr.ReadToEnd();
+
+                sr.Close();
+                Analizar(archivo);
+            }
+            else
+            {
+                txtErrores.Text += "\r\nError en Imporatcion, archivo no compatible";
+            }
+        }
+
+        void LLamada_repositorio(string path)
+        {
+            string archivo = "";
+            if (path.Contains(".olc"))
+            {
+                SqlConnection conexion = new SqlConnection("Data Source=DANNEK-PC\\DANNEK;Initial Catalog=Repositorio_Compi2;Integrated Security=True");
+
+                conexion.Open();
+
+                SqlCommand comando = new SqlCommand("SELECT Codigo FROM ARCHIVO WHERE path= '" + path + "'", conexion);
+
+                SqlDataReader lector = comando.ExecuteReader();
+                while (lector.Read())
+                {
+                    archivo = lector.GetString(0);
+                }
+
+                conexion.Close();
+
+                if (!archivo.Equals(""))
+                {
+                    Analizar(archivo);
+
+                }
+                else
+                {
+                    MessageBox.Show("Usuario o Contraseña Invalidos", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+            else
+            {
+                txtErrores.Text += "\r\nError en Imporatcion, archivo no compatible";
+            }
+        }
+
+        public string TraduccionC(ParseTreeNode nodo)
+        {
+            string respuesta = "";
+
+            switch (nodo.Term.Name.ToString())
+            {
+                case "S":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+
+                            respuesta = TraduccionC(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Cuerpo":
+                    {
+                        if (nodo.ChildNodes.Count == 7)
+                        {
+                            clase_actual = nodo.ChildNodes[1].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+
+                            respuesta = clase.Visibilidad + " " + clase.Nombre + "{\r\n " + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";                          
+                        }
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+                            clase_actual = nodo.ChildNodes[2].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+
+                            respuesta = clase.Visibilidad + " " + clase.Nombre + "{\r\n " + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
+
+                        }
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+                            clase_actual = nodo.ChildNodes[2].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+
+                            respuesta = clase.Visibilidad + " " + clase.Nombre + "{\r\n " + TraduccionC(nodo.ChildNodes[4]) + "\r\n}";
+                            
+                        }
+                        else //5
+                        {
+
+                            clase_actual = nodo.ChildNodes[1].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+
+                            respuesta = clase.Visibilidad + " " + clase.Nombre + "{\r\n " + TraduccionC(nodo.ChildNodes[3]) + "\r\n}";
+                            
+                        }
+
+                        break;
+                    }
+
+                case "Contenido":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+
+                            respuesta += TraduccionC(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Globales":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+
+                            respuesta += TraduccionC(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Global":
+                    {
+                        if (nodo.ChildNodes.Count == 5)
+                        {
+                            if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                            {
+
+                                Clase clase = clases.Existe(clase_actual);
+
+                                string tipo = nodo.ChildNodes[0].Token.Text;
+
+                                string var = nodo.ChildNodes[1].Token.Text;
+
+                                Variable temp = clase.variables.Buscar(var);
+
+                                temp.SetValor(TraduccionC(nodo.ChildNodes[3]));
+
+                                respuesta = "\r\n"+temp.visibilidad + " " + temp.nombre + " = " + temp.GetValor();
+
+                                
+
+                                
+
+                            }
+                            
+                        }
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+                                Clase clase = clases.Existe(clase_actual);
+
+                                string var = nodo.ChildNodes[2].Token.Text;
+
+                                Variable temp = clase.variables.Buscar(var);
+
+                                temp.SetValor(TraduccionC(nodo.ChildNodes[4]));
+
+                                respuesta = "\r\n" + temp.visibilidad + " " + temp.nombre + " = " + temp.GetValor();
+
+                            }
+                        }
+                        /*
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+                            resultado = ActuarC(nodo.ChildNodes[0]);
+                        }
+                        else if (nodo.ChildNodes.Count == 9)
+                        {
+                            resultado = ActuarC(nodo.ChildNodes[0]);
+                        }
+                        */
+                        break;
+                    }
+
+                case "Componentes":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+
+                            respuesta += TraduccionC(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Componente":
+                    {
+                       if (nodo.ChildNodes.Count == 5)
+                        {
+                            string x = nodo.ChildNodes[0].Token.Text;
+
+                            if (x.Equals(clase_actual))
+                            {
+                                Clase clase = clases.Existe(x);
+                                Funcion temp = clase.funciones.Existe(x + "_");
+                                respuesta ="\r\n"+ x + "()" + "{}";
+
+                            }
+                            
+
+
+                        }
+                       else if (nodo.ChildNodes.Count == 6)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                if (nodo.ChildNodes[2].Term.Name.ToString() == "Parametros")
+                                {
+                                    string x = nodo.ChildNodes[0].Token.Text;
+                                    if (x.Equals(clase_actual))
+                                    {
+                                        Clase clase = clases.Existe(x);
+
+                                        string parametros = ActuarC(nodo.ChildNodes[2]);
+
+                                        string[] Sparametros = parametros.Split(',');
+
+                                        string nombre = x;
+
+                                        for (int y = 0; y < Sparametros.Length; y++)
+                                        {
+                                            string[] param = Sparametros[y].Split(' ');
+
+                                            nombre += "_" + param[0];
+                                        }
+
+                                        Funcion temp = clase.funciones.Existe(nombre);
+
+                                        respuesta = x + "(" + ")" + "{}";
+
+
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "Error al declarar,falta tipo";
+                                    }
+                                }
+                                else
+                                {
+                                    string x = nodo.ChildNodes[0].Token.Text;
+                                    if (x.Equals(clase_actual))
+                                    {
+                                        Clase clase = clases.Existe(x);
+
+                                        Funcion temp = clase.funciones.Existe(x + "_");
+                                        
+
+                                        respuesta = temp.visibilidad+" "+ x + "()" + "{\r\n" + TraduccionC(nodo.ChildNodes[4]) + "\r\n}";
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "Error al declarar,falta tipo";
+                                    }
+                                }
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                            {
+                                string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                if (tipo.Equals("void"))
+                                {
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    Clase temp = clases.Existe(clase_actual);
+
+                                    Funcion nuevo = new Funcion(tipo, nombre, "publico");
+                                    temp.funciones.Insertar(nuevo);
+
+                                    respuesta = tipo + " " + nombre + "()" + "{" + "}";
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "Falta Retorno";
+                                }
+                            }
+                            else
+                            {
+                                string x = nodo.ChildNodes[1].Token.Text;
+
+                                if (x.Equals(clase_actual))
+                                {
+                                    
+
+                                    Clase clase = clases.Existe(x);
+                                    Funcion funcion = clase.funciones.Existe(x + "_");
+
+                                    respuesta = funcion.visibilidad + " " + x + "(){}";
+
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "Error al declarar,falta tipo";
+                                }
+                            }
+
+                        }
+                       else if (nodo.ChildNodes.Count == 7)
+                       {
+                           if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                           {
+                               string x = nodo.ChildNodes[0].Token.Text;
+
+                               if (x.Equals(clase_actual))
+                               {
+                                   Clase clase = clases.Existe(x);
+
+                                   string parametros = ActuarC(nodo.ChildNodes[2]);
+
+                                   string[] Sparametros = parametros.Split(',');
+
+                                   string nombre = x;
+
+                                   for (int y = 0; y < Sparametros.Length; y++)
+                                   {
+                                       string[] param = Sparametros[y].Split(' ');
+
+                                       nombre += "_" + param[0];
+                                   }
+
+                                   Funcion temp = clase.funciones.Existe(nombre);
+
+
+
+                                   respuesta = temp.visibilidad+" "+x + "(" + ")" + "\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
+
+                               }
+
+
+                           }
+                           else if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                           {
+                               if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                               {
+                                   if (nodo.ChildNodes[3].Term.Name.ToString() == "Parametros")
+                                   {
+
+
+                                       fun_actual = nodo.ChildNodes[1].Token.Text;
+
+                                       Clase clase = clases.Existe(clase_actual);
+
+
+                                       Funcion temp = clase.funciones.Existe(clase_actual);
+
+
+                                       respuesta = temp.visibilidad + " " + temp.tipo+ " "+temp.nombre+"(" + ")" + "{}";
+
+
+                                   }
+                                   else
+                                   {
+
+                                       fun_actual = nodo.ChildNodes[1].Token.Text;
+
+                                       Clase clase = clases.Existe(clase_actual);
+
+                                       Funcion temp = clase.funciones.Existe(fun_actual);
+
+
+
+                                       respuesta = temp.visibilidad + " "+temp.tipo+" " + fun_actual + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
+
+
+                                   }
+
+                               }
+                               else
+                               {
+                                   string tipo = ActuarC(nodo.ChildNodes[0]);
+                                   string nombre = ActuarC(nodo.ChildNodes[2]);
+
+                                   Clase clase_n = clases.Existe(clase_actual);
+
+                                   Funcion nuevo_f = new Funcion(tipo, nombre, "publico");
+
+                                   nuevo_f.SetArreglor(true);
+
+                                   if (tipo != "void")
+                                   {
+                                       retorna = true;
+                                   }
+
+                                   nuevo_f.SetArreglor(true);
+
+                                   clase_n.funciones.Insertar(nuevo_f);
+                               }
+                           }
+                           else if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                           {
+                                if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                                {
+                                    if (nodo.ChildNodes[3].Term.Name.ToString() == "Parametros")
+                                    {
+
+
+                                        string x = nodo.ChildNodes[1].Token.Text;
+
+                                        if (x.Equals(clase_actual))
+                                        {
+                                            Clase clase = clases.Existe(x);
+                                            string parametros = ActuarC(nodo.ChildNodes[2]);
+
+                                            string[] Sparametros = parametros.Split(',');
+
+                                            string nombre = x;
+
+                                            for (int y = 0; y < Sparametros.Length; y++)
+                                            {
+                                                string[] param = Sparametros[y].Split(' ');
+
+                                                nombre += "_" + param[0];
+                                            }
+
+                                            Funcion temp = clase.funciones.Existe(nombre);
+
+                                            respuesta = temp.visibilidad + " " + x + "( ){}";
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "Error al declarar,falta tipo";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string visi = ActuarC(nodo.ChildNodes[0]);
+
+                                        string x = nodo.ChildNodes[1].Token.Text;
+
+                                        if (x.Equals(clase_actual))
+                                        {
+                                            Clase clase = clases.Existe(x);
+                                            fun_actual = x + "_";
+                                            Funcion temp = clase.funciones.Existe(x + "_");
+
+                                            respuesta = temp.visibilidad + " " + x + "()\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
+
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+
+                                    string x = nodo.ChildNodes[2].Token.Text;
+
+                                    Funcion temp = clases.Existe(clase_actual).funciones.Existe(x);
+
+                                    respuesta = temp.visibilidad + " " + temp.tipo + " " + temp.nombre + "(){}";
+                               }
+                           }
+                           else
+                           {
+                               if (nodo.ChildNodes[1].Term.Name.ToString() == "Tipo")
+                               {
+                                   string x = nodo.ChildNodes[2].Token.Text;
+
+                                   Clase clase = clases.Existe(clase_actual);
+
+                                   if (clase.funciones.ExisteF(x))
+                                   {
+
+                                       fun_actual = x;
+
+                                       Funcion funcion = clase.funciones.Existe(x);
+
+                                       respuesta = funcion.visibilidad + " " + funcion.tipo + " " + funcion.nombre+"(){}";
+
+                                   }
+                                                                   }
+                               else
+                               {
+                                   string x = nodo.ChildNodes[2].Token.Text;
+
+                                   Clase clase = clases.Existe(clase_actual);
+
+                                   if (clase.funciones.ExisteF(x))
+                                   {
+                                       fun_actual = x;
+
+                                       Funcion funcion = clase.funciones.Existe(x);
+
+                                       respuesta = funcion.visibilidad + " " + funcion.tipo + " " + funcion.nombre + "(){}";
+
+                                   }
+
+                               }
+                           }
+
+                       }
+                       else if (nodo.ChildNodes.Count == 8)
+                       {
+                           if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                           {
+                               if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                               {
+
+                                   string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                   Clase clase = clases.Existe(clase_actual);
+                                    Funcion temp = clase.funciones.Existe(nombre);
+                                    
+
+                                   respuesta = temp.visibilidad+" "+temp.tipo + " " + nombre + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
+
+                               }
+                               else
+                               {
+                                   if (nodo.ChildNodes[4].Term.Name.ToString() == "Parametros")
+                                   {
+                                       string tipo = ActuarC(nodo.ChildNodes[0]);
+                                       string nombre = ActuarC(nodo.ChildNodes[2]);
+
+                                       //arreglo
+                                   }
+                                   else
+                                   {
+                                       string tipo = ActuarC(nodo.ChildNodes[0]);
+                                       string nombre = ActuarC(nodo.ChildNodes[2]);
+
+                                      //arreglo
+                                   }
+                               }
+                           }
+                           else if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                           {
+                               if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
+                               {
+                                   string visi = ActuarC(nodo.ChildNodes[0]);
+
+                                   string x = nodo.ChildNodes[1].Token.Text;
+
+                                    if (x.Equals(clase_actual))
+                                    {
+                                        Clase clase = clases.Existe(x);
+
+                                        string parametros = ActuarC(nodo.ChildNodes[3]);
+
+                                        string[] Sparametros = parametros.Split(',');
+
+                                        string nombre = x;
+
+                                        for (int y = 0; y < Sparametros.Length; y++)
+                                        {
+                                            string[] param = Sparametros[y].Split(' ');
+
+                                            nombre += "_" + param[0];
+                                        }
+
+                                        Funcion temp = clase.funciones.Existe(nombre);
+
+                                        respuesta = temp.visibilidad + " " + x + "(" + ")" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
+                                   }
+                                  
+
+                               }
+                               else
+                               {
+                                   if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                   {
+                                       if (nodo.ChildNodes[4].Term.Name.ToString() == "Parametros")
+                                       {
+                                           
+                                           fun_actual = nodo.ChildNodes[2].Token.Text;
+
+                                           Clase clase = clases.Existe(clase_actual);
+
+                                           Funcion temp = clase.funciones.Existe(fun_actual);
+
+                                           respuesta = temp.visibilidad + " " + temp.tipo + " " + fun_actual + "()" + "{}";
+
+                                       }
+                                       else
+                                       {
+                                           
+                                           fun_actual = nodo.ChildNodes[2].Token.Text;
+
+                                           Clase clase = clases.Existe(clase_actual);
+
+                                           Funcion temp = clase.funciones.Existe(fun_actual);
+
+                                           respuesta = temp.visibilidad + " " + temp.tipo + " " + fun_actual + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
+                                       }
+                                   }
+                                   else
+                                   {
+                                       
+                                       string nombre = ActuarC(nodo.ChildNodes[3]);
+
+                                   }
+                               }
+                           }
+                           else
+                           {
+                               if (nodo.ChildNodes[1].Term.Name.ToString() == "Tipo")
+                               {
+                                   if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                   {
+                                       string x = nodo.ChildNodes[2].Token.Text;
+
+                                       Clase clase = clases.Existe(clase_actual);
+
+                                       if (clase.funciones.ExisteF(x))
+                                       {
+                                           if (nodo.ChildNodes[4].Term.Name.ToString() == "Parametros")
+                                           {
+                                               string tipo = ActuarC(nodo.ChildNodes[4]);
+
+                                               Funcion fun = clase.funciones.Existe(x);
+
+                                               fun.tipo = tipo;
+
+                                               fun.nodo = null;
+
+                                               fun.parametros = null;
+                                               fun.variables = new Variables();
+                                               fun.tamaño = 0;
+                                               fun.correlactivo_var = 0;
+
+                                               string parametros = ActuarC(nodo.ChildNodes[2]);
+
+                                               string[] Sparametros = parametros.Split(',');
+
+                                               fun.parametros = new Parametros();
+
+                                               for (int y = 0; y < Sparametros.Length; y++)
+                                               {
+                                                   string[] param = Sparametros[y].Split(' ');
+
+                                                   Parametro nP = new Parametro(param[0], param[1]);
+
+                                                   fun.parametros.Insertar(nP);
+
+                                                   Variable variable = new Variable(param[0], param[1]);
+                                                   variable.posicion = fun.correlactivo_var;
+                                                   fun.correlactivo_var++;
+
+                                                   fun.variables.Insertar(variable);
+
+                                               }
+
+
+
+                                           }
+                                           else
+                                           {
+                                               string tipo = ActuarC(nodo.ChildNodes[4]);
+
+                                               Funcion fun = clase.funciones.Existe(x);
+
+                                               fun.tipo = tipo;
+
+                                               fun.parametros = null;
+                                               fun.variables = new Variables();
+                                               fun.nodo = nodo.ChildNodes[6];
+                                               fun.correlactivo_var = 0;
+                                               fun.tamaño = 0;
+
+
+                                           }
+                                       }
+                                       else
+                                       {
+                                           txtErrores.Text += "No existe funcion para sobreescribir";
+                                       }
+                                   }
+                                   else
+                                   {
+                                       string x = nodo.ChildNodes[3].Token.Text;
+
+                                       Clase clase = clases.Existe(clase_actual);
+
+                                       if (clase.funciones.ExisteF(x))
+                                       {
+                                           string tipo = ActuarC(nodo.ChildNodes[1]);
+
+                                           Funcion fun = clase.funciones.Existe(x);
+                                           fun.variables = new Variables();
+                                           fun.nodo = null;
+                                           fun.SetArreglor(true);
+                                           fun.tamaño = 0;
+                                           fun.correlactivo_var = 0;
+                                       }
+                                       else
+                                       {
+                                           txtErrores.Text += "\n\rNo existe la Funcio a Sobrescribir|";
+                                       }
+
+                                   }
+
+                               }
+                               else
+                               {
+                                   if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                   {
+                                       if (nodo.ChildNodes[4].Term.Name.ToString() == "Parametros")
+                                       {
+                                           string visi = ActuarC(nodo.ChildNodes[1]);
+                                           string x = nodo.ChildNodes[2].Token.Text;
+
+                                           Clase clase = clases.Existe(clase_actual);
+
+                                           if (clase.funciones.ExisteF(x))
+                                           {
+                                               Funcion funcion = clase.funciones.Existe(x);
+
+                                               funcion.nodo = null;
+                                               funcion.visibilidad = visi;
+                                               funcion.variables = new Variables();
+                                               funcion.correlactivo_var = 0;
+                                               funcion.tamaño = 0;
+
+                                               string parametros = ActuarC(nodo.ChildNodes[4]);
+
+                                               string[] Sparametros = parametros.Split(',');
+
+
+                                               funcion.parametros = new Parametros();
+
+                                               for (int y = 0; y < Sparametros.Length; y++)
+                                               {
+                                                   string[] param = Sparametros[y].Split(' ');
+
+                                                   Parametro nP = new Parametro(param[0], param[1]);
+
+                                                   funcion.parametros.Insertar(nP);
+
+                                                   Variable variable = new Variable(param[0], param[1]);
+                                                   variable.posicion = funcion.correlactivo_var;
+                                                   funcion.correlactivo_var++;
+
+                                                   funcion.variables.Insertar(variable);
+
+                                               }
+                                           }
+                                           else
+                                           {
+                                               txtErrores.Text += "\r\nNO Existe funcion para sobrescribir";
+                                           }
+                                       }
+                                       else
+                                       {
+                                           string visi = ActuarC(nodo.ChildNodes[1]);
+                                           string x = nodo.ChildNodes[2].Token.Text;
+
+                                           Clase clase = clases.Existe(clase_actual);
+
+                                           if (clase.funciones.ExisteF(x))
+                                           {
+                                               Funcion funcion = clase.funciones.Existe(x);
+
+                                               funcion.nodo = nodo.ChildNodes[6];
+                                               funcion.visibilidad = visi;
+                                               funcion.variables = new Variables();
+                                               funcion.tamaño = 0;
+                                               funcion.correlactivo_var = 0;
+                                               fun_actual = x;
+                                           }
+                                           else
+                                           {
+                                               txtErrores.Text += "\r\nNO Existe funcion para sobrescribir";
+                                           }
+
+
+                                       }
+                                   }
+                                   else
+                                   {
+                                       string nombre = nodo.ChildNodes[3].Token.Text;
+
+                                       Clase clase = clases.Existe(clase_actual);
+
+                                       if (clase.funciones.ExisteF(nombre))
+                                       {
+                                           Funcion funcion = clase.funciones.Existe(nombre);
+
+                                           string visi = ActuarC(nodo.ChildNodes[1]);
+                                           string tipo = ActuarC(nodo.ChildNodes[2]);
+
+                                           if (tipo != "void")
+                                           {
+                                               retorna = true;
+                                           }
+
+
+                                           funcion.tipo = tipo;
+                                           funcion.visibilidad = visi;
+
+                                           funcion.variables = new Variables();
+                                           funcion.correlactivo_var = 0;
+                                           funcion.tamaño = 0;
+
+                                           funcion.nodo = null;
+
+                                       }
+                                       else
+                                       {
+                                           txtErrores.Text += "\n\rNO Existe la función para sobrescribir";
+                                       }
+
+                                   }
+                               }
+
+                           }
+                       }
+                       else if (nodo.ChildNodes.Count == 9)
+                       {
+                           if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                           {
+                              
+                               string nombre = nodo.ChildNodes[0].Token.Text;
+
+                           }
+                           else if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                           {
+                               if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                               {
+                                   
+                                   fun_actual = nodo.ChildNodes[2].Token.Text;
+
+                                   Clase clase = clases.Existe(clase_actual);
+
+                                   Funcion temp = clase.funciones.Existe(fun_actual);
+
+                                   respuesta = temp.visibilidad + " " + temp.tipo + " " + fun_actual + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[7]) + "\r\n}";
+                               }
+                               else
+                               {
+                                    if (nodo.ChildNodes[5].Term.Name.ToString() == "Parametros")
+                                    {
+
+                                        fun_actual = nodo.ChildNodes[3].Token.Text;
+
+                                    }
+                                    else
+                                    {
+
+                                        fun_actual = nodo.ChildNodes[3].Token.Text;
+                                    }
+                               }
+                           }
+                           else
+                           {
+
+                               if (nodo.ChildNodes[1].Term.Name.ToString() == "Tipo")
+                               {
+                                   if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                   {
+                                       string x = nodo.ChildNodes[2].Token.Text;
+
+                                       if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                       {
+                                           Clase clase = clases.Existe(clase_actual);
+                                           Funcion temp = clase.funciones.Existe(x);
+
+                                            respuesta = temp.visibilidad + " " + temp.tipo + " " + x + "()\r\n" + TraduccionC(nodo.ChildNodes[7]) + "\r\n}";
+
+                                       }
+                                       else
+                                       {
+                                           txtErrores.Text += "\r\nNo Hay Función para sobrescribir";
+                                       }
+                                   }
+                                   else if (nodo.ChildNodes[5].Term.Name.ToString() == "Parametros")
+                                   {
+
+                                       string x = nodo.ChildNodes[3].Token.Text;
+
+                                       if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                       {
+                                           Clase clase = clases.Existe(clase_actual);
+                                           Funcion funcion = clase.funciones.Existe(x);
+
+                                        
+                                       }
+                                       else
+                                       {
+                                           txtErrores.Text += "\r\nNo Hay Función para sobrescribir";
+                                       }
+                                   }
+                                   else
+                                   {
+                                       string x = nodo.ChildNodes[3].Token.Text;
+
+                                       if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                       {
+                                            /*
+                                           Clase clase = clases.Existe(clase_actual);
+                                           Funcion funcion = clase.funciones.Existe(x);
+
+
+                                           funcion.nodo = nodo.ChildNodes[7];
+                                            */
+
+                                       }
+                                       else
+                                       {
+                                           txtErrores.Text += "\r\nNo Hay Función para sobrescribir";
+                                       }
+                                   }
+                               }
+                               else if (nodo.ChildNodes[1].Term.Name.ToString() == "Visibilidad")
+                               {
+                                   if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                   {
+                                       string x = nodo.ChildNodes[2].Token.Text;
+
+                                       if (x.Equals(clase_actual))
+                                       {
+                                           if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                           {
+                                               Clase clase = clases.Existe(clase_actual);
+
+                                               Funcion funcion = clase.funciones.Existe(x);
+
+                                               fun_actual = x;
+
+                                               string visi = ActuarC(nodo.ChildNodes[1]);
+
+                                               funcion.visibilidad = visi;
+
+                                               funcion.nodo = nodo.ChildNodes[7];
+                                               funcion.variables = new Variables();
+
+                                               funcion.correlactivo_var = 0;
+                                               funcion.tamaño = 0;
+
+                                               string parametros = ActuarC(nodo.ChildNodes[4]);
+
+                                               string[] Sparametros = parametros.Split(',');
+
+                                               funcion.parametros = new Parametros();
+
+                                               for (int y = 0; y < Sparametros.Length; y++)
+                                               {
+                                                   string[] param = Sparametros[y].Split(' ');
+
+                                                   Parametro nP = new Parametro(param[0], param[1]);
+
+                                                   funcion.parametros.Insertar(nP);
+
+                                                   Variable variable = new Variable(param[0], param[1]);
+                                                   variable.posicion = funcion.correlactivo_var;
+                                                   funcion.correlactivo_var++;
+
+                                                   funcion.variables.Insertar(variable);
+
+                                               }
+
+                                           }
+                                           else
+                                           {
+                                               txtErrores.Text += "\r\nNo Existe la Funcion para sobrescribir";
+                                           }
+                                       }
+                                       else
+                                       {
+                                           txtErrores.Text += "\r\nFalta Tipo";
+                                       }
+                                   }
+                                   else if (nodo.ChildNodes[2].Term.Name.ToString() == "Tipo")
+                                   {
+                                       if (nodo.ChildNodes[3].Term.Name.ToString() == "ID")
+                                       {
+                                           string x = nodo.ChildNodes[2].Token.Text;
+
+                                           if (clases.Existe(clase_actual).funciones.ExisteF(x))
+                                           {
+                                               if (nodo.ChildNodes[5].Term.Name.ToString() == "Parametros")
+                                               {
+                                                   string visi = ActuarC(nodo.ChildNodes[1]);
+                                                   string tipo = ActuarC(nodo.ChildNodes[2]);
+
+                                                   fun_actual = x;
+
+                                                   if (!tipo.Equals("void"))
+                                                   {
+                                                       fun_actual = x;
+
+                                                       Funcion funcion = clases.Existe(clase_actual).funciones.Existe(x);
+
+                                                       funcion.parametros = null;
+                                                       funcion.visibilidad = visi;
+
+                                                       funcion.tipo = tipo;
+
+                                                       funcion.variables = new Variables();
+                                                       funcion.correlactivo_var = 0;
+                                                       funcion.tamaño = 0;
+
+                                                       string parametros = ActuarC(nodo.ChildNodes[5]);
+
+                                                       string[] Sparametros = parametros.Split(',');
+
+                                                       funcion.parametros = new Parametros();
+
+                                                       for (int y = 0; y < Sparametros.Length; y++)
+                                                       {
+                                                           string[] param = Sparametros[y].Split(' ');
+
+                                                           Parametro nP = new Parametro(param[0], param[1]);
+
+                                                           funcion.parametros.Insertar(nP);
+
+                                                           Variable variable = new Variable(param[0], param[1]);
+                                                           variable.posicion = funcion.correlactivo_var;
+                                                           funcion.correlactivo_var++;
+
+                                                           funcion.variables.Insertar(variable);
+
+                                                       }
+                                                   }
+                                                   else
+                                                   {
+                                                       txtErrores.Text += "\r\nFalta Retorno";
+                                                   }
+                                               }
+                                               else
+                                               {
+                                                   string visi = ActuarC(nodo.ChildNodes[1]);
+                                                   string tipo = ActuarC(nodo.ChildNodes[2]);
+
+                                                   fun_actual = x;
+
+                                                   Funcion funcion = clases.Existe(clase_actual).funciones.Existe(x);
+
+                                                   funcion.parametros = null;
+                                                   funcion.visibilidad = visi;
+
+                                                   funcion.tipo = tipo;
+
+                                                   funcion.variables = new Variables();
+                                                   funcion.correlactivo_var = 0;
+                                                   funcion.tamaño = 0;
+
+                                                   funcion.nodo = nodo.ChildNodes[7];
+                                               }
+                                           }
+                                           else
+                                           {
+                                               txtErrores.Text += "\r\nNo existe la funcion a sobrescribir";
+                                           }
+                                       }
+                                       else
+                                       {
+
+                                           string x = nodo.ChildNodes[2].Token.Text;
+                                           string visi = ActuarC(nodo.ChildNodes[1]);
+                                           string tipo = ActuarC(nodo.ChildNodes[2]);
+
+
+                                           if (!tipo.Equals("void"))
+                                           {
+
+                                               fun_actual = x;
+
+                                               Funcion funcion = clases.Existe(clase_actual).funciones.Existe(x);
+
+                                               funcion.parametros = null;
+                                               funcion.visibilidad = visi;
+                                               funcion.tipo = tipo;
+
+                                               funcion.variables = new Variables();
+                                               funcion.correlactivo_var = 0;
+                                               funcion.tamaño = 0;
+
+                                               funcion.SetArreglor(true);
+
+
+                                           }
+                                           else
+                                           {
+                                               txtErrores.Text += "\r\nFalta Retorno";
+                                           }
+
+
+
+                                       }
+
+                                   }
+                               }
+                           }
+                       }
+                       else if (nodo.ChildNodes.Count == 10)
+                       {
+                           if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
+                           {
+                               string visi = ActuarC(nodo.ChildNodes[0]);
+                               string tipo = ActuarC(nodo.ChildNodes[1]);
+                               string nombre = nodo.ChildNodes[3].Token.Text;
+
+                                //funcion.nodo = nodo.ChildNodes[8];
+
+
+                           }
+                           else
+                           {
+                               if (nodo.ChildNodes[1].Term.Name.ToString() == "Visibilidad")
+                               {
+                                   if (nodo.ChildNodes[3].Term.Name.ToString() == "ID")
+                                   {
+                                        string nombre = nodo.ChildNodes[3].Token.Text;
+                                                                           
+                                        Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
+
+                                        respuesta = funcion.visibilidad + " " + funcion.tipo + " " + nombre + "()\r\n{\r\n" + TraduccionC(nodo.ChildNodes[8])+"\r\n}";
+                                        
+
+                                           
+                                       
+                                   }
+                                   else
+                                   {
+                                       if (nodo.ChildNodes[6].Term.Name.ToString() == "Parametros")
+                                       {
+                                           string nombre = nodo.ChildNodes[4].Token.Text;
+                                           string tipo = ActuarC(nodo.ChildNodes[2]);
+                                           string visi = ActuarC(nodo.ChildNodes[1]);
+
+                                         
+                                       }
+                                       else
+                                       {
+                                           string nombre = nodo.ChildNodes[4].Token.Text;
+                                           string tipo = ActuarC(nodo.ChildNodes[2]);
+                                           string visi = ActuarC(nodo.ChildNodes[1]);
+
+                                            //funcion.nodo = nodo.ChildNodes[8];
+
+
+                                       }
+                                   }
+                               }
+                               else
+                               {
+                                   string nombre = nodo.ChildNodes[3].Token.Text;
+                                   string tipo = ActuarC(nodo.ChildNodes[1]);
+
+                                   if (clases.Existe(clase_actual).funciones.ExisteF(nombre))
+                                   {
+
+                                       Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
+
+                                       funcion.tipo = tipo;
+                                       funcion.visibilidad = "publico";
+
+                                       if (tipo != "void")
+                                       {
+                                           retorna = true;
+                                       }
+
+                                       funcion.variables = new Variables();
+                                       funcion.correlactivo_var = 0;
+                                       funcion.tamaño = 0;
+
+                                       funcion.SetArreglor(true);
+
+                                       funcion.nodo = nodo.ChildNodes[8];
+
+                                       string parametros = ActuarC(nodo.ChildNodes[5]);
+
+                                       string[] Sparametros = parametros.Split(',');
+
+                                       funcion.parametros = new Parametros();
+
+                                       for (int y = 0; y < Sparametros.Length; y++)
+                                       {
+                                           string[] param = Sparametros[y].Split(' ');
+
+                                           Parametro nP = new Parametro(param[0], param[1]);
+
+                                           funcion.parametros.Insertar(nP);
+
+                                           Variable variable = new Variable(param[0], param[1]);
+                                           variable.posicion = funcion.correlactivo_var;
+                                           funcion.correlactivo_var++;
+
+                                           funcion.variables.Insertar(variable);
+
+                                       }
+                                   }
+                                   else
+                                   {
+                                       txtErrores.Text += "\r\nNo Existe la funcion a sobrescribir";
+                                   }
+
+                               }
+                           }
+                       }
+                       else if (nodo.ChildNodes.Count == 11)
+                       {
+                           string nombre = nodo.ChildNodes[4].Token.Text;
+                           string tipo = ActuarC(nodo.ChildNodes[2]);
+                           string visi = ActuarC(nodo.ChildNodes[1]);
+                            //funcion.nodo = nodo.ChildNodes[9];
+
+                       }
+                      
+                        break;
+                    }
+
+                case "Sentencias":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+                            respuesta += TraduccionC(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+
+                        }
+
+                        break;
+                    }
+
+                case "Sentencia":
+                    {
+                        respuesta = TraduccionC(nodo.ChildNodes[0]);
+                        break;
+                    }
+
+                case "Declaracion":
+                    {
+                        if (nodo.ChildNodes.Count == 5)
+                        {
+                            Clase clase = clases.Existe(clase_actual);
+
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            Variable variable = funcion.variables.Buscar(nombre);
+
+                            string Valor = ActuarC(nodo.ChildNodes[3]);
+
+                            contadorTemp++;
+
+                            respuesta = "\r\nt" + contadorTemp + "=" + "p + " + variable.posicion;
+                            respuesta += "\r\npila[t" + contadorTemp + "]" + "=" + Valor;
+                            
+
+                        }
+                        /*
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+
+                            Clase tempoC = clases.Existe(clase_actual);
+
+                            Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                            string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            string valor = ActuarC(nodo.ChildNodes[4]);
+
+                            string dimeniones = ActuarC(nodo.ChildNodes[2]);
+
+                            Variable nuevo = new Variable(tipo, nombre, "valor", dimension, dimeniones);
+                            nuevo.posicion = temp.correlactivo_var;
+                            temp.correlactivo_var++;
+
+                            temp.variables.Insertar(nuevo);
+
+                        }
+                        else if (nodo.ChildNodes.Count == 7)
+                        {
+                            Clase tempoC = clases.Existe(clase_actual);
+
+                            Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                            string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            string funcion = nodo.ChildNodes[3].Token.Text;
+
+                            if (tempoC.funciones.ExisteF(funcion))
+                            {
+                                Funcion aux = tempoC.funciones.Existe(funcion);
+
+                                string temporal = fun_actual;
+
+                                if (aux.TieneParametros())
+                                {
+                                    txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                }
+                                else
+                                {
+                                    if (aux.tipo.Equals(tipo))
+                                    {
+                                        fun_actual = aux.GetNombre();
+                                        ActuarC(aux.nodo);
+                                        fun_actual = temporal;
+                                        string valor = aux.GetRetorno();
+
+                                        Variable nuevo = new Variable(tipo, nombre, valor);
+                                        nuevo.posicion = temp.correlactivo_var;
+                                        temp.correlactivo_var++;
+
+                                        temp.variables.Insertar(nuevo);
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nError de Tipos";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                            }
+
+
+
+
+                        }
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+                            if (nodo.ChildNodes[2].Token.Text.Equals("="))
+                            {
+                                Clase tempoC = clases.Existe(clase_actual);
+
+                                Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                                string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                string funcion = nodo.ChildNodes[3].Token.Text;
+
+                                if (tempoC.funciones.ExisteF(funcion))
+                                {
+                                    string temporal = fun_actual;
+
+                                    Funcion aux = tempoC.funciones.Existe(funcion);
+                                    string param = ActuarC(nodo.ChildNodes[5]);
+                                    string[] variables = param.Split(',');
+
+                                    fun_actual = funcion;
+                                    tempoC.funciones.Existe(funcion);
+
+                                    if (variables.Length == aux.nParametros)
+                                    {
+                                        for (int x = 0; x < variables.Length; x++)
+                                        {
+                                            string n = aux.parametros.GetNOmbreP(x + 1);
+
+                                            aux.variables.Buscar(n);
+
+                                            aux.variables.aux.SetValor(variables[x]);
+
+                                        }
+
+                                        ActuarC(aux.nodo);
+
+                                        string valor = aux.GetRetorno();
+
+                                        fun_actual = temporal;
+                                        Variable nuevo = new Variable(tipo, nombre, valor);
+                                        nuevo.posicion = temp.correlactivo_var;
+                                        temp.correlactivo_var++;
+                                        // Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                        temp.variables.Insertar(nuevo);
+
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nNo Coinciden los Parametros";
+                                    }
+
+
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                }
+                            }
+                            else
+                            {
+                                if (nodo.ChildNodes[4].Term.Name.ToString() == "ID")
+                                {
+                                    Clase tempoC = clases.Existe(clase_actual);
+
+                                    Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                                    string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    string funcion = nodo.ChildNodes[4].Token.Text;
+
+
+                                    if (tempoC.funciones.ExisteF(funcion))
+                                    {
+                                        Funcion aux = tempoC.funciones.Existe(funcion);
+
+                                        if (aux.tipo.Equals(tipo))
+                                        {
+
+                                            if (!aux.TieneParametros())
+                                            {
+
+                                                if (aux.IsArreglo())
+                                                {
+                                                    string dimeniones = ActuarC(nodo.ChildNodes[2]);
+                                                    string temporal = fun_actual;
+                                                    fun_actual = funcion;
+
+                                                    ActuarC(aux.nodo);
+
+                                                    fun_actual = temporal;
+
+                                                    string valor = aux.GetRetorno();
+
+                                                    Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                                    nuevo.posicion = temp.correlactivo_var;
+                                                    temp.correlactivo_var++;
+
+                                                    temp.variables.Insertar(nuevo);
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nLa Funcion no es un arreglo";
+                                                }
+
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nFaltan Parametros";
+                                            }
+
+
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nError de Tipos";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nNO existe la Funcion " + funcion;
+                                    }
+                                }
+                                else
+                                {
+                                    if (nodo.ChildNodes[5].Term.Name.ToString().Equals("AsignacionesArreglo"))
+                                    {
+                                        dimension = 0;
+
+                                        Clase tempoC = clases.Existe(clase_actual);
+
+                                        Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                                        string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                        string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                        string dimeniones = ActuarC(nodo.ChildNodes[2]);
+
+                                        string valor = ActuarC(nodo.ChildNodes[5]);
+
+                                        Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                        temp.variables.Insertar(nuevo);
+                                    }
+                                    else if (nodo.ChildNodes[5].Term.Name.ToString().Equals("AsignacionArreglo"))
+                                    {
+                                        dimension = 0;
+
+                                        Clase tempoC = clases.Existe(clase_actual);
+
+                                        Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                                        string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                        string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                        string dimeniones = ActuarC(nodo.ChildNodes[2]);
+
+                                        string valor = ActuarC(nodo.ChildNodes[5]);
+
+                                        Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                        temp.variables.Insertar(nuevo);
+
+
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Clase tempoC = clases.Existe(clase_actual);
+
+                            Funcion temp = tempoC.funciones.Existe(fun_actual);
+
+                            string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            string funcion = nodo.ChildNodes[4].Token.Text;
+
+                            Funcion aux = tempoC.funciones.Existe(funcion);
+
+                            string dimeniones = ActuarC(nodo.ChildNodes[2]);
+
+                            if (aux.tipo.Equals(tipo))
+                            {
+                                if (aux.IsArreglo())
+                                {
+                                    string temporal = fun_actual;
+                                    fun_actual = funcion;
+
+
+
+                                    string param = ActuarC(nodo.ChildNodes[6]);
+                                    string[] variables = param.Split(',');
+
+                                    fun_actual = funcion;
+                                    tempoC.funciones.Existe(funcion);
+
+                                    if (variables.Length == aux.nParametros)
+                                    {
+                                        for (int x = 0; x < variables.Length; x++)
+                                        {
+                                            string n = aux.parametros.GetNOmbreP(x + 1);
+
+                                            aux.variables.Buscar(n);
+
+                                            aux.variables.aux.SetValor(variables[x]);
+
+                                        }
+
+                                        ActuarC(aux.nodo);
+
+                                        string valor = aux.GetRetorno();
+
+                                        fun_actual = temporal;
+
+                                        Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+
+                                        nuevo.posicion = temp.correlactivo_var;
+                                        temp.correlactivo_var++;
+
+                                        temp.variables.Insertar(nuevo);
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nNo Coinciden los Parametros";
+                                    }
+
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nLa Funcion " + funcion + " NO es Arreglo";
+                                }
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nError de Tipos";
+                            }
+
+                        }
+                        */
+                        break;
+                    }
+            }
+
+            return respuesta;
         }
     }
 }
