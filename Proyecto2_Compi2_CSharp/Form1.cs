@@ -7544,11 +7544,6 @@ namespace Proyecto2_Compi2_CSharp
 
                                     }
 
-                                    respuesta += "\r\n" + temp.nombre + " = " + valor;
-
-
-
-
                                     contadorTemp++;
                                     respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
 
@@ -8084,28 +8079,197 @@ namespace Proyecto2_Compi2_CSharp
                             if (nodo.ChildNodes[0].Term.Name != "Operacion")
                             {
                                 respuesta = TraduccionC(nodo.ChildNodes[1]);
+
                             }
                             else
                             {
-                                if (nodo.ChildNodes[1].Term.Name != "suma")
+                                if (nodo.ChildNodes[1].Term.Name == "suma")
                                 {
-                                    
+                                    string op1, op2;
+
+                                    string preR1 = TraduccionC(nodo.ChildNodes[0]);
+
+                                    string[] partes1 = preR1.Split(',');
+
+                                    string preR2 = TraduccionC(nodo.ChildNodes[2]);
+
+                                    string[] partes2 = preR2.Split(',');
+
+
+                                    if (partes1.Length == 2)
+                                    {
+                                        respuesta += partes1[0];
+                                        op1 = partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = preR1;
+                                    }
+
+
+                                    if (partes2.Length == 2)
+                                    {
+                                        respuesta += partes2[0];
+                                        op2 = partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = preR2;
+                                    }
+
+                                    contadorTemp++;
+                                    respuesta = "\r\nt" + contadorTemp + " = " + op1 + " + " + op2 + ",t" + contadorTemp;
+
+
                                 }
-                                else if (nodo.ChildNodes[1].Term.Name != "resta")
+                                else if (nodo.ChildNodes[1].Term.Name == "resta")
                                 {
-                                    
+                                    string op1, op2;
+
+                                    string preR1 = TraduccionC(nodo.ChildNodes[0]);
+
+                                    string[] partes1 = preR1.Split(',');
+
+                                    string preR2 = TraduccionC(nodo.ChildNodes[2]);
+
+                                    string[] partes2 = preR2.Split(',');
+
+
+                                    if (partes1.Length == 2)
+                                    {
+                                        respuesta += partes1[0];
+                                        op1 = partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = preR1;
+                                    }
+
+
+                                    if (partes2.Length == 2)
+                                    {
+                                        respuesta += partes2[0];
+                                        op2 = partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = preR2;
+                                    }
+
+                                    contadorTemp++;
+                                    respuesta = "\r\nt" + contadorTemp + " = " + op1 + " - " + op2 + ",t" + contadorTemp;
+
                                 }
-                                else if (nodo.ChildNodes[1].Term.Name != "multi")
+                                else if (nodo.ChildNodes[1].Term.Name == "multi")
                                 {
-                                    
+                                    string op1, op2;
+
+                                    string preR1 = TraduccionC(nodo.ChildNodes[0]);
+
+                                    string[] partes1 = preR1.Split(',');
+
+                                    string preR2 = TraduccionC(nodo.ChildNodes[2]);
+
+                                    string[] partes2 = preR2.Split(',');
+
+
+                                    if (partes1.Length == 2)
+                                    {
+                                        respuesta += partes1[0];
+                                        op1 = partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = preR1;
+                                    }
+
+
+                                    if (partes2.Length == 2)
+                                    {
+                                        respuesta += partes2[0];
+                                        op2 = partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = preR2;
+                                    }
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = " + op1 + " * " + op2 + ",t" + contadorTemp;
                                 }
-                                else if (nodo.ChildNodes[1].Term.Name != "div")
+                                else if (nodo.ChildNodes[1].Term.Name == "div")
                                 {
-                                    
+                                    string op1, op2;
+
+                                    string preR1 = TraduccionC(nodo.ChildNodes[0]);
+
+                                    string[] partes1 = preR1.Split(',');
+
+                                    string preR2 = TraduccionC(nodo.ChildNodes[2]);
+
+                                    string[] partes2 = preR2.Split(',');
+
+
+                                    if (partes1.Length == 2)
+                                    {
+                                        respuesta += partes1[0];
+                                        op1 = partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = preR1;
+                                    }
+
+
+                                    if (partes2.Length == 2)
+                                    {
+                                        respuesta += partes2[0];
+                                        op2 = partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = preR2;
+                                    }
+
+                                    contadorTemp++;
+                                    respuesta = "\r\nt" + contadorTemp + " = " + op1 + " / " + op2 + ",t" + contadorTemp;
                                 }
-                                else if (nodo.ChildNodes[1].Term.Name != "power")
+                                else if (nodo.ChildNodes[1].Term.Name == "power")
                                 {
-                                    
+                                    string op1, op2;
+
+                                    string preR1 = TraduccionC(nodo.ChildNodes[0]);
+
+                                    string[] partes1 = preR1.Split(',');
+
+                                    string preR2 = TraduccionC(nodo.ChildNodes[2]);
+
+                                    string[] partes2 = preR2.Split(',');
+
+
+                                    if (partes1.Length == 2)
+                                    {
+                                        respuesta += partes1[0];
+                                        op1 = partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = preR1;
+                                    }
+
+
+                                    if (partes2.Length == 2)
+                                    {
+                                        respuesta += partes2[0];
+                                        op2 = partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = preR2;
+                                    }
+
+                                    contadorTemp++;
+                                    respuesta = "\r\nt" + contadorTemp + " = " + op1 + "  " + op2 + ",t" + contadorTemp;
                                 }
                             }
                         }
