@@ -36,9 +36,10 @@ namespace Proyecto2_Compi2_CSharp
         ParseTreeNode op_switch;
         bool importacion = false;
         bool retorna = false;
-        bool operacion = false;
+        bool Escond2 = false;
         bool salir = false;
         bool sino_operado = false;
+
         Clases clases;
 
         Object[] Stack;
@@ -3031,7 +3032,7 @@ namespace Proyecto2_Compi2_CSharp
                         Funcion funcion = clases.Existe(clase_actual).funciones.Existe(fun_actual);
                         string logica;
 
-                        bool hacer = false;
+                       // bool hacer = false;
                         logica = ActuarC(nodo.ChildNodes[1]);
 
                         if (nodo.ChildNodes.Count == 5)
@@ -3046,10 +3047,9 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 IF nuevo = new IF(logica, nodo.ChildNodes[4]);
                                 funcion.Ifs.Insertar(nuevo);
-                                if (hacer)
-                                {
-                                    resultado = ActuarC(nodo.ChildNodes[4]);
-                                }
+                                
+                                resultado = ActuarC(nodo.ChildNodes[4]);
+                                
 
                             }
                             else
@@ -3059,9 +3059,6 @@ namespace Proyecto2_Compi2_CSharp
                                 resultado = ActuarC(nodo.ChildNodes[5]);
                                
                             }
-
-
-
                         }
                         else if (nodo.ChildNodes.Count == 7)
                         {
@@ -3085,13 +3082,16 @@ namespace Proyecto2_Compi2_CSharp
 
                             IF nuevo = new IF(logica, null,nodo.ChildNodes[6]);
                             funcion.Ifs.Insertar(nuevo);
+                            ActuarC(nodo.ChildNodes[6]);
 
                         }
                         else
                         {
 
-                            IF nuevo = new IF(logica, nodo.ChildNodes[4], nodo.ChildNodes[6]);
+                            IF nuevo = new IF(logica, nodo.ChildNodes[4], nodo.ChildNodes[7]);
                             funcion.Ifs.Insertar(nuevo);
+                            ActuarC(nodo.ChildNodes[4]);
+                            ActuarC(nodo.ChildNodes[7]);
                         }
 
 
@@ -3322,17 +3322,7 @@ namespace Proyecto2_Compi2_CSharp
                     {
                         string condicion = ActuarC(nodo.ChildNodes[1]);
 
-                        while (condicion.Equals("true"))
-                        {
-
-                            if (nodo.ChildNodes.Count == 6)
-                            {
-                                ActuarC(nodo.ChildNodes[4]);
-                            }
-
-                            condicion = ActuarC(nodo.ChildNodes[1]);
-                        }
-
+                         ActuarC(nodo.ChildNodes[4]);                       
                         break;
                     }
 
@@ -3345,19 +3335,12 @@ namespace Proyecto2_Compi2_CSharp
 
                             string condicion = ActuarC(nodo.ChildNodes[5]);
 
-                            while (condicion.Equals("true"))
-                            {
-                                ActuarC(nodo.ChildNodes[2]);
-                            }
+                         
                         }
                         else
                         {
                             string condicion = ActuarC(nodo.ChildNodes[4]);
 
-                            while (condicion.Equals("true"))
-                            {
-                                txtConsola.Text += "\n\r --Do While sin sentencias--";
-                            }
                         }
 
                         break;
@@ -3387,7 +3370,7 @@ namespace Proyecto2_Compi2_CSharp
 
                 case "Imprimir":
                     {
-                        txtConsola.Text += "\n\r" + ActuarC(nodo.ChildNodes[1]);
+                     //   txtConsola.Text += "\n\r" + ActuarC(nodo.ChildNodes[1]);
                         break;
                     }
 
@@ -3399,71 +3382,13 @@ namespace Proyecto2_Compi2_CSharp
                         {
                             nombre = nodo.ChildNodes[1].Token.Text;
 
-                            Clase clase_n = clases.Existe(clase_actual);
-                            Funcion nuevo_f = clase_n.funciones.Existe(fun_actual);
+                            
 
-                            if (clase_n.variables.Buscar_existe(nombre))
-                            {
-                                Variable aux = clase_n.variables.Buscar(nombre);
-
-                                aux.SetValor(ActuarC(nodo.ChildNodes[3]));
-                                double control = double.Parse(ActuarC(nodo.ChildNodes[3]));
-                                string logica_inicial = "true";
-
-                                logica_inicial = ActuarC(nodo.ChildNodes[5]);
-
-                                while (logica_inicial.Equals("true"))
-                                {
-
-                                    if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "aumentar")
-                                    {
-                                        control++;
-                                    }
-                                    else if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "disminuir")
-                                    {
-                                        control--;
-                                    }
-
-                                    logica_inicial = ActuarC(nodo.ChildNodes[5]);
-                                    aux.SetValor(Convert.ToString(control));
-                                }
-
-                            }
-                            else if (nuevo_f.variables.Buscar_existe(nombre))
-                            {
-                                Variable aux = nuevo_f.variables.Buscar(nombre);
-
-                                aux.SetValor(ActuarC(nodo.ChildNodes[3]));
-                                double control = double.Parse(ActuarC(nodo.ChildNodes[3]));
-                                string logica_inicial = "true";
-
-                                logica_inicial = ActuarC(nodo.ChildNodes[5]);
-
-                                while (logica_inicial.Equals("true"))
-                                {
-
-
-                                    if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "aumentar")
-                                    {
-                                        control++;
-                                    }
-                                    else if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "disminuir")
-                                    {
-                                        control--;
-                                    }
-
-                                    logica_inicial = ActuarC(nodo.ChildNodes[5]);
-                                    aux.SetValor(Convert.ToString(control));
-                                }
-                            }
-                            else
-                            {
-                                txtErrores.Text += "(Error en " + nodo.Token.Location.Line + "," + nodo.Token.Location.Column + ") No existe variable :\"" + nombre + "\"";
-                            }
+                            
                         }
                         else if (nodo.ChildNodes.Count == 13)
                         {
-                            if (nodo.ChildNodes[0].Term.Name != "ID")
+                            if (nodo.ChildNodes[1].Term.Name == "ID")
                             {
                                 nombre = nodo.ChildNodes[1].Token.Text;
 
@@ -3480,8 +3405,6 @@ namespace Proyecto2_Compi2_CSharp
 
                                     logica_inicial = ActuarC(nodo.ChildNodes[5]);
 
-                                    while (logica_inicial.Equals("true"))
-                                    {
                                         ActuarC(nodo.ChildNodes[11]);
 
                                         if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "aumentar")
@@ -3495,8 +3418,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                         logica_inicial = ActuarC(nodo.ChildNodes[5]);
                                         aux.SetValor(Convert.ToString(control));
-                                    }
-
+                                 
                                 }
                                 else if (nuevo_f.variables.Buscar_existe(nombre))
                                 {
@@ -3550,8 +3472,9 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     string tipo = ActuarC(nodo.ChildNodes[1]);
                                     Variable nuevo = new Variable(tipo, nombre);
-
-
+                                    
+                                    nuevo.posicion = nuevo_f.correlactivo_var;
+                                    nuevo_f.correlactivo_var++;
 
                                     double control = double.Parse(ActuarC(nodo.ChildNodes[4]));
                                     nuevo.SetValor(Convert.ToString(control));
@@ -3563,26 +3486,10 @@ namespace Proyecto2_Compi2_CSharp
 
                                     logica_inicial = ActuarC(nodo.ChildNodes[6]);
 
-                                    while (logica_inicial.Equals("true"))
-                                    {
+                                  
+                                    
 
-
-                                        if (nodo.ChildNodes[9].Token.Terminal.Name.ToString() == "aumentar")
-                                        {
-                                            control++;
-                                        }
-                                        else if (nodo.ChildNodes[9].Token.Terminal.Name.ToString() == "disminuir")
-                                        {
-                                            control--;
-                                        }
-
-                                        clase_n.funciones.aux.variables.Buscar(nombre);
-                                        clase_n.funciones.aux.variables.aux.SetValor(Convert.ToString(control));
-                                        logica_inicial = ActuarC(nodo.ChildNodes[6]);
-
-                                    }
-
-                                    clase_n.funciones.aux.variables.ELiminar(nombre);
+                                    
                                 }
                             }
                         }
@@ -3607,7 +3514,8 @@ namespace Proyecto2_Compi2_CSharp
                                 string tipo = ActuarC(nodo.ChildNodes[1]);
                                 Variable nuevo = new Variable(tipo, nombre);
 
-
+                                nuevo.posicion = nuevo_f.correlactivo_var;
+                                nuevo_f.correlactivo_var++;
 
                                 double control = double.Parse(ActuarC(nodo.ChildNodes[4]));
                                 nuevo.SetValor(Convert.ToString(control));
@@ -3619,8 +3527,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                 logica_inicial = ActuarC(nodo.ChildNodes[6]);
 
-                                while (logica_inicial.Equals("true"))
-                                {
+                               
                                     ActuarC(nodo.ChildNodes[12]);
 
                                     if (nodo.ChildNodes[9].Token.Terminal.Name.ToString() == "aumentar")
@@ -3636,9 +3543,9 @@ namespace Proyecto2_Compi2_CSharp
                                     clase_n.funciones.aux.variables.aux.SetValor(Convert.ToString(control));
                                     logica_inicial = ActuarC(nodo.ChildNodes[6]);
 
-                                }
+                              
 
-                                clase_n.funciones.aux.variables.ELiminar(nombre);
+                                
                             }
                         }
                         break;
@@ -6466,6 +6373,8 @@ namespace Proyecto2_Compi2_CSharp
                                             nombre += "_" + param[0];
                                         }
 
+                                        fun_actual = nombre;
+
                                         Funcion temp = clase.funciones.Existe(nombre);
 
                                         respuesta = temp.visibilidad + " " + x + "(" + ")" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
@@ -8364,6 +8273,1274 @@ namespace Proyecto2_Compi2_CSharp
                         break;
                     }
 
+                case "If":
+                    {
+
+                        Clase clase = clases.Existe(clase_actual);
+                        Funcion funcion = clase.funciones.Existe(fun_actual);
+                        string logica;
+
+                        // bool hacer = false;
+                        logica = ActuarC(nodo.ChildNodes[1]);
+
+                        if (nodo.ChildNodes.Count == 5)
+                        {
+                            IF temp = funcion.Ifs.Existe(logica);
+
+                            respuesta = TraduccionC(nodo.ChildNodes[6]);
+
+                            string pre = TraduccionC(nodo.ChildNodes[1]);
+                            int lfalso = contadorL - 1;
+
+
+                            string[] partes = pre.Split(';');
+
+                            if (partes.Length != 4)
+                            {
+                                for (int x = 0; x < partes.Length; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < partes.Length - 1; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            respuesta += "\r\nL" + contadorL;
+                            respuesta += "\r\nL" + lfalso;
+
+                        }
+                        else if (nodo.ChildNodes.Count == 6)
+                        {
+                            if (nodo.ChildNodes[4].Term.ToString().Equals("Sentencias"))
+                            {
+                                IF temp = funcion.Ifs.Existe(logica);
+                                
+                                respuesta = TraduccionC(nodo.ChildNodes[6]);
+
+                                string pre = TraduccionC(nodo.ChildNodes[1]);
+                                int lfalso = contadorL - 1;
+
+
+                                string[] partes = pre.Split(';');
+
+                                if (partes.Length != 4)
+                                {
+                                    for (int x = 0; x < partes.Length; x++)
+                                    {
+                                        respuesta += partes[x];
+                                    }
+                                }
+                                else
+                                {
+                                    for (int x = 0; x < partes.Length - 1; x++)
+                                    {
+                                        respuesta += partes[x];
+                                    }
+                                }
+                                respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
+                                respuesta += "\r\nL" + lfalso;
+                                
+
+
+                            }
+                            else
+                            {
+                                IF temp = funcion.Ifs.Existe(logica);
+
+                                respuesta = TraduccionC(nodo.ChildNodes[6]);
+
+                                string pre = TraduccionC(nodo.ChildNodes[1]);
+                                int lfalso = contadorL - 1;
+
+
+                                string[] partes = pre.Split(';');
+
+                                if (partes.Length != 4)
+                                {
+                                    for (int x = 0; x < partes.Length; x++)
+                                    {
+                                        respuesta += partes[x];
+                                    }
+                                }
+                                else
+                                {
+                                    for (int x = 0; x < partes.Length - 1; x++)
+                                    {
+                                        respuesta += partes[x];
+                                    }
+                                }
+                                respuesta += "\r\nL" + contadorL;
+                                contadorL++;
+                                respuesta += "\r\nGoto L" + contadorL;
+                                int lsalida = contadorL;
+                                respuesta += "\r\nL" + lfalso;
+                                respuesta += TraduccionC(nodo.ChildNodes[5]);
+                                respuesta += "\r\nL" + lsalida;
+
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 7)
+                        {
+                            if (nodo.ChildNodes[4].Term.ToString().Equals("Sentencias"))
+                            {
+                                IF temp = funcion.Ifs.Existe(logica);
+                                
+                                respuesta = TraduccionC(nodo.ChildNodes[6]);
+
+                                string pre = TraduccionC(nodo.ChildNodes[1]);
+                                int lfalso = contadorL - 1;
+                                
+
+                                string[] partes = pre.Split(';');
+
+                                if (partes.Length != 4)
+                                {
+                                    for (int x = 0; x < partes.Length; x++)
+                                    {
+                                        respuesta += partes[x];
+                                    }
+                                }
+                                else
+                                {
+                                    for (int x = 0; x < partes.Length - 1; x++)
+                                    {
+                                        respuesta += partes[x];
+                                    }
+                                }
+                                respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
+                                contadorL++;
+                                respuesta += "\r\nGoto L" + contadorL;
+                                int lsalida = contadorL;
+                                respuesta += "\r\nL" + lfalso;
+                                respuesta += TraduccionC(nodo.ChildNodes[6]);
+                                respuesta += "\r\nL" + lsalida;
+
+                            }
+                            else
+                            {
+                                IF temp = funcion.Ifs.Existe(logica);
+
+                                string pre = TraduccionC(nodo.ChildNodes[1]);
+                                int lfalso = contadorL - 1;
+
+                                string[] partes = pre.Split(';');
+
+                                if (partes.Length != 4)
+                                {
+                                    for (int x = 0; x < partes.Length; x++)
+                                    {
+                                        respuesta += partes[x];
+                                    }
+                                }
+                                else
+                                {
+                                    for (int x = 0; x < partes.Length - 1; x++)
+                                    {
+                                        respuesta += partes[x];
+                                    }
+                                }
+                                respuesta += "\r\nL" + contadorL;
+                                contadorL++;
+                                respuesta += "\r\nGoto L" + contadorL;
+                                respuesta += "\r\nL" + lfalso;
+                                respuesta += "\r\nL" + contadorL;
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 8)
+                        {
+
+                            IF temp = funcion.Ifs.Existe(logica);
+                            
+                            string pre = TraduccionC(nodo.ChildNodes[1]);
+                            int lfalso = contadorL - 1;
+
+                            string[] partes = pre.Split(';');
+
+                            if (partes.Length != 4)
+                            {
+                                for (int x = 0; x < partes.Length; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < partes.Length - 1; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
+                            contadorL++;
+                            respuesta += "\r\nGoto L" + contadorL;
+                            respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[6]);
+                            respuesta += "\r\nL" + contadorL;
+
+                        }
+                        else
+                        {
+
+                            IF temp = funcion.Ifs.Existe(logica);
+
+                            string pre = TraduccionC(nodo.ChildNodes[1]);
+                            int lfalso = contadorL - 1;
+
+                            string[] partes = pre.Split(';');
+
+                            if (partes.Length != 4)
+                            {
+                                
+                                for (int x = 0; x < partes.Length; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < partes.Length-1; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+
+                            respuesta += "\r\nL" + contadorL+TraduccionC(nodo.ChildNodes[4]);
+                            contadorL++;
+                            respuesta += "\r\nGoto L" + contadorL;
+                            respuesta += "\r\nL" + lfalso +TraduccionC(nodo.ChildNodes[7]);
+                            respuesta += "\r\nL" + contadorL;
+                        }
+                        break;
+                    }
+
+                case "Condicion":
+                    {
+                        respuesta = TraduccionC(nodo.ChildNodes[0]);
+                        break;
+                    }
+
+                case "Logica":
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name != "Logica")
+                            {
+                                respuesta = TraduccionC(nodo.ChildNodes[1]);
+                            }
+                            else
+                            {
+
+                                if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "or")
+                                {
+                                    string temp1 = TraduccionC(nodo.ChildNodes[0]);
+                                    string[] Partes1 = temp1.Split(';');
+                                    Escond2 = true;
+                                    string temp2 = TraduccionC(nodo.ChildNodes[2]);
+                                    string[] Partes2 = temp2.Split(';');
+
+
+                                    string cond1;
+                                    string cond21;
+                                    string temporal1 = "";
+
+                                    for (int x = 1; x < (Partes1.Length - 1); x++)
+                                    {
+                                        temporal1 += Partes1[x];
+                                    }
+
+
+
+                                  
+                                    cond1 = temporal1;
+
+                                    
+                                   
+                                    cond21 = Partes2[1].Replace("if", "iffalse");
+                                    contadorL--;
+                                    string cadremplazo = "L" + contadorL;
+                                    contadorL--;
+                                    string cadn = "L" + (contadorL - 1);
+                                    string cond22 = cond21.Replace(cadremplazo, cadn);
+
+                                    cadn = "L" + (contadorL - 1);
+                                    cadremplazo = "L" + contadorL;
+
+                                    cond1 = cond1.Replace(cadn, cadremplazo);
+
+                                    if (cond22.Contains("Goto"))
+                                    {
+                                        string remplazo = "Goto L" + (contadorL - 1) + ";Goto";
+                                        cond22 = cond22.Replace("Goto", remplazo);
+                                    }
+
+                                    Escond2 = false;
+                                    respuesta = Partes1[0] + Partes2[0] + ";" + cond1 + ";" + cond22;
+                                }
+                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "and")
+                                {
+                                    string temp1= TraduccionC(nodo.ChildNodes[0]);
+                                    string[] Partes1 = temp1.Split(';');
+                                    Escond2 = true;
+                                    string temp2= TraduccionC(nodo.ChildNodes[2]);
+                                    string[] Partes2 = temp2.Split(';');
+                                    
+
+                                    string cond1;
+                                    string cond21;
+                                    string temporal1 = "";
+
+                                    for(int x=1;x< (Partes1.Length-1); x++)
+                                    {
+                                        temporal1 += Partes1[x];
+                                    }
+
+                                    if (temporal1.Contains("iffalse"))
+                                    {
+                                        cond1 = temporal1;
+                                    }
+                                    else
+                                    {
+                                        cond1 = temporal1.Replace("if", "iffalse");
+                                    }
+
+                                    
+                                    cond21 = Partes2[1].Replace("if", "iffalse");
+                                    contadorL--;
+                                    string cadremplazo = "L" + contadorL;
+                                    contadorL--;
+                                    string cadn = "L" + (contadorL-1);
+                                    string cond22 = cond21.Replace(cadremplazo, cadn);
+
+                                    if (cond22.Contains("Goto"))
+                                    {
+                                        string remplazo = "Goto L" + (contadorL-1) + ";Goto";
+                                        cond22 = cond22.Replace("Goto", remplazo);
+                                    }
+
+                                    Escond2 = false;
+                                    respuesta = Partes1[0] + Partes2[0]+";"+cond1 +";"+ cond22;
+                                    
+                                }
+                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "Xor")
+                                {
+                                    respuesta = TraduccionC(nodo.ChildNodes[0]);
+                                    respuesta += TraduccionC(nodo.ChildNodes[2]);
+                                }
+                            }
+
+                        }
+                        else if (nodo.ChildNodes.Count == 2)
+                        {
+                            string temp = TraduccionC(nodo.ChildNodes[1]);
+                            string[] Partes = temp.Split(',');
+                        }
+                        else
+                        {
+
+                            string temp = TraduccionC(nodo.ChildNodes[0]);
+                            string[] Partes = temp.Split(',');
+
+                            if (Partes.Length == 2)
+                            {
+                                respuesta += Partes[0];
+                                contadorL++;
+
+                                respuesta += ";\r\nif " + Partes[1] + " Goto L" + contadorL;
+                                contadorL++;
+                                respuesta += ";\r\nGoto L" + contadorL;
+
+                            }
+                            else
+                            {
+                                respuesta = temp;
+                            }
+                            
+                        }
+
+                        break;
+                    }
+
+                case "Relacional":
+                    {
+                        
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name != "Relacional")
+                            {
+                                respuesta = TraduccionC(nodo.ChildNodes[1]);
+                            }
+                            else
+                            {
+                                string op1;
+                                string op2;
+
+                                if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "igual")
+                                {
+
+                                    string temp1 = TraduccionC(nodo.ChildNodes[0]);
+                                    string[] Partes1 = temp1.Split(',');
+
+                                    string temp2 = TraduccionC(nodo.ChildNodes[2]);
+                                    string[] Partes2 = temp2.Split(',');
+
+                                    if (Partes1.Length == 2)
+                                    {
+                                        respuesta += Partes1[0];
+                                        op1= Partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = temp1;
+                                    }
+
+
+                                    if (Partes2.Length == 2)
+                                    {
+                                        respuesta += Partes2[0];
+                                        op2 = Partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = temp2;
+                                    }
+
+                                    respuesta += "," + op1 + " = " + op2;
+
+
+                                }
+                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "Diferente")
+                                {
+                                    string temp1 = TraduccionC(nodo.ChildNodes[0]);
+                                    string[] Partes1 = temp1.Split(',');
+
+                                    string temp2 = TraduccionC(nodo.ChildNodes[2]);
+                                    string[] Partes2 = temp2.Split(',');
+
+                                    if (Partes1.Length == 2)
+                                    {
+                                        respuesta += Partes1[0];
+                                        op1 = Partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = temp1;
+                                    }
+
+
+                                    if (Partes2.Length == 2)
+                                    {
+                                        respuesta += Partes2[0];
+                                        op2 = Partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = temp2;
+                                    }
+
+                                    respuesta += "," + op1 + " != " + op2;
+
+
+                                }
+                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "menor")
+                                {
+                                    string temp1 = TraduccionC(nodo.ChildNodes[0]);
+                                    string[] Partes1 = temp1.Split(',');
+
+                                    string temp2 = TraduccionC(nodo.ChildNodes[2]);
+                                    string[] Partes2 = temp2.Split(',');
+
+                                    if (Partes1.Length == 2)
+                                    {
+                                        respuesta += Partes1[0];
+                                        op1 = Partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = temp1;
+                                    }
+
+
+                                    if (Partes2.Length == 2)
+                                    {
+                                        respuesta += Partes2[0];
+                                        op2 = Partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = temp2;
+                                    }
+
+                                    respuesta += "," + op1 + " < " + op2;
+
+                                }
+                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "mayor")
+                                {
+                                    string temp1 = TraduccionC(nodo.ChildNodes[0]);
+                                    string[] Partes1 = temp1.Split(',');
+
+                                    string temp2 = TraduccionC(nodo.ChildNodes[2]);
+                                    string[] Partes2 = temp2.Split(',');
+
+                                    if (Partes1.Length == 2)
+                                    {
+                                        respuesta += Partes1[0];
+                                        op1 = Partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = temp1;
+                                    }
+
+
+                                    if (Partes2.Length == 2)
+                                    {
+                                        respuesta += Partes2[0];
+                                        op2 = Partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = temp2;
+                                    }
+
+                                    respuesta += "," + op1 + " > " + op2;
+
+                                }
+                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "menor_que")
+                                {
+                                    string temp1 = TraduccionC(nodo.ChildNodes[0]);
+                                    string[] Partes1 = temp1.Split(',');
+
+                                    string temp2 = TraduccionC(nodo.ChildNodes[2]);
+                                    string[] Partes2 = temp2.Split(',');
+
+                                    if (Partes1.Length == 2)
+                                    {
+                                        respuesta += Partes1[0];
+                                        op1 = Partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = temp1;
+                                    }
+
+
+                                    if (Partes2.Length == 2)
+                                    {
+                                        respuesta += Partes2[0];
+                                        op2 = Partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = temp2;
+                                    }
+
+                                    respuesta += ","+op1 + " <= " + op2;
+                                }
+                                else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "mayor_que")
+                                {
+                                    string temp1 = TraduccionC(nodo.ChildNodes[0]);
+                                    string[] Partes1 = temp1.Split(',');
+
+                                    string temp2 = TraduccionC(nodo.ChildNodes[2]);
+                                    string[] Partes2 = temp2.Split(',');
+
+                                    if (Partes1.Length == 2)
+                                    {
+                                        respuesta += Partes1[0];
+                                        op1 = Partes1[1];
+                                    }
+                                    else
+                                    {
+                                        op1 = temp1;
+                                    }
+
+
+                                    if (Partes2.Length == 2)
+                                    {
+                                        respuesta += Partes2[0];
+                                        op2 = Partes2[1];
+                                    }
+                                    else
+                                    {
+                                        op2 = temp2;
+                                    }
+
+                                    respuesta += "," + op1 + " >= " + op2;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+
+                        }
+                       
+                       break;
+
+                    }
+
+                case "Imprimir":
+                    {
+                        respuesta += "\r\nPrint(" + ActuarC(nodo.ChildNodes[1])+")";
+                        break;
+                    }
+
+                case "While":
+                    {
+                        Clase clase = clases.Existe(clase_actual);
+                        Funcion funcion = clase.funciones.Existe(fun_actual);
+
+
+                        contadorL++;
+                        int lciclo = contadorL;
+
+                        string pre = TraduccionC(nodo.ChildNodes[1]);
+                        int lfalso = contadorL - 1;
+
+                        string[] partes = pre.Split(';');
+
+                        respuesta = "\r\nL" + lciclo;
+
+                        if (partes.Length != 4)
+                        {
+
+                            for (int x = 0; x < partes.Length; x++)
+                            {
+                                respuesta += partes[x];
+                            }
+                        }
+                        else
+                        {
+                            for (int x = 0; x < partes.Length - 1; x++)
+                            {
+                                respuesta += partes[x];
+                            }
+                        }
+
+                        respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[4]);
+                        respuesta += "\r\nGoto L"+lciclo;
+                        respuesta += "\r\nL" + contadorL ;
+
+
+
+                        break;
+                    }
+
+                case "Do_While":
+                    {
+
+                   
+                        if (nodo.ChildNodes.Count == 8)
+                        {
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+
+                            contadorL++;
+                            int lciclo = contadorL;
+
+                            respuesta = "\r\nL" + lciclo;
+                            respuesta +=TraduccionC(nodo.ChildNodes[2]);
+                        
+                            
+                            string pre = TraduccionC(nodo.ChildNodes[5]);
+                            int lfalso = contadorL - 1;
+
+                            string[] partes = pre.Split(';');
+
+                            
+
+                            if (partes.Length != 4)
+                            {
+
+                                for (int x = 0; x < partes.Length; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < partes.Length - 1; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+
+                            respuesta += "\r\nL" + contadorL;
+                            respuesta += "\r\nGoto L" + lciclo;
+                            respuesta += "\r\nL" + lfalso;
+
+
+
+
+
+                            
+                        }
+                        else
+                        {
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+
+                            contadorL++;
+                            int lciclo = contadorL;
+
+                            respuesta = "\r\nL" + lciclo;
+                            
+
+                            string pre = TraduccionC(nodo.ChildNodes[4]);
+                            int lfalso = contadorL - 1;
+
+                            string[] partes = pre.Split(';');
+
+
+
+                            if (partes.Length != 4)
+                            {
+
+                                for (int x = 0; x < partes.Length; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < partes.Length - 1; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+
+                            respuesta += "\r\nL" + contadorL;
+                            respuesta += "\r\nGoto L" + lciclo;
+                            respuesta += "\r\nL" + lfalso;
+                        }
+
+                 
+
+                        break;
+                    }
+
+                case "for":
+                    {
+                        string nombre;
+
+                        if (nodo.ChildNodes.Count == 12)
+                        {
+                            nombre = nodo.ChildNodes[1].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                            if (funcion.variables.Buscar_existe(nombre))
+                            {
+                                Variable temp = funcion.variables.Buscar(nombre);
+
+                                string preR = TraduccionC(nodo.ChildNodes[3]);
+                                string valor= preR;
+
+                                string[] partes = preR.Split(',');
+
+                                if (partes.Length == 2)
+                                {
+                                    respuesta += partes[0];
+                                    valor = partes[1];
+                                }
+                                else
+                                {
+
+                                }
+
+                                contadorTemp++;
+                                respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
+
+                                string cond = TraduccionC(nodo.ChildNodes[5]);
+
+                                string[] partescond = cond.Split(';');
+
+                                
+                                contadorL++;
+                                int lciclo = contadorL;
+
+                                respuesta += "\r\nL" + lciclo;
+                                respuesta += partescond[0];
+                                respuesta += partescond[1];
+                                respuesta += partescond[2];
+
+                                int x = contadorL - 2;
+                                respuesta+= "\r\nL" + x;
+
+                                if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "aumentar")
+                                {
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    int auxt = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt"+ contadorTemp+" = pila[t" + auxt+"]";
+                                    int auxt2 = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
+                                    auxt2 = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    
+                                    respuesta += "\r\npila[t" + contadorTemp+ "] = t" + auxt2;
+
+
+                                    respuesta += "\r\nGoto L" + lciclo;
+                                    x = contadorL - 1;
+                                    respuesta += "\r\nL" + x;
+                                }
+                                else if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "disminuir")
+                                {
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    int auxt = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+                                    int auxt2 = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
+                                    auxt2 = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                    respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
+
+                                    respuesta += "\r\nGoto L" + lciclo;
+                                    x = contadorL - 1;
+                                    respuesta += "\r\nL" + x;
+                                }
+
+                            }
+                            else if (clase.variables.Buscar_existe(nombre))
+                            {
+                                Variable temp = clase.variables.Buscar(nombre);
+
+                                string preR = TraduccionC(nodo.ChildNodes[3]);
+                                string valor = preR;
+
+                                string[] partes = preR.Split(',');
+
+                                if (partes.Length == 2)
+                                {
+                                    respuesta += partes[0];
+                                    valor = partes[1];
+                                }
+                                else
+                                {
+
+                                }
+
+                                respuesta += "\r\n"+temp.nombre+" = " + valor;
+
+                                string cond = TraduccionC(nodo.ChildNodes[5]);
+
+                                string[] partescond = cond.Split(';');
+
+                                
+                                contadorL++;
+                                int lciclo = contadorL;
+
+                                respuesta += "\r\nL" + lciclo;
+                                respuesta += partescond[0];
+                                respuesta += partescond[1];
+                                respuesta += partescond[2];
+
+                                int x = contadorL - 2;
+                                respuesta += "\r\nL" + x;
+
+                                if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "aumentar")
+                                {
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
+                                    int auxt = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " + 1";
+                                    respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
+
+                                    respuesta += "\r\nGoto L" + lciclo;
+                                    x = contadorL - 1;
+                                    respuesta += "\r\nL" + x;
+                                }
+                                else if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "disminuir")
+                                {
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
+                                    int auxt = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " - 1";
+                                    respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
+
+                                    respuesta += "\r\nGoto L" + lciclo;
+                                    x = contadorL - 1;
+                                    respuesta += "\r\nL" + x;
+                                }
+
+                            }
+
+                        }
+                        else if (nodo.ChildNodes.Count == 13)
+                        {
+                            if (nodo.ChildNodes[1].Term.Name != "ID")
+                            {
+                                nombre = nodo.ChildNodes[2].Token.Text;
+
+                                Clase clase = clases.Existe(clase_actual);
+                                Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                                if (funcion.variables.Buscar_existe(nombre))
+                                {
+                                    Variable temp = funcion.variables.Buscar(nombre);
+
+                                    string preR = TraduccionC(nodo.ChildNodes[4]);
+                                    string valor = preR;
+
+                                    string[] partes = preR.Split(',');
+
+                                    if (partes.Length == 2)
+                                    {
+                                        respuesta += partes[0];
+                                        valor = partes[1];
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                    respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
+
+                                    string cond = TraduccionC(nodo.ChildNodes[6]);
+
+                                    string[] partescond = cond.Split(';');
+
+
+                                    contadorL++;
+                                    int lciclo = contadorL;
+
+                                    respuesta += "\r\nL" + lciclo;
+                                    respuesta += partescond[0];
+                                    respuesta += partescond[1];
+                                    respuesta += partescond[2];
+
+                                    int x = contadorL - 2;
+                                    respuesta += "\r\nL" + x;
+
+                                    if (nodo.ChildNodes[9].Token.Terminal.Name.ToString() == "aumentar")
+                                    {
+                                        respuesta += TraduccionC(nodo.ChildNodes[11]);
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        int auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+                                        int auxt2 = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
+                                        auxt2 = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
+
+
+                                        respuesta += "\r\nGoto L" + lciclo;
+                                        x = contadorL - 1;
+                                        respuesta += "\r\nL" + x;
+                                    }
+                                    else if (nodo.ChildNodes[9].Token.Terminal.Name.ToString() == "disminuir")
+                                    {
+                                        respuesta += TraduccionC(nodo.ChildNodes[11]);
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        int auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+                                        int auxt2 = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
+                                        auxt2 = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
+
+                                        respuesta += "\r\nGoto L" + lciclo;
+                                        x = contadorL - 1;
+                                        respuesta += "\r\nL" + x;
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                nombre = nodo.ChildNodes[1].Token.Text;
+
+                                Clase clase = clases.Existe(clase_actual);
+                                Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                                if (funcion.variables.Buscar_existe(nombre))
+                                {
+                                    Variable temp = funcion.variables.Buscar(nombre);
+
+                                    string preR = TraduccionC(nodo.ChildNodes[3]);
+                                    string valor = preR;
+
+                                    string[] partes = preR.Split(',');
+
+                                    if (partes.Length == 2)
+                                    {
+                                        respuesta += partes[0];
+                                        valor = partes[1];
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                    respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
+
+                                    string cond = TraduccionC(nodo.ChildNodes[5]);
+
+                                    string[] partescond = cond.Split(';');
+
+
+                                    contadorL++;
+                                    int lciclo = contadorL;
+
+                                    respuesta += "\r\nL" + lciclo;
+                                    respuesta += partescond[0];
+                                    respuesta += partescond[1];
+                                    respuesta += partescond[2];
+
+                                    int x = contadorL - 2;
+                                    respuesta += "\r\nL" + x;
+
+                                    if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "aumentar")
+                                    {
+                                        respuesta += TraduccionC(nodo.ChildNodes[11]);
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        int auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+                                        int auxt2 = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
+                                        auxt2 = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
+
+
+                                        respuesta += "\r\nGoto L" + lciclo;
+                                        x = contadorL - 1;
+                                        respuesta += "\r\nL" + x;
+                                    }
+                                    else if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "disminuir")
+                                    {
+                                        respuesta += TraduccionC(nodo.ChildNodes[11]);
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        int auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+                                        int auxt2 = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
+                                        auxt2 = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
+
+                                        respuesta += "\r\nGoto L" + lciclo;
+                                        x = contadorL - 1;
+                                        respuesta += "\r\nL" + x;
+                                    }
+
+                                }
+                                else if (clase.variables.Buscar_existe(nombre))
+                                {
+                                    Variable temp = clase.variables.Buscar(nombre);
+
+                                    string preR = TraduccionC(nodo.ChildNodes[3]);
+                                    string valor = preR;
+
+                                    string[] partes = preR.Split(',');
+
+                                    if (partes.Length == 2)
+                                    {
+                                        respuesta += partes[0];
+                                        valor = partes[1];
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    respuesta += "\r\n" + temp.nombre + " = " + valor;
+
+                                    string cond = TraduccionC(nodo.ChildNodes[5]);
+
+                                    string[] partescond = cond.Split(';');
+
+
+                                    contadorL++;
+                                    int lciclo = contadorL;
+
+                                    respuesta += "\r\nL" + lciclo;
+                                    respuesta += partescond[0];
+                                    respuesta += partescond[1];
+                                    respuesta += partescond[2];
+
+                                    int x = contadorL - 2;
+                                    respuesta += "\r\nL" + x;
+
+                                    if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "aumentar")
+                                    {
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
+                                        int auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " + 1";
+                                        respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
+
+                                        respuesta += "\r\nGoto L" + lciclo;
+                                        x = contadorL - 1;
+                                        respuesta += "\r\nL" + x;
+                                    }
+                                    else if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "disminuir")
+                                    {
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
+                                        int auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " - 1";
+                                        respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
+
+                                        respuesta += "\r\nGoto L" + lciclo;
+                                        x = contadorL - 1;
+                                        respuesta += "\r\nL" + x;
+                                    }
+
+                                }
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 14)
+                        {
+                            nombre = nodo.ChildNodes[2].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                            if (funcion.variables.Buscar_existe(nombre))
+                            {
+                                Variable temp = funcion.variables.Buscar(nombre);
+
+                                string preR = TraduccionC(nodo.ChildNodes[4]);
+                                string valor = preR;
+
+                                string[] partes = preR.Split(',');
+
+                                if (partes.Length == 2)
+                                {
+                                    respuesta += partes[0];
+                                    valor = partes[1];
+                                }
+                                else
+                                {
+
+                                }
+
+                                contadorTemp++;
+                                respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
+
+                                string cond = TraduccionC(nodo.ChildNodes[6]);
+
+                                string[] partescond = cond.Split(';');
+
+
+                                contadorL++;
+                                int lciclo = contadorL;
+
+                                respuesta += "\r\nL" + lciclo;
+                                respuesta += partescond[0];
+                                respuesta += partescond[1];
+                                respuesta += partescond[2];
+
+                                int x = contadorL - 2;
+                                respuesta += "\r\nL" + x;
+
+                                if (nodo.ChildNodes[9].Token.Terminal.Name.ToString() == "aumentar")
+                                {
+                                    respuesta += TraduccionC(nodo.ChildNodes[12]);
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    int auxt = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+                                    int auxt2 = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
+                                    auxt2 = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                    respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
+
+
+                                    respuesta += "\r\nGoto L" + lciclo;
+                                    x = contadorL - 1;
+                                    respuesta += "\r\nL" + x;
+                                }
+                                else if (nodo.ChildNodes[9].Token.Terminal.Name.ToString() == "disminuir")
+                                {
+                                    respuesta += TraduccionC(nodo.ChildNodes[12]);
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    int auxt = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+                                    int auxt2 = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
+                                    auxt2 = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                    respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
+
+                                    respuesta += "\r\nGoto L" + lciclo;
+                                    x = contadorL - 1;
+                                    respuesta += "\r\nL" + x;
+                                }
+
+                            }
+                        }
+                        break;
+
+                    }
             }
 
             return respuesta;

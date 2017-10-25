@@ -313,14 +313,14 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             IF.ErrorRule = SyntaxError + finCuerpo;
 
 
-            For.Rule = RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + Sentencias + finCuerpo
-                       | RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + finCuerpo
-                       | RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + Sentencias + finCuerpo
-                       | RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + finCuerpo
-                       | RPara + Tipo + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + Sentencias + finCuerpo
-                       | RPara + Tipo + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + finCuerpo
-                       | RPara + Tipo + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + Sentencias + finCuerpo
-                       | RPara + Tipo + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + finCuerpo;
+            For.Rule =   RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + Sentencias + finCuerpo//13
+                       | RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + finCuerpo//12
+                       | RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + Sentencias + finCuerpo//13
+                       | RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + finCuerpo//12
+                       | RPara + Tipo + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + Sentencias + finCuerpo//14
+                       | RPara + Tipo + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + finCuerpo//13
+                       | RPara + Tipo + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + Sentencias + finCuerpo//14
+                       | RPara + Tipo + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + finCuerpo;//13
 
             For.ErrorRule = SyntaxError + finCuerpo;
 
