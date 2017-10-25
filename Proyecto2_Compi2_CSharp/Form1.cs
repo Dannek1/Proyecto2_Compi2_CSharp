@@ -3329,9 +3329,9 @@ namespace Proyecto2_Compi2_CSharp
                 case "Do_While":
                     {
 
-                        if (nodo.ChildNodes.Count == 8)
+                        if (nodo.ChildNodes.Count == 7)
                         {
-                            ActuarC(nodo.ChildNodes[2]);
+                            ActuarC(nodo.ChildNodes[1]);
 
                             string condicion = ActuarC(nodo.ChildNodes[5]);
 
@@ -8287,7 +8287,7 @@ namespace Proyecto2_Compi2_CSharp
                         {
                             IF temp = funcion.Ifs.Existe(logica);
 
-                            respuesta = TraduccionC(nodo.ChildNodes[6]);
+                         
 
                             string pre = TraduccionC(nodo.ChildNodes[1]);
                             int lfalso = contadorL - 1;
@@ -8309,8 +8309,20 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += partes[x];
                                 }
                             }
-                            respuesta += "\r\nL" + contadorL;
-                            respuesta += "\r\nL" + lfalso;
+
+                            if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
+                            {
+                                respuesta += "\r\nL" + lfalso;
+                                respuesta += "\r\nL" + contadorL;
+                                
+                            }
+                            else
+                            {
+                                respuesta += "\r\nL" + contadorL;
+                                respuesta += "\r\nL" + lfalso;
+                            }
+
+                            
 
                         }
                         else if (nodo.ChildNodes.Count == 6)
@@ -8319,7 +8331,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 IF temp = funcion.Ifs.Existe(logica);
                                 
-                                respuesta = TraduccionC(nodo.ChildNodes[6]);
+                                
 
                                 string pre = TraduccionC(nodo.ChildNodes[1]);
                                 int lfalso = contadorL - 1;
@@ -8341,9 +8353,21 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += partes[x];
                                     }
                                 }
-                                respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
-                                respuesta += "\r\nL" + lfalso;
-                                
+                                if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
+                                {
+                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += TraduccionC(nodo.ChildNodes[4]);
+                                    respuesta += "\r\nL" + contadorL;
+
+                                }
+                                else
+                                {
+                                    respuesta += "\r\nL" + contadorL;
+                                    respuesta += TraduccionC(nodo.ChildNodes[4]);
+                                    respuesta += "\r\nL" + lfalso;
+                                }
+
+
 
 
                             }
@@ -8351,7 +8375,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 IF temp = funcion.Ifs.Existe(logica);
 
-                                respuesta = TraduccionC(nodo.ChildNodes[6]);
+                                
 
                                 string pre = TraduccionC(nodo.ChildNodes[1]);
                                 int lfalso = contadorL - 1;
@@ -8373,13 +8397,32 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += partes[x];
                                     }
                                 }
-                                respuesta += "\r\nL" + contadorL;
-                                contadorL++;
-                                respuesta += "\r\nGoto L" + contadorL;
-                                int lsalida = contadorL;
-                                respuesta += "\r\nL" + lfalso;
-                                respuesta += TraduccionC(nodo.ChildNodes[5]);
-                                respuesta += "\r\nL" + lsalida;
+
+
+                                if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
+                                {
+
+                                    respuesta += "\r\nL" + lfalso;
+                                    contadorL++;
+                                    respuesta += "\r\nGoto L" + contadorL;
+                                    int lsalida = contadorL;
+                                    respuesta += "\r\nL" + (contadorL-1);
+                                    respuesta += TraduccionC(nodo.ChildNodes[5]);
+                                    respuesta += "\r\nL" + lsalida;
+
+                                }
+                                else
+                                {
+                                    respuesta += "\r\nL" + contadorL;
+                                    contadorL++;
+                                    respuesta += "\r\nGoto L" + contadorL;
+                                    int lsalida = contadorL;
+                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += TraduccionC(nodo.ChildNodes[5]);
+                                    respuesta += "\r\nL" + lsalida;
+                                }
+
+                              
 
                             }
                         }
@@ -8389,7 +8432,6 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 IF temp = funcion.Ifs.Existe(logica);
                                 
-                                respuesta = TraduccionC(nodo.ChildNodes[6]);
 
                                 string pre = TraduccionC(nodo.ChildNodes[1]);
                                 int lfalso = contadorL - 1;
@@ -8411,13 +8453,31 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += partes[x];
                                     }
                                 }
-                                respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
-                                contadorL++;
-                                respuesta += "\r\nGoto L" + contadorL;
-                                int lsalida = contadorL;
-                                respuesta += "\r\nL" + lfalso;
-                                respuesta += TraduccionC(nodo.ChildNodes[6]);
-                                respuesta += "\r\nL" + lsalida;
+
+                                if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
+                                {
+
+                                    respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[4]);
+                                    contadorL++;
+                                    respuesta += "\r\nGoto L" + contadorL;
+                                    int lsalida = contadorL;
+                                    respuesta += "\r\nL" + (contadorL - 1);
+                                    respuesta += TraduccionC(nodo.ChildNodes[6]);
+                                    respuesta += "\r\nL" + lsalida;
+
+                                }
+                                else
+                                {
+                                    respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
+                                    contadorL++;
+                                    respuesta += "\r\nGoto L" + contadorL;
+                                    int lsalida = contadorL;
+                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += TraduccionC(nodo.ChildNodes[6]);
+                                    respuesta += "\r\nL" + lsalida;
+                                }
+
+                                
 
                             }
                             else
@@ -8443,11 +8503,29 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += partes[x];
                                     }
                                 }
-                                respuesta += "\r\nL" + contadorL;
-                                contadorL++;
-                                respuesta += "\r\nGoto L" + contadorL;
-                                respuesta += "\r\nL" + lfalso;
-                                respuesta += "\r\nL" + contadorL;
+
+                                if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
+                                {
+
+
+                                    respuesta += "\r\nL" + lfalso;
+                                    contadorL++;
+                                    respuesta += "\r\nGoto L" + contadorL;
+                                   
+                                    respuesta += "\r\nL" + (contadorL-1);
+                                    respuesta += "\r\nL" + contadorL;
+
+                                }
+                                else
+                                {
+                                    respuesta += "\r\nL" + contadorL;
+                                    contadorL++;
+                                    respuesta += "\r\nGoto L" + contadorL;
+                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += "\r\nL" + contadorL;
+                                }
+
+                               
                             }
                         }
                         else if (nodo.ChildNodes.Count == 8)
@@ -8474,11 +8552,30 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += partes[x];
                                 }
                             }
-                            respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
-                            contadorL++;
-                            respuesta += "\r\nGoto L" + contadorL;
-                            respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[6]);
-                            respuesta += "\r\nL" + contadorL;
+
+
+                            if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
+                            {
+
+
+                                respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[4]);
+                                contadorL++;
+                                respuesta += "\r\nGoto L" + contadorL;
+
+                                respuesta += "\r\nL" + (contadorL - 1) + TraduccionC(nodo.ChildNodes[6]);
+                                respuesta += "\r\nL" + contadorL;
+
+                            }
+                            else
+                            {
+                                respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
+                                contadorL++;
+                                respuesta += "\r\nGoto L" + contadorL;
+                                respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[6]);
+                                respuesta += "\r\nL" + contadorL;
+                            }
+
+
 
                         }
                         else
@@ -8505,13 +8602,31 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     respuesta += partes[x];
                                 }
+
                             }
 
-                            respuesta += "\r\nL" + contadorL+TraduccionC(nodo.ChildNodes[4]);
-                            contadorL++;
-                            respuesta += "\r\nGoto L" + contadorL;
-                            respuesta += "\r\nL" + lfalso +TraduccionC(nodo.ChildNodes[7]);
-                            respuesta += "\r\nL" + contadorL;
+                            if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
+                            {
+
+
+                                respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[4]);
+                                contadorL++;
+                                respuesta += "\r\nGoto L" + contadorL;
+
+                                respuesta += "\r\nL" + (contadorL - 1) + TraduccionC(nodo.ChildNodes[7]);
+                                respuesta += "\r\nL" + contadorL;
+
+                            }
+                            else
+                            {
+                                respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
+                                contadorL++;
+                                respuesta += "\r\nGoto L" + contadorL;
+                                respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[7]);
+                                respuesta += "\r\nL" + contadorL;
+                            }
+
+                        
                         }
                         break;
                     }
@@ -8933,7 +9048,7 @@ namespace Proyecto2_Compi2_CSharp
                     {
 
                    
-                        if (nodo.ChildNodes.Count == 8)
+                        if (nodo.ChildNodes.Count == 7)
                         {
                             Clase clase = clases.Existe(clase_actual);
                             Funcion funcion = clase.funciones.Existe(fun_actual);
@@ -8943,53 +9058,7 @@ namespace Proyecto2_Compi2_CSharp
                             int lciclo = contadorL;
 
                             respuesta = "\r\nL" + lciclo;
-                            respuesta +=TraduccionC(nodo.ChildNodes[2]);
-                        
-                            
-                            string pre = TraduccionC(nodo.ChildNodes[5]);
-                            int lfalso = contadorL - 1;
-
-                            string[] partes = pre.Split(';');
-
-                            
-
-                            if (partes.Length != 4)
-                            {
-
-                                for (int x = 0; x < partes.Length; x++)
-                                {
-                                    respuesta += partes[x];
-                                }
-                            }
-                            else
-                            {
-                                for (int x = 0; x < partes.Length - 1; x++)
-                                {
-                                    respuesta += partes[x];
-                                }
-                            }
-
-                            respuesta += "\r\nL" + contadorL;
-                            respuesta += "\r\nGoto L" + lciclo;
-                            respuesta += "\r\nL" + lfalso;
-
-
-
-
-
-                            
-                        }
-                        else
-                        {
-                            Clase clase = clases.Existe(clase_actual);
-                            Funcion funcion = clase.funciones.Existe(fun_actual);
-
-
-                            contadorL++;
-                            int lciclo = contadorL;
-
-                            respuesta = "\r\nL" + lciclo;
-                            
+                            respuesta += TraduccionC(nodo.ChildNodes[1]);
 
                             string pre = TraduccionC(nodo.ChildNodes[4]);
                             int lfalso = contadorL - 1;
@@ -9013,10 +9082,50 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += partes[x];
                                 }
                             }
-
-                            respuesta += "\r\nL" + contadorL;
-                            respuesta += "\r\nGoto L" + lciclo;
                             respuesta += "\r\nL" + lfalso;
+                            respuesta += "\r\nGoto L" + lciclo;
+                            respuesta += "\r\nL" + contadorL;
+
+                        }
+                        else
+                        {
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+
+                            contadorL++;
+                            int lciclo = contadorL;
+
+                            respuesta = "\r\nL" + lciclo;
+                            
+
+                            string pre = TraduccionC(nodo.ChildNodes[3]);
+                            int lfalso = contadorL - 1;
+
+                            string[] partes = pre.Split(';');
+
+
+
+                            if (partes.Length != 4)
+                            {
+
+                                for (int x = 0; x < partes.Length; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < partes.Length - 1; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            respuesta += "\r\nL" + lfalso;
+                            respuesta += "\r\nGoto L" + lciclo;
+                            respuesta += "\r\nL" + contadorL;
+                            
+                            
                         }
 
                  
