@@ -822,6 +822,7 @@ namespace Proyecto2_Compi2_CSharp
                                             Parametro nP = new Parametro(param[0], param[1]);
 
                                             nuevo.parametros.Insertar(nP);
+                                            nuevo.nParametros++;
 
                                             Variable variable = new Variable(param[0], param[1]);
                                             variable.posicion = nuevo.correlactivo_var;
@@ -941,6 +942,7 @@ namespace Proyecto2_Compi2_CSharp
                                         Parametro nP = new Parametro(param[0], param[1]);
 
                                         nuevo.parametros.Insertar(nP);
+                                        nuevo.nParametros++;
 
                                         Variable variable = new Variable(param[0], param[1]);
                                         variable.posicion = nuevo.correlactivo_var;
@@ -971,10 +973,7 @@ namespace Proyecto2_Compi2_CSharp
                                     {
                                         string tipo = ActuarC(nodo.ChildNodes[0]);
 
-                                        if (!tipo.Equals("void"))
-                                        {
-                                            retorna = true;
-                                        }
+                                       
 
                                         fun_actual = nodo.ChildNodes[1].Token.Text;
 
@@ -986,6 +985,15 @@ namespace Proyecto2_Compi2_CSharp
 
                                         Funcion nuevo = new Funcion(tipo, fun_actual, "publico");
 
+                                        if (!tipo.Equals("void"))
+                                        {
+                                            Variable variable = new Variable(tipo, "retorno");
+                                            variable.posicion = nuevo.correlactivo_var;
+                                            nuevo.correlactivo_var++;
+
+                                            nuevo.variables.Insertar(variable);
+                                        }
+
                                         nuevo.parametros = new Parametros();
 
                                         for (int y = 0; y < Sparametros.Length; y++)
@@ -995,6 +1003,7 @@ namespace Proyecto2_Compi2_CSharp
                                             Parametro nP = new Parametro(param[0], param[1]);
 
                                             nuevo.parametros.Insertar(nP);
+                                            nuevo.nParametros++;
 
                                             Variable variable = new Variable(param[0], param[1]);
                                             variable.posicion = nuevo.correlactivo_var;
@@ -1013,16 +1022,20 @@ namespace Proyecto2_Compi2_CSharp
                                     {
                                         string tipo = ActuarC(nodo.ChildNodes[0]);
 
-                                        if (!tipo.Equals("void"))
-                                        {
-                                            retorna = true;
-                                        }
-
                                         fun_actual = nodo.ChildNodes[1].Token.Text;
 
                                         Clase temp = clases.Existe(clase_actual);
 
                                         Funcion nuevo = new Funcion(tipo, fun_actual, "publico");
+
+                                        if (!tipo.Equals("void"))
+                                        {
+                                            Variable variable = new Variable(tipo, "retorno");
+                                            variable.posicion = nuevo.correlactivo_var;
+                                            nuevo.correlactivo_var++;
+
+                                            nuevo.variables.Insertar(variable);
+                                        }
 
                                         nuevo.nodo = nodo.ChildNodes[5];
 
@@ -1045,11 +1058,14 @@ namespace Proyecto2_Compi2_CSharp
 
                                     nuevo_f.SetArreglor(true);
 
-                                    if (tipo != "void")
+                                    if (!tipo.Equals("void"))
                                     {
-                                        retorna = true;
-                                    }
+                                        Variable variable = new Variable(tipo, "retorno");
+                                        variable.posicion = nuevo_f.correlactivo_var;
+                                        nuevo_f.correlactivo_var++;
 
+                                        nuevo_f.variables.Insertar(variable);
+                                    }
                                     nuevo_f.SetArreglor(true);
 
                                     clase_n.funciones.Insertar(nuevo_f);
@@ -1092,6 +1108,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 Parametro nP = new Parametro(param[0], param[1]);
 
                                                 nuevo.parametros.Insertar(nP);
+                                                nuevo.nParametros++;
 
                                                 Variable variable = new Variable(param[0], param[1]);
                                                 variable.posicion = nuevo.correlactivo_var;
@@ -1168,11 +1185,26 @@ namespace Proyecto2_Compi2_CSharp
                                         fun_actual = x;
 
                                         string tipo = ActuarC(nodo.ChildNodes[1]);
+
+
+
                                         funcion.parametros = null;
                                         funcion.nodo = null;
                                         funcion.variables = new Variables();
-                                        funcion.tipo = tipo;
                                         funcion.correlactivo_var = 0;
+
+                                        if (!tipo.Equals("void"))
+                                        {
+                                            Variable variable = new Variable(tipo, "retorno");
+                                            variable.posicion = funcion.correlactivo_var;
+                                            funcion.correlactivo_var++;
+
+                                            funcion.variables.Insertar(variable);
+                                        }
+
+
+                                        funcion.tipo = tipo;
+                                        
                                         funcion.tamaño = 0;
 
 
@@ -1202,6 +1234,7 @@ namespace Proyecto2_Compi2_CSharp
                                         funcion.correlactivo_var = 0;
                                         funcion.tamaño = 0;
 
+
                                     }
                                     else
                                     {
@@ -1219,10 +1252,7 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     string tipo = ActuarC(nodo.ChildNodes[0]);
 
-                                    if (!tipo.Equals("void"))
-                                    {
-                                        retorna = true;
-                                    }
+                                    
 
                                     string nombre = nodo.ChildNodes[1].Token.Text;
 
@@ -1235,7 +1265,14 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Funcion nuevo = new Funcion(tipo, nombre, "publico");
 
+                                    if (!tipo.Equals("void"))
+                                    {
+                                        Variable variable = new Variable(tipo, "retorno");
+                                        variable.posicion = nuevo.correlactivo_var;
+                                        nuevo.correlactivo_var++;
 
+                                        nuevo.variables.Insertar(variable);
+                                    }
 
                                     nuevo.parametros = new Parametros();
 
@@ -1246,6 +1283,7 @@ namespace Proyecto2_Compi2_CSharp
                                         Parametro nP = new Parametro(param[0], param[1]);
 
                                         nuevo.parametros.Insertar(nP);
+                                        nuevo.nParametros++;
 
                                         Variable variable = new Variable(param[0], param[1]);
                                         variable.posicion = nuevo.correlactivo_var;
@@ -1257,6 +1295,8 @@ namespace Proyecto2_Compi2_CSharp
                                     nuevo.nodo = nodo.ChildNodes[6];
 
                                     temp.funciones.Insertar(nuevo);
+
+                                    fun_actual = nombre;
 
                                     resultado = tipo + " " + nombre + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[6]) + "\r\n}";
 
@@ -1276,9 +1316,13 @@ namespace Proyecto2_Compi2_CSharp
 
                                         nuevo_f.SetArreglor(true);
 
-                                        if (tipo != "void")
+                                        if (!tipo.Equals("void"))
                                         {
-                                            retorna = true;
+                                            Variable variable = new Variable(tipo, "retorno");
+                                            variable.posicion = nuevo_f.correlactivo_var;
+                                            nuevo_f.correlactivo_var++;
+
+                                            nuevo_f.variables.Insertar(variable);
                                         }
 
                                         nuevo_f.SetArreglor(true);
@@ -1293,6 +1337,7 @@ namespace Proyecto2_Compi2_CSharp
                                             Parametro nP = new Parametro(param[0], param[1]);
 
                                             nuevo_f.parametros.Insertar(nP);
+                                            nuevo_f.nParametros++;
 
                                             Variable variable = new Variable(param[0], param[1]);
                                             variable.posicion = nuevo_f.correlactivo_var;
@@ -1315,11 +1360,14 @@ namespace Proyecto2_Compi2_CSharp
 
                                         nuevo_f.SetArreglor(true);
 
-                                        if (tipo != "void")
+                                        if (!tipo.Equals("void"))
                                         {
-                                            retorna = true;
-                                        }
+                                            Variable variable = new Variable(tipo, "retorno");
+                                            variable.posicion = nuevo_f.correlactivo_var;
+                                            nuevo_f.correlactivo_var++;
 
+                                            nuevo_f.variables.Insertar(variable);
+                                        }
                                         nuevo_f.SetArreglor(true);
 
                                         nuevo_f.nodo = nodo.ChildNodes[6];
@@ -1364,6 +1412,7 @@ namespace Proyecto2_Compi2_CSharp
                                             Parametro nP = new Parametro(param[0], param[1]);
 
                                             nuevo.parametros.Insertar(nP);
+                                            nuevo.nParametros++;
 
                                             Variable variable = new Variable(param[0], param[1]);
                                             variable.posicion = nuevo.correlactivo_var;
@@ -1394,11 +1443,7 @@ namespace Proyecto2_Compi2_CSharp
                                             string visi = ActuarC(nodo.ChildNodes[0]);
                                             string tipo = ActuarC(nodo.ChildNodes[1]);
 
-                                            if (!tipo.Equals("void"))
-                                            {
-                                                retorna = true;
-                                            }
-
+                                           
                                             fun_actual = nodo.ChildNodes[2].Token.Text;
 
                                             Clase temp = clases.Existe(clase_actual);
@@ -1409,6 +1454,15 @@ namespace Proyecto2_Compi2_CSharp
 
                                             Funcion nuevo = new Funcion(tipo, fun_actual, visi);
 
+                                            if (!tipo.Equals("void"))
+                                            {
+                                                Variable variable = new Variable(tipo, "retorno");
+                                                variable.posicion = nuevo.correlactivo_var;
+                                                nuevo.correlactivo_var++;
+
+                                                nuevo.variables.Insertar(variable);
+                                            }
+
                                             nuevo.parametros = new Parametros();
 
                                             for (int y = 0; y < Sparametros.Length; y++)
@@ -1418,6 +1472,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 Parametro nP = new Parametro(param[0], param[1]);
 
                                                 nuevo.parametros.Insertar(nP);
+                                                nuevo.nParametros++;
 
                                                 Variable variable = new Variable(param[0], param[1]);
                                                 variable.posicion = nuevo.correlactivo_var;
@@ -1435,17 +1490,22 @@ namespace Proyecto2_Compi2_CSharp
                                         {
                                             string visi = ActuarC(nodo.ChildNodes[0]);
                                             string tipo = ActuarC(nodo.ChildNodes[1]);
-
-                                            if (!tipo.Equals("void"))
-                                            {
-                                                retorna = true;
-                                            }
+                                            
 
                                             fun_actual = nodo.ChildNodes[2].Token.Text;
 
                                             Clase temp = clases.Existe(clase_actual);
 
                                             Funcion nuevo = new Funcion(tipo, fun_actual, visi);
+
+                                            if (!tipo.Equals("void"))
+                                            {
+                                                Variable variable = new Variable(tipo, "retorno");
+                                                variable.posicion = nuevo.correlactivo_var;
+                                                nuevo.correlactivo_var++;
+
+                                                nuevo.variables.Insertar(variable);
+                                            }
 
                                             nuevo.nodo = nodo.ChildNodes[6];
 
@@ -1466,10 +1526,15 @@ namespace Proyecto2_Compi2_CSharp
 
                                         nuevo_f.SetArreglor(true);
 
-                                        if (tipo != "void")
+                                        if (!tipo.Equals("void"))
                                         {
-                                            retorna = true;
+                                            Variable variable = new Variable(tipo, "retorno");
+                                            variable.posicion = nuevo_f.correlactivo_var;
+                                            nuevo_f.correlactivo_var++;
+
+                                            nuevo_f.variables.Insertar(variable);
                                         }
+
 
                                         nuevo_f.SetArreglor(true);
 
@@ -1506,6 +1571,17 @@ namespace Proyecto2_Compi2_CSharp
                                                 fun.tamaño = 0;
                                                 fun.correlactivo_var = 0;
 
+                                                if (!tipo.Equals("void"))
+                                                {
+                                                    Variable variable = new Variable(tipo, "retorno");
+                                                    variable.posicion = fun.correlactivo_var;
+                                                    fun.correlactivo_var++;
+
+                                                    fun.variables.Insertar(variable);
+                                                }
+
+                                                
+
                                                 string parametros = ActuarC(nodo.ChildNodes[2]);
 
                                                 string[] Sparametros = parametros.Split(',');
@@ -1519,6 +1595,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                                     fun.parametros.Insertar(nP);
+                                                    fun.nParametros++;
 
                                                     Variable variable = new Variable(param[0], param[1]);
                                                     variable.posicion = fun.correlactivo_var;
@@ -1545,6 +1622,16 @@ namespace Proyecto2_Compi2_CSharp
                                                 fun.correlactivo_var = 0;
                                                 fun.tamaño = 0;
 
+                                                if (!tipo.Equals("void"))
+                                                {
+                                                    Variable variable = new Variable(tipo, "retorno");
+                                                    variable.posicion = fun.correlactivo_var;
+                                                    fun.correlactivo_var++;
+
+                                                    fun.variables.Insertar(variable);
+                                                }
+
+
 
                                             }
                                         }
@@ -1569,6 +1656,16 @@ namespace Proyecto2_Compi2_CSharp
                                             fun.SetArreglor(true);
                                             fun.tamaño = 0;
                                             fun.correlactivo_var = 0;
+
+                                            if (!tipo.Equals("void"))
+                                            {
+                                                Variable variable = new Variable(tipo, "retorno");
+                                                variable.posicion = fun.correlactivo_var;
+                                                fun.correlactivo_var++;
+
+                                                fun.variables.Insertar(variable);
+                                            }
+
                                         }
                                         else
                                         {
@@ -1613,6 +1710,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                                     funcion.parametros.Insertar(nP);
+                                                    funcion.nParametros++;
 
                                                     Variable variable = new Variable(param[0], param[1]);
                                                     variable.posicion = funcion.correlactivo_var;
@@ -1665,19 +1763,24 @@ namespace Proyecto2_Compi2_CSharp
 
                                             string visi = ActuarC(nodo.ChildNodes[1]);
                                             string tipo = ActuarC(nodo.ChildNodes[2]);
-
-                                            if (tipo != "void")
-                                            {
-                                                retorna = true;
-                                            }
-
-
+                                            
                                             funcion.tipo = tipo;
                                             funcion.visibilidad = visi;
 
                                             funcion.variables = new Variables();
                                             funcion.correlactivo_var = 0;
                                             funcion.tamaño = 0;
+
+                                            if (!tipo.Equals("void"))
+                                            {
+                                                Variable variable = new Variable(tipo, "retorno");
+                                                variable.posicion = funcion.correlactivo_var;
+                                                funcion.correlactivo_var++;
+
+                                                funcion.variables.Insertar(variable);
+                                            }
+
+
 
                                             funcion.nodo = null;
 
@@ -1698,11 +1801,6 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 string tipo = ActuarC(nodo.ChildNodes[0]);
 
-                                if (tipo != "void")
-                                {
-                                    retorna = true;
-                                }
-
                                 string nombre = nodo.ChildNodes[0].Token.Text;
 
                                 Funcion funcion = new Funcion(tipo, nombre, "publico");
@@ -1712,6 +1810,16 @@ namespace Proyecto2_Compi2_CSharp
                                 funcion.nodo = nodo.ChildNodes[7];
 
                                 funcion.SetArreglor(true);
+
+                                if (!tipo.Equals("void"))
+                                {
+                                    Variable variable = new Variable(tipo, "retorno");
+                                    variable.posicion = funcion.correlactivo_var;
+                                    funcion.correlactivo_var++;
+
+                                    funcion.variables.Insertar(variable);
+                                }
+
 
                                 string parametros = ActuarC(nodo.ChildNodes[2]);
 
@@ -1726,6 +1834,7 @@ namespace Proyecto2_Compi2_CSharp
                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                     funcion.parametros.Insertar(nP);
+                                    funcion.nParametros++;
 
                                     Variable variable = new Variable(param[0], param[1]);
                                     variable.posicion = funcion.correlactivo_var;
@@ -1745,11 +1854,6 @@ namespace Proyecto2_Compi2_CSharp
                                     string visi = ActuarC(nodo.ChildNodes[0]);
                                     string tipo = ActuarC(nodo.ChildNodes[1]);
 
-                                    if (!tipo.Equals("void"))
-                                    {
-                                        retorna = true;
-                                    }
-
                                     fun_actual = nodo.ChildNodes[2].Token.Text;
 
                                     Clase temp = clases.Existe(clase_actual);
@@ -1760,6 +1864,16 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Funcion nuevo = new Funcion(tipo, fun_actual, visi);
 
+                                    if (!tipo.Equals("void"))
+                                    {
+                                        Variable variable = new Variable(tipo, "retorno");
+                                        variable.posicion = nuevo.correlactivo_var;
+                                        nuevo.correlactivo_var++;
+
+                                        nuevo.variables.Insertar(variable);
+                                    }
+
+
                                     nuevo.parametros = new Parametros();
 
                                     for (int y = 0; y < Sparametros.Length; y++)
@@ -1769,6 +1883,7 @@ namespace Proyecto2_Compi2_CSharp
                                         Parametro nP = new Parametro(param[0], param[1]);
 
                                         nuevo.parametros.Insertar(nP);
+                                        nuevo.nParametros++;
 
                                         Variable variable = new Variable(param[0], param[1]);
                                         variable.posicion = nuevo.correlactivo_var;
@@ -1816,6 +1931,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 Parametro nP = new Parametro(param[0], param[1]);
 
                                                 nuevo.parametros.Insertar(nP);
+                                                nuevo.nParametros++;
 
                                                 Variable variable = new Variable(param[0], param[1]);
                                                 variable.posicion = nuevo.correlactivo_var;
@@ -1834,14 +1950,20 @@ namespace Proyecto2_Compi2_CSharp
                                     {
                                         string visi = ActuarC(nodo.ChildNodes[0]);
                                         string tipo = ActuarC(nodo.ChildNodes[1]);
-                                        if (tipo != "void")
-                                        {
-                                            retorna = true;
-                                        }
-
+                                        
                                         fun_actual = nodo.ChildNodes[3].Token.Text;
 
                                         Funcion nuevo = new Funcion(tipo, fun_actual, visi);
+
+                                        if (!tipo.Equals("void"))
+                                        {
+                                            Variable variable = new Variable(tipo, "retorno");
+                                            variable.posicion = nuevo.correlactivo_var;
+                                            nuevo.correlactivo_var++;
+
+                                            nuevo.variables.Insertar(variable);
+                                        }
+
 
                                         nuevo.nodo = nodo.ChildNodes[7];
                                         nuevo.SetArreglor(true);
@@ -1868,11 +1990,6 @@ namespace Proyecto2_Compi2_CSharp
 
                                             string tipo = ActuarC(nodo.ChildNodes[1]);
 
-                                            if (tipo != "void")
-                                            {
-                                                retorna = true;
-                                            }
-
                                             funcion.visibilidad = "publico";
                                             funcion.tipo = tipo;
 
@@ -1881,6 +1998,16 @@ namespace Proyecto2_Compi2_CSharp
                                             funcion.variables = new Variables();
                                             funcion.correlactivo_var = 0;
                                             funcion.tamaño = 0;
+
+                                            if (!tipo.Equals("void"))
+                                            {
+                                                Variable variable = new Variable(tipo, "retorno");
+                                                variable.posicion = funcion.correlactivo_var;
+                                                funcion.correlactivo_var++;
+
+                                                funcion.variables.Insertar(variable);
+                                            }
+
 
                                             string parametros = ActuarC(nodo.ChildNodes[4]);
 
@@ -1895,6 +2022,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 Parametro nP = new Parametro(param[0], param[1]);
 
                                                 funcion.parametros.Insertar(nP);
+                                                funcion.nParametros++;
 
                                                 Variable variable = new Variable(param[0], param[1]);
                                                 variable.posicion = funcion.correlactivo_var;
@@ -1951,6 +2079,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                                     funcion.parametros.Insertar(nP);
+                                                    funcion.nParametros++;
 
                                                     Variable variable = new Variable(param[0], param[1]);
                                                     variable.posicion = funcion.correlactivo_var;
@@ -1978,12 +2107,6 @@ namespace Proyecto2_Compi2_CSharp
                                             Funcion funcion = clase.funciones.Existe(x);
 
                                             string tipo = ActuarC(nodo.ChildNodes[1]);
-
-                                            if (tipo != "void")
-                                            {
-                                                retorna = true;
-                                            }
-
                                             funcion.visibilidad = "publico";
                                             funcion.tipo = tipo;
 
@@ -1991,6 +2114,17 @@ namespace Proyecto2_Compi2_CSharp
                                             funcion.variables = new Variables();
                                             funcion.correlactivo_var = 0;
                                             funcion.tamaño = 0;
+
+                                            if (!tipo.Equals("void"))
+                                            {
+                                                Variable variable = new Variable(tipo, "retorno");
+                                                variable.posicion = funcion.correlactivo_var;
+                                                funcion.correlactivo_var++;
+
+                                                funcion.variables.Insertar(variable);
+                                            }
+
+
                                             funcion.SetArreglor(true);
 
                                             funcion.nodo = nodo.ChildNodes[7];
@@ -2042,6 +2176,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                                     funcion.parametros.Insertar(nP);
+                                                    funcion.nParametros++;
 
                                                     Variable variable = new Variable(param[0], param[1]);
                                                     variable.posicion = funcion.correlactivo_var;
@@ -2105,6 +2240,7 @@ namespace Proyecto2_Compi2_CSharp
                                                             Parametro nP = new Parametro(param[0], param[1]);
 
                                                             funcion.parametros.Insertar(nP);
+                                                            funcion.nParametros++;
 
                                                             Variable variable = new Variable(param[0], param[1]);
                                                             variable.posicion = funcion.correlactivo_var;
@@ -2136,6 +2272,16 @@ namespace Proyecto2_Compi2_CSharp
                                                     funcion.variables = new Variables();
                                                     funcion.correlactivo_var = 0;
                                                     funcion.tamaño = 0;
+
+                                                    if (!tipo.Equals("void"))
+                                                    {
+                                                        Variable variable = new Variable(tipo, "retorno");
+                                                        variable.posicion = funcion.correlactivo_var;
+                                                        funcion.correlactivo_var++;
+
+                                                        funcion.variables.Insertar(variable);
+                                                    }
+
 
                                                     funcion.nodo = nodo.ChildNodes[7];
                                                 }
@@ -2199,10 +2345,7 @@ namespace Proyecto2_Compi2_CSharp
                                     funcion.tipo = tipo;
                                     funcion.visibilidad = visi;
 
-                                    if (tipo != "void")
-                                    {
-                                        retorna = true;
-                                    }
+                                   
 
                                     funcion.SetArreglor(true);
 
@@ -2211,6 +2354,16 @@ namespace Proyecto2_Compi2_CSharp
                                     funcion.variables = new Variables();
                                     funcion.correlactivo_var = 0;
                                     funcion.tamaño = 0;
+
+                                    if (!tipo.Equals("void"))
+                                    {
+                                        Variable variable = new Variable(tipo, "retorno");
+                                        variable.posicion = funcion.correlactivo_var;
+                                        funcion.correlactivo_var++;
+
+                                        funcion.variables.Insertar(variable);
+                                    }
+
 
                                     string parametros = ActuarC(nodo.ChildNodes[5]);
 
@@ -2225,6 +2378,7 @@ namespace Proyecto2_Compi2_CSharp
                                         Parametro nP = new Parametro(param[0], param[1]);
 
                                         funcion.parametros.Insertar(nP);
+                                        funcion.nParametros++;
 
                                         Variable variable = new Variable(param[0], param[1]);
                                         variable.posicion = funcion.correlactivo_var;
@@ -2259,15 +2413,20 @@ namespace Proyecto2_Compi2_CSharp
                                             funcion.visibilidad = visi;
                                             funcion.tipo = tipo;
 
-                                            if (tipo != "void")
-                                            {
-                                                retorna = true;
-                                            }
-
                                             funcion.variables = new Variables();
 
                                             funcion.correlactivo_var = 0;
                                             funcion.tamaño = 0;
+
+                                            if (!tipo.Equals("void"))
+                                            {
+                                                Variable variable = new Variable(tipo, "retorno");
+                                                variable.posicion = funcion.correlactivo_var;
+                                                funcion.correlactivo_var++;
+
+                                                funcion.variables.Insertar(variable);
+                                            }
+
 
                                             funcion.SetArreglor(true);
                                             funcion.visibilidad = "publico";
@@ -2287,6 +2446,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 Parametro nP = new Parametro(param[0], param[1]);
 
                                                 funcion.parametros.Insertar(nP);
+                                                funcion.nParametros++;
 
                                                 Variable variable = new Variable(param[0], param[1]);
                                                 variable.posicion = funcion.correlactivo_var;
@@ -2326,6 +2486,12 @@ namespace Proyecto2_Compi2_CSharp
                                                     funcion.correlactivo_var = 0;
                                                     funcion.tamaño = 0;
 
+                                                    Variable variablet = new Variable(tipo, "retorno");
+                                                    variablet.posicion = funcion.correlactivo_var;
+                                                    funcion.correlactivo_var++;
+
+                                                    funcion.variables.Insertar(variablet);
+
                                                     string parametros = ActuarC(nodo.ChildNodes[6]);
 
                                                     string[] Sparametros = parametros.Split(',');
@@ -2339,6 +2505,7 @@ namespace Proyecto2_Compi2_CSharp
                                                         Parametro nP = new Parametro(param[0], param[1]);
 
                                                         funcion.parametros.Insertar(nP);
+                                                        funcion.nParametros++;
 
                                                         Variable variable = new Variable(param[0], param[1]);
                                                         variable.posicion = funcion.correlactivo_var;
@@ -2378,10 +2545,15 @@ namespace Proyecto2_Compi2_CSharp
                                                 funcion.correlactivo_var = 0;
                                                 funcion.tamaño = 0;
 
-                                                if (tipo != "void")
+                                                if (!tipo.Equals("void"))
                                                 {
-                                                    retorna = true;
+                                                    Variable variable = new Variable(tipo, "retorno");
+                                                    variable.posicion = funcion.correlactivo_var;
+                                                    funcion.correlactivo_var++;
+
+                                                    funcion.variables.Insertar(variable);
                                                 }
+
 
                                                 funcion.SetArreglor(true);
 
@@ -2408,14 +2580,20 @@ namespace Proyecto2_Compi2_CSharp
                                         funcion.tipo = tipo;
                                         funcion.visibilidad = "publico";
 
-                                        if (tipo != "void")
-                                        {
-                                            retorna = true;
-                                        }
-
+                                    
                                         funcion.variables = new Variables();
                                         funcion.correlactivo_var = 0;
                                         funcion.tamaño = 0;
+
+                                        if (!tipo.Equals("void"))
+                                        {
+                                            Variable variable = new Variable(tipo, "retorno");
+                                            variable.posicion = funcion.correlactivo_var;
+                                            funcion.correlactivo_var++;
+
+                                            funcion.variables.Insertar(variable);
+                                        }
+
 
                                         funcion.SetArreglor(true);
 
@@ -2434,6 +2612,7 @@ namespace Proyecto2_Compi2_CSharp
                                             Parametro nP = new Parametro(param[0], param[1]);
 
                                             funcion.parametros.Insertar(nP);
+                                            funcion.nParametros++;
 
                                             Variable variable = new Variable(param[0], param[1]);
                                             variable.posicion = funcion.correlactivo_var;
@@ -2472,11 +2651,14 @@ namespace Proyecto2_Compi2_CSharp
                                 funcion.nodo = nodo.ChildNodes[9];
                                 funcion.SetArreglor(true);
 
-                                if (tipo != "void")
+                                if (!tipo.Equals("void"))
                                 {
-                                    retorna = true;
-                                }
+                                    Variable variable = new Variable(tipo, "retorno");
+                                    variable.posicion = funcion.correlactivo_var;
+                                    funcion.correlactivo_var++;
 
+                                    funcion.variables.Insertar(variable);
+                                }
 
                                 string parametros = ActuarC(nodo.ChildNodes[6]);
 
@@ -2491,6 +2673,7 @@ namespace Proyecto2_Compi2_CSharp
                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                     funcion.parametros.Insertar(nP);
+                                    funcion.nParametros++;
 
                                     Variable variable = new Variable(param[0], param[1]);
                                     variable.posicion = funcion.correlactivo_var;
@@ -2985,6 +3168,7 @@ namespace Proyecto2_Compi2_CSharp
             
                 case "Funciones":
                     {
+                        /*
                         string funcion;
                         Clase clase_n = clases.Existe(clase_actual);
 
@@ -3023,6 +3207,7 @@ namespace Proyecto2_Compi2_CSharp
                             }
 
                         }
+                        */
                         break;
                     }
 
@@ -3333,13 +3518,13 @@ namespace Proyecto2_Compi2_CSharp
                         {
                             ActuarC(nodo.ChildNodes[1]);
 
-                            string condicion = ActuarC(nodo.ChildNodes[5]);
+                            string condicion = ActuarC(nodo.ChildNodes[4]);
 
                          
                         }
                         else
                         {
-                            string condicion = ActuarC(nodo.ChildNodes[4]);
+                            string condicion = ActuarC(nodo.ChildNodes[3]);
 
                         }
 
@@ -3351,20 +3536,8 @@ namespace Proyecto2_Compi2_CSharp
                     {
                         string condicion1 = ActuarC(nodo.ChildNodes[1]);
                         string condicion2 = ActuarC(nodo.ChildNodes[3]);
-
-                        if (condicion1.Equals("true") && condicion2.Equals("true")) {
-
-                            if (nodo.ChildNodes.Count == 8)
-                            {
-                                ActuarC(nodo.ChildNodes[6]);
-                            }
-                            else
-                            {
-                                txtConsola.Text += "\r\nCondiciones Corectas";
-                            }
-
-                        }
-
+                         ActuarC(nodo.ChildNodes[6]);
+       
                         break;
                     }
 
@@ -3554,25 +3727,18 @@ namespace Proyecto2_Compi2_CSharp
 
                 case "Repetir":
                     {
-                        if (nodo.ChildNodes.Count == 8)
+                        if (nodo.ChildNodes.Count == 7)
                         {
-                            ActuarC(nodo.ChildNodes[2]);
+                            ActuarC(nodo.ChildNodes[1]);
 
-                            string condicion = ActuarC(nodo.ChildNodes[5]);
+                            string condicion = ActuarC(nodo.ChildNodes[4]);
 
-                            while (condicion.Equals("false"))
-                            {
-                                ActuarC(nodo.ChildNodes[2]);
-                            }
+
                         }
                         else
                         {
-                            string condicion = ActuarC(nodo.ChildNodes[4]);
+                            string condicion = ActuarC(nodo.ChildNodes[3]);
 
-                            while (condicion.Equals("false"))
-                            {
-                                txtConsola.Text += "\n\r --Reperit sin sentencias--";
-                            }
                         }
 
                         break;
@@ -4121,6 +4287,7 @@ namespace Proyecto2_Compi2_CSharp
                                         Parametro nP = new Parametro(param[0], param[1]);
 
                                         nuevo.parametros.Insertar(nP);
+                                        nuevo.nParametros++;
 
                                     }
 
@@ -4173,6 +4340,7 @@ namespace Proyecto2_Compi2_CSharp
                                         Parametro nP = new Parametro(param[0], param[1]);
 
                                         nuevo.parametros.Insertar(nP);
+                                        nuevo.nParametros++;
 
                                     }
 
@@ -4210,6 +4378,7 @@ namespace Proyecto2_Compi2_CSharp
                                     Parametro nP = new Parametro(param[0], param[1]);
 
                                     nuevo.parametros.Insertar(nP);
+                                    nuevo.nParametros++;
 
                                 }
 
@@ -4245,6 +4414,7 @@ namespace Proyecto2_Compi2_CSharp
                                 Parametro nP = new Parametro(param[0], param[1]);
 
                                 nuevo.parametros.Insertar(nP);
+                                nuevo.nParametros++;
 
                             }
 
@@ -6015,7 +6185,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 Clase clase = clases.Existe(x);
                                 Funcion temp = clase.funciones.Existe(x + "_");
-                                respuesta ="\r\n"+ x + "()" + "{}";
+                                respuesta = "\r\n" + temp.nombre + "()" + "{}";
 
                             }
                             
@@ -6048,7 +6218,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                         Funcion temp = clase.funciones.Existe(nombre);
 
-                                        respuesta = x + "(" + ")" + "{}";
+                                        respuesta = temp.nombre + "(" + ")" + "{}";
 
 
 
@@ -6068,7 +6238,7 @@ namespace Proyecto2_Compi2_CSharp
                                         Funcion temp = clase.funciones.Existe(x + "_");
                                         
 
-                                        respuesta = temp.visibilidad+" "+ x + "()" + "{\r\n" + TraduccionC(nodo.ChildNodes[4]) + "\r\n}";
+                                        respuesta = temp.visibilidad+" "+ temp.nombre + "()" + "{\r\n" + TraduccionC(nodo.ChildNodes[4]) + "\r\n}";
 
                                     }
                                     else
@@ -6090,7 +6260,7 @@ namespace Proyecto2_Compi2_CSharp
                                     Funcion nuevo = new Funcion(tipo, nombre, "publico");
                                     temp.funciones.Insertar(nuevo);
 
-                                    respuesta = tipo + " " + nombre + "()" + "{" + "}";
+                                    respuesta = "fuction " + nombre + "()" + "{" + "}";
 
                                 }
                                 else
@@ -6109,7 +6279,7 @@ namespace Proyecto2_Compi2_CSharp
                                     Clase clase = clases.Existe(x);
                                     Funcion funcion = clase.funciones.Existe(x + "_");
 
-                                    respuesta = funcion.visibilidad + " " + x + "(){}";
+                                    respuesta = funcion.visibilidad + " fuction " + funcion.nombre + "(){}";
 
 
                                 }
@@ -6147,7 +6317,7 @@ namespace Proyecto2_Compi2_CSharp
 
 
 
-                                   respuesta = temp.visibilidad+" "+x + "(" + ")" + "\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
+                                   respuesta = temp.visibilidad+" "+ temp.nombre + "(" + ")" + "\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
 
                                }
 
@@ -6169,7 +6339,7 @@ namespace Proyecto2_Compi2_CSharp
                                        Funcion temp = clase.funciones.Existe(clase_actual);
 
 
-                                       respuesta = temp.visibilidad + " " + temp.tipo+ " "+temp.nombre+"(" + ")" + "{}";
+                                       respuesta = temp.visibilidad + " fuction "+temp.nombre+"(" + ")" + "{}";
 
 
                                    }
@@ -6184,7 +6354,7 @@ namespace Proyecto2_Compi2_CSharp
 
 
 
-                                       respuesta = temp.visibilidad + " "+temp.tipo+" " + fun_actual + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
+                                       respuesta = temp.visibilidad + "fuction " + fun_actual + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
 
 
                                    }
@@ -6201,10 +6371,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                    nuevo_f.SetArreglor(true);
 
-                                   if (tipo != "void")
-                                   {
-                                       retorna = true;
-                                   }
+                                 
 
                                    nuevo_f.SetArreglor(true);
 
@@ -6239,7 +6406,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                             Funcion temp = clase.funciones.Existe(nombre);
 
-                                            respuesta = temp.visibilidad + " " + x + "( ){}";
+                                            respuesta = temp.visibilidad + " " + temp.nombre + "( ){}";
 
                                         }
                                         else
@@ -6259,7 +6426,7 @@ namespace Proyecto2_Compi2_CSharp
                                             fun_actual = x + "_";
                                             Funcion temp = clase.funciones.Existe(x + "_");
 
-                                            respuesta = temp.visibilidad + " " + x + "()\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
+                                            respuesta = temp.visibilidad + " " + temp.nombre + "()\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
 
                                         }
 
@@ -6272,7 +6439,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Funcion temp = clases.Existe(clase_actual).funciones.Existe(x);
 
-                                    respuesta = temp.visibilidad + " " + temp.tipo + " " + temp.nombre + "(){}";
+                                    respuesta = temp.visibilidad + " fuction " + temp.nombre + "(){}";
                                }
                            }
                            else
@@ -6290,10 +6457,10 @@ namespace Proyecto2_Compi2_CSharp
 
                                        Funcion funcion = clase.funciones.Existe(x);
 
-                                       respuesta = funcion.visibilidad + " " + funcion.tipo + " " + funcion.nombre+"(){}";
+                                       respuesta = funcion.visibilidad + " fuction " + funcion.nombre+"(){}";
 
                                    }
-                                                                   }
+                                }
                                else
                                {
                                    string x = nodo.ChildNodes[2].Token.Text;
@@ -6306,7 +6473,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                        Funcion funcion = clase.funciones.Existe(x);
 
-                                       respuesta = funcion.visibilidad + " " + funcion.tipo + " " + funcion.nombre + "(){}";
+                                       respuesta = funcion.visibilidad + " fuction " + funcion.nombre + "(){}";
 
                                    }
 
@@ -6327,7 +6494,7 @@ namespace Proyecto2_Compi2_CSharp
                                     Funcion temp = clase.funciones.Existe(nombre);
                                     
 
-                                   respuesta = temp.visibilidad+" "+temp.tipo + " " + nombre + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
+                                   respuesta = temp.visibilidad+" fuction " + nombre + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
 
                                }
                                else
@@ -6377,7 +6544,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                         Funcion temp = clase.funciones.Existe(nombre);
 
-                                        respuesta = temp.visibilidad + " " + x + "(" + ")" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
+                                        respuesta = temp.visibilidad + " " + temp.nombre + "(" + ")" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
                                    }
                                   
 
@@ -6395,7 +6562,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                            Funcion temp = clase.funciones.Existe(fun_actual);
 
-                                           respuesta = temp.visibilidad + " " + temp.tipo + " " + fun_actual + "()" + "{}";
+                                           respuesta = temp.visibilidad + " fuction " + fun_actual + "()" + "{}";
 
                                        }
                                        else
@@ -6407,7 +6574,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                            Funcion temp = clase.funciones.Existe(fun_actual);
 
-                                           respuesta = temp.visibilidad + " " + temp.tipo + " " + fun_actual + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
+                                           respuesta = temp.visibilidad + " fuction " + fun_actual + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
                                        }
                                    }
                                    else
@@ -6458,8 +6625,9 @@ namespace Proyecto2_Compi2_CSharp
                                                    Parametro nP = new Parametro(param[0], param[1]);
 
                                                    fun.parametros.Insertar(nP);
+                                                    fun.nParametros++;
 
-                                                   Variable variable = new Variable(param[0], param[1]);
+                                                    Variable variable = new Variable(param[0], param[1]);
                                                    variable.posicion = fun.correlactivo_var;
                                                    fun.correlactivo_var++;
 
@@ -6552,8 +6720,9 @@ namespace Proyecto2_Compi2_CSharp
                                                    Parametro nP = new Parametro(param[0], param[1]);
 
                                                    funcion.parametros.Insertar(nP);
+                                                    funcion.nParametros++;
 
-                                                   Variable variable = new Variable(param[0], param[1]);
+                                                    Variable variable = new Variable(param[0], param[1]);
                                                    variable.posicion = funcion.correlactivo_var;
                                                    funcion.correlactivo_var++;
 
@@ -6605,12 +6774,6 @@ namespace Proyecto2_Compi2_CSharp
                                            string visi = ActuarC(nodo.ChildNodes[1]);
                                            string tipo = ActuarC(nodo.ChildNodes[2]);
 
-                                           if (tipo != "void")
-                                           {
-                                               retorna = true;
-                                           }
-
-
                                            funcion.tipo = tipo;
                                            funcion.visibilidad = visi;
 
@@ -6618,7 +6781,17 @@ namespace Proyecto2_Compi2_CSharp
                                            funcion.correlactivo_var = 0;
                                            funcion.tamaño = 0;
 
-                                           funcion.nodo = null;
+                                            if (!tipo.Equals("void"))
+                                            {
+                                                Variable variable = new Variable(tipo, "retorno");
+                                                variable.posicion = funcion.correlactivo_var;
+                                                funcion.correlactivo_var++;
+
+                                                funcion.variables.Insertar(variable);
+                                            }
+
+
+                                            funcion.nodo = null;
 
                                        }
                                        else
@@ -6650,7 +6823,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                    Funcion temp = clase.funciones.Existe(fun_actual);
 
-                                   respuesta = temp.visibilidad + " " + temp.tipo + " " + fun_actual + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[7]) + "\r\n}";
+                                   respuesta = temp.visibilidad + " fuction " + fun_actual + "()" + "\r\n{" + TraduccionC(nodo.ChildNodes[7]) + "\r\n}";
                                }
                                else
                                {
@@ -6681,7 +6854,7 @@ namespace Proyecto2_Compi2_CSharp
                                            Clase clase = clases.Existe(clase_actual);
                                            Funcion temp = clase.funciones.Existe(x);
 
-                                            respuesta = temp.visibilidad + " " + temp.tipo + " " + x + "()\r\n" + TraduccionC(nodo.ChildNodes[7]) + "\r\n}";
+                                            respuesta = temp.visibilidad + " fuction " + x + "()\r\n" + TraduccionC(nodo.ChildNodes[7]) + "\r\n}";
 
                                        }
                                        else
@@ -6766,8 +6939,9 @@ namespace Proyecto2_Compi2_CSharp
                                                    Parametro nP = new Parametro(param[0], param[1]);
 
                                                    funcion.parametros.Insertar(nP);
+                                                    funcion.nParametros++;
 
-                                                   Variable variable = new Variable(param[0], param[1]);
+                                                    Variable variable = new Variable(param[0], param[1]);
                                                    variable.posicion = funcion.correlactivo_var;
                                                    funcion.correlactivo_var++;
 
@@ -6829,8 +7003,9 @@ namespace Proyecto2_Compi2_CSharp
                                                            Parametro nP = new Parametro(param[0], param[1]);
 
                                                            funcion.parametros.Insertar(nP);
+                                                            funcion.nParametros++;
 
-                                                           Variable variable = new Variable(param[0], param[1]);
+                                                            Variable variable = new Variable(param[0], param[1]);
                                                            variable.posicion = funcion.correlactivo_var;
                                                            funcion.correlactivo_var++;
 
@@ -6931,7 +7106,7 @@ namespace Proyecto2_Compi2_CSharp
                                                                            
                                         Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
 
-                                        respuesta = funcion.visibilidad + " " + funcion.tipo + " " + nombre + "()\r\n{\r\n" + TraduccionC(nodo.ChildNodes[8])+"\r\n}";
+                                        respuesta = funcion.visibilidad + " fuction " + nombre + "()\r\n{\r\n" + TraduccionC(nodo.ChildNodes[8])+"\r\n}";
                                         
 
                                            
@@ -6972,16 +7147,21 @@ namespace Proyecto2_Compi2_CSharp
                                        funcion.tipo = tipo;
                                        funcion.visibilidad = "publico";
 
-                                       if (tipo != "void")
-                                       {
-                                           retorna = true;
-                                       }
-
                                        funcion.variables = new Variables();
                                        funcion.correlactivo_var = 0;
                                        funcion.tamaño = 0;
 
-                                       funcion.SetArreglor(true);
+                                        if (!tipo.Equals("void"))
+                                        {
+                                            Variable variable = new Variable(tipo, "retorno");
+                                            variable.posicion = funcion.correlactivo_var;
+                                            funcion.correlactivo_var++;
+
+                                            funcion.variables.Insertar(variable);
+                                        }
+
+
+                                        funcion.SetArreglor(true);
 
                                        funcion.nodo = nodo.ChildNodes[8];
 
@@ -6998,8 +7178,9 @@ namespace Proyecto2_Compi2_CSharp
                                            Parametro nP = new Parametro(param[0], param[1]);
 
                                            funcion.parametros.Insertar(nP);
+                                            funcion.nParametros++;
 
-                                           Variable variable = new Variable(param[0], param[1]);
+                                            Variable variable = new Variable(param[0], param[1]);
                                            variable.posicion = funcion.correlactivo_var;
                                            funcion.correlactivo_var++;
 
@@ -7096,11 +7277,27 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 else
                                 {
-                                   
-                                    fun_actual = aux.GetNombre();
-                                    respuesta=TraduccionC(aux.nodo);
-                                    fun_actual = temporal;
-                                    string valor = aux.GetRetorno();
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+
+                                    respuesta += "\r\np = t" + contadorTemp;
+                                    respuesta += "\r\nCall " + aux.nombre + "()";
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + 0";
+                                    
+                                    int auxt = contadorTemp;
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                    string valor = "t" + contadorTemp;
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                    respuesta += "\r\np = t" + contadorTemp;
+
                                     contadorTemp++;
                                     respuesta += "\r\nt" + contadorTemp + "=p + " + temp.posicion;
                                     respuesta += "\r\npila[t"+contadorTemp+"] =" +valor; 
@@ -8027,7 +8224,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
 
                                     contadorTemp++;
-                                    respuesta = "\r\nt" + contadorTemp + " = " + op1 + " + " + op2 + ",t" + contadorTemp;
+                                    respuesta += "\r\nt" + contadorTemp + " = " + op1 + " + " + op2 + ",t" + contadorTemp;
 
 
                                 }
@@ -8066,7 +8263,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
 
                                     contadorTemp++;
-                                    respuesta = "\r\nt" + contadorTemp + " = " + op1 + " - " + op2 + ",t" + contadorTemp;
+                                    respuesta += "\r\nt" + contadorTemp + " = " + op1 + " - " + op2 + ",t" + contadorTemp;
 
                                 }
                                 else if (nodo.ChildNodes[1].Term.Name == "multi")
@@ -8141,7 +8338,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
 
                                     contadorTemp++;
-                                    respuesta = "\r\nt" + contadorTemp + " = " + op1 + " / " + op2 + ",t" + contadorTemp;
+                                    respuesta += "\r\nt" + contadorTemp + " = " + op1 + " / " + op2 + ",t" + contadorTemp;
                                 }
                                 else if (nodo.ChildNodes[1].Term.Name == "power")
                                 {
@@ -8178,7 +8375,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
 
                                     contadorTemp++;
-                                    respuesta = "\r\nt" + contadorTemp + " = " + op1 + "  " + op2 + ",t" + contadorTemp;
+                                    respuesta += "\r\nt" + contadorTemp + " = " + op1 + "  " + op2 + ",t" + contadorTemp;
                                 }
                             }
                         }
@@ -9047,7 +9244,6 @@ namespace Proyecto2_Compi2_CSharp
                 case "Do_While":
                     {
 
-                   
                         if (nodo.ChildNodes.Count == 7)
                         {
                             Clase clase = clases.Existe(clase_actual);
@@ -9650,6 +9846,389 @@ namespace Proyecto2_Compi2_CSharp
                         break;
 
                     }
+
+                case "SX":
+                    {
+                        string condicion1 = TraduccionC(nodo.ChildNodes[1]);
+                        string condicion2 = TraduccionC(nodo.ChildNodes[3]);
+
+                        string[] partes1 = condicion1.Split(';');
+                        string[] partes2 = condicion2.Split(';');
+
+
+                        if (nodo.ChildNodes.Count == 8)
+                            {
+
+                            respuesta += partes1[0];
+                            respuesta += partes2[0];
+
+                            if (partes1[1].Contains("if "))
+                            {
+                                partes1[1] = partes1[1].Replace("if", "iffalse");
+                                contadorL--;
+                                contadorL--;
+                                contadorL--;
+
+
+                            }
+
+                            if (partes2[1].Contains("if "))
+                            {
+                                partes2[1] = partes2[1].Replace("if", "iffalse");
+
+                                string viejo = "L" + (contadorL + 2);
+                                string nuevo = "L" + contadorL;
+
+                                partes2[1] = partes2[1].Replace(viejo, nuevo);
+                            }
+
+                            partes1[2] = partes1[2].Replace("L" + (contadorL + 1), "L" + contadorL);
+
+
+                            respuesta += partes1[1];
+                            respuesta += partes2[1];
+                            respuesta += TraduccionC(nodo.ChildNodes[6]);
+                            respuesta += "\r\nL" + contadorL;
+                            //ActuarC(nodo.ChildNodes[6]);
+                        }
+                        else
+                        {
+                            respuesta += partes1[0];
+                            respuesta += partes2[0];
+
+                            if (partes1[1].Contains("if "))
+                            {
+                                partes1[1] = partes1[1].Replace("if", "iffalse");
+                                contadorL--;
+                                contadorL--;
+                                contadorL--;
+                              
+
+                            }
+
+                            if (partes2[1].Contains("if "))
+                            {
+                                partes2[1] = partes2[1].Replace("if", "iffalse");
+
+                                string viejo = "L" + (contadorL + 2);
+                                string nuevo = "L" + contadorL;
+
+                                partes2[1] = partes2[1].Replace(viejo, nuevo);
+                            }
+
+                            partes1[2] = partes1[2].Replace("L" + (contadorL + 1), "L" + contadorL);
+
+
+                            respuesta += partes1[1];
+                            respuesta += partes2[1];
+                            respuesta += "\r\nL" + contadorL;
+
+
+                            // txtConsola.Text += "\r\nCondiciones Corectas";
+                        }
+
+                        
+
+                        break;
+                    }
+
+                case "Repetir":
+                    {
+                        if (nodo.ChildNodes.Count == 7)
+                        {
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+
+                            contadorL++;
+                            int lciclo = contadorL;
+
+                            respuesta = "\r\nL" + lciclo;
+                            respuesta += TraduccionC(nodo.ChildNodes[1]);
+
+                            string pre = TraduccionC(nodo.ChildNodes[4]);
+                            int lfalso = contadorL - 1;
+
+                            string[] partes = pre.Split(';');
+
+
+
+                            if (partes.Length != 4)
+                            {
+
+                                for (int x = 0; x < partes.Length; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < partes.Length - 1; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            respuesta += "\r\nL" + contadorL;
+                            respuesta += "\r\nGoto L" + lciclo;
+                            respuesta += "\r\nL" + lfalso;
+                        }
+                        else
+                        {
+                            Clase clase = clases.Existe(clase_actual);
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+
+                            contadorL++;
+                            int lciclo = contadorL;
+
+                            respuesta = "\r\nL" + lciclo;
+
+
+                            string pre = TraduccionC(nodo.ChildNodes[3]);
+                            int lfalso = contadorL - 1;
+
+                            string[] partes = pre.Split(';');
+
+
+
+                            if (partes.Length != 4)
+                            {
+
+                                for (int x = 0; x < partes.Length; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < partes.Length - 1; x++)
+                                {
+                                    respuesta += partes[x];
+                                }
+                            }
+                            respuesta += "\r\nL" + contadorL;
+                            respuesta += "\r\nGoto L" + lciclo;
+                            respuesta += "\r\nL" + lfalso;
+
+
+                        }
+
+                        break;
+                    }
+
+                case "Retorno":
+                    {
+                        Clase clase = clases.Existe(clase_actual);
+                        Funcion funcion=clase.funciones.Existe(fun_actual);
+
+                        string temp = TraduccionC(nodo.ChildNodes[1]);
+
+                        string[] partes = temp.Split(',');
+
+                        if (partes.Length ==2)
+                        {
+                            respuesta += partes[0];
+
+                            Variable variable = funcion.variables.Buscar("retorno");
+
+                            contadorTemp++;
+                            respuesta += "\r\nt"+contadorTemp +" = p + "+variable.posicion;
+
+                            respuesta += "\r\npila[t"+contadorTemp +"] = "+partes[1];
+
+                        }
+                        else
+                        {
+                            Variable variable = funcion.variables.Buscar("retorno");
+
+                            contadorTemp++;
+                            respuesta += "\r\nt" + contadorTemp + " = p + " + variable.posicion;
+
+                            respuesta += "\r\npila[t" + contadorTemp + "] = " + temp;
+                        }
+
+                            
+
+
+                        break;
+                    }
+
+                case "Funciones":
+                    {
+                        Clase clase = clases.Existe(clase_actual);
+                        Funcion actual = clase.funciones.Existe(fun_actual);
+
+                        string nombre = nodo.ChildNodes[0].Token.Text;
+
+
+
+                        if (nodo.ChildNodes.Count == 5)
+                        {
+                            string Datos = TraduccionC(nodo.ChildNodes[2]);
+
+                            string[] parametros = Datos.Split(';');
+                            Funcion Aejec=null;
+                            if (nombre.Equals(clase_actual))
+                            {
+                                Aejec = clase.funciones.ExisteP(nombre+"_",parametros.Length);                                 
+
+                            }
+                            else
+                            {
+                                Aejec = clase.funciones.Existe(nombre);
+
+                                if (parametros.Length != Aejec.nParametros)
+                                {
+                                    Aejec = null;
+                                }
+
+                            }
+
+                            if (Aejec != null)
+                            {
+                                contadorTemp++;
+                                if (actual.correlactivo_var == 0)
+                                {
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + (actual.correlactivo_var + 1);
+                                }
+                                else
+                                {
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + actual.correlactivo_var;
+                                }
+
+                                int tpfalso = contadorTemp;
+
+                                bool retorna = Aejec.variables.Buscar_existe("retorno");
+
+
+                                for (int x = 0; x < parametros.Length; x++)
+                                {
+                                    string[] partes = parametros[x].Split(',');
+
+                                    if (partes.Length == 2)
+                                    {
+                                        respuesta += partes[0];
+                                        contadorTemp++;
+                                        if (retorna)
+                                        {
+                                            respuesta += "\r\nt" + contadorTemp + " = t" + tpfalso + " + " + (x + 1);
+                                        }
+                                        else
+                                        {
+                                            respuesta += "\r\nt" + contadorTemp + " = t" + tpfalso + " + " + x;
+                                        }
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
+                                    }
+                                    else
+                                    {
+                                        
+                                        contadorTemp++;
+                                        if (retorna)
+                                        {
+                                            respuesta += "\r\nt" + contadorTemp + " = t" + tpfalso + " + " + (x + 1);
+                                        }
+                                        else
+                                        {
+                                            respuesta += "\r\nt" + contadorTemp + " = t" + tpfalso + " + " + x;
+                                        }
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[0];
+                                    }
+
+                                    
+                                    
+
+                                }
+
+
+                                contadorTemp++;
+                                if (actual.correlactivo_var == 0)
+                                {
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + (actual.correlactivo_var + 1);
+                                }
+                                else
+                                {
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + actual.correlactivo_var;
+                                }
+
+
+                                respuesta += "\r\np = t" + contadorTemp;
+                                respuesta += "\r\nCall " + Aejec.nombre + "()";
+
+                                contadorTemp++;
+                                if (actual.correlactivo_var == 0)
+                                {
+                                    respuesta += "\r\nt" + contadorTemp + " = p - " + (actual.correlactivo_var + 1);
+                                }
+                                else
+                                {
+                                    respuesta += "\r\nt" + contadorTemp + " = p -" + actual.correlactivo_var;
+                                }
+
+                                respuesta += "\r\np = t" + contadorTemp;
+
+                            }
+                            
+
+                            
+                        }
+                        else
+                        {
+                            if (nombre.Equals(clase_actual))
+                            {
+                                nombre = nombre + "_";
+
+                            }
+
+                            Funcion Aejec = clase.funciones.Existe(nombre);
+
+                            contadorTemp++;
+
+                            if (actual.correlactivo_var == 0)
+                            {
+                                respuesta += "\r\nt" + contadorTemp + " = p + " + (actual.correlactivo_var+1);
+                            }
+                            else
+                            {
+                                respuesta += "\r\nt" + contadorTemp + " = p +" + actual.correlactivo_var;
+                            }
+
+                            
+                            respuesta += "\r\np = t" + contadorTemp;
+                            respuesta += "\r\nCall " + nombre + "()";
+
+                            contadorTemp++;
+                            if (actual.correlactivo_var == 0)
+                            {
+                                respuesta += "\r\nt" + contadorTemp + " = p - " + (actual.correlactivo_var + 1);
+                            }
+                            else
+                            {
+                                respuesta += "\r\nt" + contadorTemp + " = p - " + actual.correlactivo_var;
+                            }
+
+                            respuesta += "\r\np = t" + contadorTemp;
+                        }
+
+                        break;
+                    }
+
+                case "Operaciones":
+                    {
+                        if (nodo.ChildNodes.Count == 3)
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+                            respuesta += ";";
+                            respuesta += TraduccionC(nodo.ChildNodes[2]);
+                        }
+                        else
+                        {
+                            respuesta = TraduccionC(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
             }
 
             return respuesta;
@@ -9811,5 +10390,7 @@ namespace Proyecto2_Compi2_CSharp
 
             return respuesta;
         }
+
+        
     }
 }

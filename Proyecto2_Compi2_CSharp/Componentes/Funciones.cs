@@ -91,8 +91,7 @@ namespace Proyecto2_Compi2_CSharp.Componentes
 
         public Funcion Existe(string nombre)
         {
-            
-
+   
             aux = cabeza;
 
             bool seguir = true;
@@ -112,6 +111,35 @@ namespace Proyecto2_Compi2_CSharp.Componentes
                     else
                     {
                         
+                        seguir = false;
+                    }
+                }
+            }
+
+            return aux;
+        }
+
+        public Funcion ExisteP(string nombre,int p)
+        {
+            aux = cabeza;
+
+            bool seguir = true;
+
+            while (seguir)
+            {
+                if(aux.nombre.Contains(nombre) && aux.nParametros == p)
+                {
+                    seguir = false;
+                }
+                else
+                {
+                    if (aux.siguiente != null)
+                    {
+                        aux = aux.siguiente;
+                    }
+                    else
+                    {
+                        aux = null;
                         seguir = false;
                     }
                 }

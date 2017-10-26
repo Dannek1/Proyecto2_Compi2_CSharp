@@ -35,7 +35,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             RegexBasedTerminal Rmientras = new RegexBasedTerminal("Rmientras", "Mientras\\(");
             RegexBasedTerminal Rhacer = new RegexBasedTerminal("Rhacer", "hacer{");
             RegexBasedTerminal RX = new RegexBasedTerminal("RX", "X\\(");
-            RegexBasedTerminal Rrepetir = new RegexBasedTerminal("Rrepetir", "Repetir");
+            RegexBasedTerminal Rrepetir = new RegexBasedTerminal("Rrepetir", "Repetir{");
             RegexBasedTerminal RUntil = new RegexBasedTerminal("RUntil", "until\\(");
             RegexBasedTerminal RPara = new RegexBasedTerminal("Rpara", "Para\\(");
             RegexBasedTerminal Rimprimir = new RegexBasedTerminal("Rimprimir", "imprimir\\(");
@@ -334,8 +334,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             
             SX.ErrorRule = SyntaxError + finCuerpo;
 
-            Repetir.Rule = Rrepetir + iniCuerpo + Sentencias + finCuerpo + RUntil + Condicion + ")" + finSentencia
-                         | Rrepetir + iniCuerpo + finCuerpo + RUntil + Condicion + ")" + finSentencia;
+            Repetir.Rule = Rrepetir + Sentencias + finCuerpo + RUntil + Condicion + ")" + finSentencia
+                         | Rrepetir + finCuerpo + RUntil + Condicion + ")" + finSentencia;
 
             Repetir.ErrorRule = SyntaxError + finSentencia;
 
