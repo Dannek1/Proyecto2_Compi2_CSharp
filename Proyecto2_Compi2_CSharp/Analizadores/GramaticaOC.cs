@@ -287,13 +287,21 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Operaciones.Rule = Operaciones + "," + Operacion
                               | Operacion;
                 
-            Asignacion.Rule = ID + "=" + Operacion + finSentencia//4
+            Asignacion.Rule = ID + "=" + Operacion + finSentencia//4  
+                            | ID + "=" + ID+"("+")" + finSentencia//6
+                            | ID + "=" + ID + "(" + Operaciones+")" + finSentencia//7
                             | ID + aumentar + finSentencia//3
                             | ID + disminuir + finSentencia//3
                             | ID + Dimension + "=" + Operacion + finSentencia//5
+                            | ID + Dimension + "=" + ID + "(" + ")" + finSentencia //7
+                            | ID + Dimension + "=" + ID + "(" + Operaciones + ")" + finSentencia//8
                             | Este + "." + ID + "=" + Operacion + finSentencia
-                            | Este + "." + ID + aumentar + finSentencia
-                            | Este + "." + ID + disminuir + finSentencia
+                            | Este + "." + ID + "=" + ID + "(" + ")" + finSentencia//8
+                            | Este + "." + ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//9
+                            | Este + "." + ID + aumentar + finSentencia//5
+                            | Este + "." + ID + disminuir + finSentencia//5
+                            | Este + "." + ID + Dimension + "=" + ID + "(" + ")" + finSentencia//9
+                            | Este + "." + ID + Dimension + "=" + ID + "(" + Operaciones + ")" + finSentencia//10
                             | Este + "." + ID + Dimension + "=" + Operacion + finSentencia;//7
 
             Asignacion.ErrorRule = SyntaxError + finSentencia;

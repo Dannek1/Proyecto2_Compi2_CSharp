@@ -2932,38 +2932,19 @@ namespace Proyecto2_Compi2_CSharp
 
                                     fun_actual = funcion;
                                     tempoC.funciones.Existe(funcion);
-
-                                    if (variables.Length == aux.nParametros)
-                                    {
-                                        for (int x = 0; x < variables.Length; x++)
-                                        {
-                                            string n = aux.parametros.GetNOmbreP(x + 1);
-
-                                            aux.variables.Buscar(n);
-
-                                            aux.variables.aux.SetValor(variables[x]);
-
-                                        }
-
-                                        ActuarC(aux.nodo);
-
-                                        string valor = aux.GetRetorno();
-
-                                        fun_actual = temporal;
-                                        Variable nuevo = new Variable(tipo, nombre, valor);
-                                        nuevo.posicion = temp.correlactivo_var;
-                                        temp.correlactivo_var++;
-                                        // Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
-
-                                        temp.variables.Insertar(nuevo);
-
-
-                                    }
-                                    else
-                                    {
-                                        txtErrores.Text += "\r\nNo Coinciden los Parametros";
-                                    }
-
+                                    
+                                    
+                                    
+                                    ActuarC(aux.nodo);
+                                    
+                                    string valor = aux.GetRetorno();
+                                    
+                                    fun_actual = temporal;
+                                    Variable nuevo = new Variable(tipo, nombre, valor);
+                                    nuevo.posicion = temp.correlactivo_var;
+                                    temp.correlactivo_var++;
+                                    // Variable nuevo = new Variable(tipo, nombre, valor, dimension, dimeniones);
+                                    temp.variables.Insertar(nuevo);
 
 
                                 }
@@ -7299,7 +7280,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += "\r\np = t" + contadorTemp;
 
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + "=p + " + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
                                     respuesta += "\r\npila[t"+contadorTemp+"] =" +valor; 
 
                                 }
@@ -7326,63 +7307,78 @@ namespace Proyecto2_Compi2_CSharp
                                 string nombre = nodo.ChildNodes[1].Token.Text;
 
                                 string funcionop = nodo.ChildNodes[3].Token.Text;
-                                int auxt;
+
+                                Variable temp = funcion.variables.Buscar(nombre);
+
 
                                 if (clase.funciones.ExisteF(funcionop))
                                 {
-                                    string temporal = fun_actual;
+                                    string tparam = TraduccionC(nodo.ChildNodes[5]);
 
-                                    Funcion aux = clase.funciones.Existe(funcionop);
-                                    string param = TraduccionC(nodo.ChildNodes[5]);
+                                    string[] parametros = tparam.Split(';');
 
-                                    string[] variables = param.Split(',');
-                                    int falsopos = funcion.correlactivo_var + 1;
+                                    Funcion aux = clase.funciones.ExisteP(funcionop,parametros.Length);
 
-                                    fun_actual = funcionop;
-                                    clase.funciones.Existe(funcionop);
-
-                                    if (variables.Length == aux.nParametros)
+                                    if (aux != null)
                                     {
-                                        for (int x = 0; x < variables.Length; x++)
-                                        {
-                                            string n = aux.parametros.GetNOmbreP(x + 1);
 
-                                            Variable vtemp=aux.variables.Buscar(n);
-
-                                            vtemp.SetValor(variables[x]);
+                                        if (aux.variables.Buscar_existe("retorno")){
 
                                             contadorTemp++;
-                                            auxt = contadorTemp;
-                                            respuesta +="\r\nt"+contadorTemp+"= p + " + falsopos;
+                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                            int lfalse = contadorTemp;
+
+                                            for(int x = 0; x < parametros.Length; x++)
+                                            {
+                                                string[] partes = parametros[x].Split(',');
+
+                                                if (partes.Length == 2)
+                                                {
+                                                    respuesta += partes[0];
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                    respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[1];
+
+                                                }
+                                                else
+                                                {
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                    respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[0];
+                                                }
+                                            }
+
+                                            respuesta += "\r\np = t" + lfalse;
+                                            respuesta += "\r\nCall " + aux.nombre + "()";
 
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + "= t" +auxt+" + " + vtemp.posicion;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + 0";
 
+                                            int auxt = contadorTemp;
 
-                                            respuesta += "\r\npila[t" + contadorTemp + "]= " + vtemp.GetValor();
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                            string valor = "t" + contadorTemp;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                            respuesta += "\r\np = t" + contadorTemp;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                            respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
 
                                         }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nNo Hay Retorno en la Funcion " + funcionop;
+                                        }
 
-                                        contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = " + funcionop + "()";
-                                        TraduccionC(aux.nodo);
-                                        auxt = contadorTemp;
-
-                                        string valor = aux.GetRetorno();
-
-                                        fun_actual = temporal;
-
-                                        Variable var = funcion.variables.Buscar(nombre);
-
-                                        contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p" + var.posicion;
-                                        respuesta += "\r\npila[" + contadorTemp + "] = t" + auxt;
+                                        
 
 
-                                    }
-                                    else
-                                    {
-                                        txtErrores.Text += "\r\nNo Coinciden los Parametros";
                                     }
 
 
@@ -7390,7 +7386,7 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 else
                                 {
-                                    txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                    txtErrores.Text += "\r\nNo Existe la Funcion " + funcionop;
                                 }
                             }
                             /*
@@ -7627,8 +7623,6 @@ namespace Proyecto2_Compi2_CSharp
                             if (funcion.variables.Buscar_existe(variable))
                             {
                                 Variable temp = funcion.variables.Buscar(variable);
-                                int auxtemp;
-
 
                                 if (nodo.ChildNodes.Count == 4)
                                 {
@@ -7661,156 +7655,181 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     if (nodo.ChildNodes[1].Term.Name.ToString() == "aumentar")
                                     {
-                                        if (temp.tipo.Equals("Cadena") || temp.tipo.Equals("booleano"))
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                        int auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t"+auxt+"]";
+
+                                        auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " + 1";
+                                        auxt = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt;
+
+                                    }
+                                    else
+                                    {
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                        int auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                        auxt = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " - 1";
+                                        auxt = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt;
+
+                                    }
+                                }
+                                else if (nodo.ChildNodes.Count == 6)
+                                {
+                                  
+                                    string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                    string funcionop = nodo.ChildNodes[2].Token.Text;
+
+                                    if (clase.funciones.ExisteF(funcionop))
+                                    {
+                                        Funcion aux = clase.funciones.Existe(funcionop);
+
+
+                                        if (aux.TieneParametros())
                                         {
-                                            txtErrores.Text += "No se puede aumentar o disminuir candenas o boleanos";
+                                            txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
                                         }
                                         else
                                         {
-                                            string valor;
-                                            if (temp.tipo.Equals("entero"))
-                                            {
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
 
-                                                int vop = int.Parse(temp.GetValor());
+                                            respuesta += "\r\np = t" + contadorTemp;
+                                            respuesta += "\r\nCall " + aux.nombre + "()";
 
-                                                vop++;
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + 0";
 
-                                                valor = vop.ToString();
+                                            int auxt = contadorTemp;
 
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = p" + temp.posicion;
-                                                auxtemp = contadorTemp;
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
 
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = pila[t" + auxtemp + "]";
+                                            string valor = "t" + contadorTemp;
 
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + (contadorTemp - 1) + " + 1";
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
 
-                                                respuesta = "\r\npila[t" + auxtemp + "] = t" + contadorTemp;
+                                            respuesta += "\r\np = t" + contadorTemp;
 
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                            respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
 
-                                            }
-                                            else if (temp.tipo.Equals("decimal"))
-                                            {
-                                                double vop = double.Parse(temp.GetValor());
-
-                                                vop++;
-
-                                                valor = vop.ToString();
-
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = p" + temp.posicion;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = pila[t" + auxtemp + "]";
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + (contadorTemp - 1) + " + 1";
-
-                                                respuesta = "\r\npila[t" + auxtemp + "] = t" + contadorTemp;
-
-                                            }
-                                            else
-                                            {
-                                                char vop = char.Parse(temp.GetValor());
-
-                                                vop++;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = p" + temp.posicion;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = pila[t" + auxtemp + "]";
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + (contadorTemp - 1) + " + 1";
-
-                                                respuesta = "\r\npila[t" + auxtemp + "] = t" + contadorTemp;
-                                            }
                                         }
                                     }
                                     else
                                     {
-                                        if (temp.tipo.Equals("Cadena") || temp.tipo.Equals("booleano"))
+                                        txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                    }
+                                }
+                                else if (nodo.ChildNodes.Count == 7)
+                                {
+                                    if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                    {
+                                        string nombre = nodo.ChildNodes[0].Token.Text;
+                                        
+                                        string funcionop = nodo.ChildNodes[2].Token.Text;
+                                        
+                                     
+                                        if (clase.funciones.ExisteF(funcionop))
                                         {
-                                            txtErrores.Text += "No se puede aumentar o disminuir candenas o boleanos";
+                                            string tparam = TraduccionC(nodo.ChildNodes[4]);
+                                        
+                                            string[] parametros = tparam.Split(';');
+                                        
+                                            Funcion aux = clase.funciones.ExisteP(funcionop, parametros.Length);
+                                        
+                                            if (aux != null)
+                                            {
+                                        
+                                                if (aux.variables.Buscar_existe("retorno"))
+                                                {
+                                        
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                    int lfalse = contadorTemp;
+                                        
+                                                    for (int x = 0; x < parametros.Length; x++)
+                                                    {
+                                                        string[] partes = parametros[x].Split(',');
+                                        
+                                                        if (partes.Length == 2)
+                                                        {
+                                                            respuesta += partes[0];
+                                                            contadorTemp++;
+                                                            respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                            respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[1];
+                                        
+                                                        }
+                                                        else
+                                                        {
+                                                            contadorTemp++;
+                                                            respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                            respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[0];
+                                                        }
+                                                    }
+                                        
+                                                    respuesta += "\r\np = t" + lfalse;
+                                                    respuesta += "\r\nCall " + aux.nombre + "()";
+                                        
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + 0";
+                                        
+                                                    int auxt = contadorTemp;
+                                        
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+                                        
+                                                    string valor = "t" + contadorTemp;
+                                        
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+                                        
+                                                    respuesta += "\r\np = t" + contadorTemp;
+                                        
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                                    respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
+                                        
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nNo Hay Retorno en la Funcion " + funcionop;
+                                                }
+                                        
+                                        
+                                        
+                                        
+                                            }
+                                        
+                                        
+                                        
                                         }
                                         else
                                         {
-                                            string valor;
-                                            if (temp.tipo.Equals("entero"))
-                                            {
-
-                                                int vop = int.Parse(temp.GetValor());
-
-                                                vop--;
-
-                                                valor = vop.ToString();
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = p" + temp.posicion;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = pila[t" + auxtemp + "]";
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + (contadorTemp - 1) + " - 1";
-
-                                                respuesta = "\r\npila[t" + auxtemp + "] = t" + contadorTemp;
-
-
-                                            }
-                                            else if (temp.tipo.Equals("decimal"))
-                                            {
-                                                double vop = double.Parse(temp.GetValor());
-
-                                                vop--;
-
-                                                valor = vop.ToString();
-
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = p" + temp.posicion;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = pila[t" + auxtemp + "]";
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + (contadorTemp - 1) + " - 1";
-
-                                                respuesta = "\r\npila[t" + auxtemp + "] = t" + contadorTemp;
-
-                                            }
-                                            else
-                                            {
-                                                char vop = char.Parse(temp.GetValor());
-
-                                                vop--;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = p" + temp.posicion;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = pila[t" + auxtemp + "]";
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + (contadorTemp - 1) + " - 1";
-
-                                                respuesta = "\r\npila[t" + auxtemp + "] = t" + contadorTemp;
-                                            }
+                                            txtErrores.Text += "\r\nNo Existe la Funcion " + funcionop;
                                         }
                                         
                                     }
@@ -7855,140 +7874,162 @@ namespace Proyecto2_Compi2_CSharp
 
                                     if (nodo.ChildNodes[1].Term.Name.ToString() == "aumentar")
                                     {
-                                        if (temp.tipo.Equals("Cadena") || temp.tipo.Equals("booleano"))
+                                        contadorTemp++;
+                                        respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
+                                        auxtemp = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta = "\r\nt" + contadorTemp + " = t" + auxtemp + "+ 1";
+
+                                        respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
+                                    }
+                                    else
+                                    {
+                                        contadorTemp++;
+                                        respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
+                                        auxtemp = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta = "\r\nt" + contadorTemp + " = t" + auxtemp + "- 1";
+
+                                        respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
+                                    }
+                                }
+                                else if (nodo.ChildNodes.Count == 6)
+                                {
+
+                                    string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                    string funcionop = nodo.ChildNodes[2].Token.Text;
+
+                                    if (clase.funciones.ExisteF(funcionop))
+                                    {
+                                        Funcion aux = clase.funciones.Existe(funcionop);
+
+
+                                        if (aux.TieneParametros())
                                         {
-                                            txtErrores.Text += "No se puede aumentar o disminuir candenas o boleanos";
+                                            txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
                                         }
                                         else
                                         {
-                                            if (temp.tipo.Equals("entero"))
-                                            {
-                                                int vop = int.Parse(temp.GetValor());
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
 
-                                                vop++;
+                                            respuesta += "\r\np = t" + contadorTemp;
+                                            respuesta += "\r\nCall " + aux.nombre + "()";
 
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + 0";
 
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
+                                            int auxt = contadorTemp;
 
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" +auxtemp+"+ 1" ;
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
 
-                                                respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
+                                            string valor = "t" + contadorTemp;
 
-                                            }
-                                            else if (temp.tipo.Equals("decimal"))
-                                            {
-                                                double vop = double.Parse(temp.GetValor());
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
 
-                                                vop++;
+                                            respuesta += "\r\np = t" + contadorTemp;
+                                            
+                                            respuesta += "\r\n"+temp.nombre+" =" + valor;
 
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + auxtemp + "+ 1";
-
-                                                respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
-                                            }
-                                            else
-                                            {
-                                                char vop = char.Parse(temp.GetValor());
-
-                                                vop++;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + auxtemp + "+ 1";
-
-                                                respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
-                                            }
                                         }
                                     }
                                     else
                                     {
-                                        if (temp.tipo.Equals("Cadena") || temp.tipo.Equals("booleano"))
+                                        txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                    }
+                                }
+                                else if (nodo.ChildNodes.Count == 7)
+                                {
+                                    if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                    {
+                                        string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                        string funcionop = nodo.ChildNodes[2].Token.Text;
+
+
+                                        if (clase.funciones.ExisteF(funcionop))
                                         {
-                                            txtErrores.Text += "No se puede aumentar o disminuir candenas o boleanos";
+                                            string tparam = TraduccionC(nodo.ChildNodes[4]);
+
+                                            string[] parametros = tparam.Split(';');
+
+                                            Funcion aux = clase.funciones.ExisteP(funcionop, parametros.Length);
+
+                                            if (aux != null)
+                                            {
+
+                                                if (aux.variables.Buscar_existe("retorno"))
+                                                {
+
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                    int lfalse = contadorTemp;
+
+                                                    for (int x = 0; x < parametros.Length; x++)
+                                                    {
+                                                        string[] partes = parametros[x].Split(',');
+
+                                                        if (partes.Length == 2)
+                                                        {
+                                                            respuesta += partes[0];
+                                                            contadorTemp++;
+                                                            respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                            respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[1];
+
+                                                        }
+                                                        else
+                                                        {
+                                                            contadorTemp++;
+                                                            respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                            respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[0];
+                                                        }
+                                                    }
+
+                                                    respuesta += "\r\np = t" + lfalse;
+                                                    respuesta += "\r\nCall " + aux.nombre + "()";
+
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + 0";
+
+                                                    int auxt = contadorTemp;
+
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                                    string valor = "t" + contadorTemp;
+
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                                    respuesta += "\r\np = t" + contadorTemp;
+
+                                                    respuesta += "\r\n" + temp.nombre +" = " + valor;
+
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nNo Hay Retorno en la Funcion " + funcionop;
+                                                }
+
+
+
+
+                                            }
+
+
+
                                         }
                                         else
                                         {
-                                            if (temp.tipo.Equals("entero"))
-                                            {
-                                                int vop = int.Parse(temp.GetValor());
-
-                                                vop--;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + auxtemp + "- 1";
-
-                                                respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
-
-                                            }
-                                            else if (temp.tipo.Equals("decimal"))
-                                            {
-                                                double vop = double.Parse(temp.GetValor());
-
-                                                vop--;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + auxtemp + "- 1";
-
-                                                respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
-
-                                            }
-                                            else
-                                            {
-                                                char vop = char.Parse(temp.GetValor());
-
-                                                vop--;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta = "\r\nt" + contadorTemp + " = t" + auxtemp + "- 1";
-
-                                                respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
-                                            }
+                                            txtErrores.Text += "\r\nNo Existe la Funcion " + funcionop;
                                         }
+
                                     }
-                                }
-                                //5
-                                else
-                                {
-                                    //Arreglo
                                 }
 
                             }
@@ -8004,170 +8045,202 @@ namespace Proyecto2_Compi2_CSharp
 
                             if (clase.variables.Buscar_existe(variable))
                             {
-                                if (nodo.ChildNodes.Count == 5)
+
+                                Variable temp = clase.variables.Buscar(variable);
+                                int auxtemp;
+
+                                if (nodo.ChildNodes.Count == 6)
                                 {
-                                    Variable temp = clase.variables.Buscar(variable);
+
+                                    //string valor = OperacionesC(nodo.ChildNodes[2]);
+                                    string valor = ActuarC(nodo.ChildNodes[4]);
+
+                                    string preR = TraduccionC(nodo.ChildNodes[4]);
+
+                                    string[] partes = preR.Split(',');
+
+                                    if (partes.Length == 2)
+                                    {
+                                        respuesta += partes[0];
+                                        valor = partes[1];
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    respuesta += "\r\n" + temp.nombre + " = " + valor;
+
+
+
+
+                                }
+                                else if (nodo.ChildNodes.Count == 5)
+                                {
+
                                     string valor;
-                                    int auxtemp;
 
                                     if (nodo.ChildNodes[3].Term.Name.ToString() == "aumentar")
                                     {
-                                        if (temp.tipo.Equals("Cadena") || temp.tipo.Equals("booleano"))
+                                        contadorTemp++;
+                                        respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
+                                        auxtemp = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta = "\r\nt" + contadorTemp + " = t" + auxtemp + "+ 1";
+
+                                        respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
+                                    }
+                                    else
+                                    {
+                                        contadorTemp++;
+                                        respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
+                                        auxtemp = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta = "\r\nt" + contadorTemp + " = t" + auxtemp + "- 1";
+
+                                        respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
+                                    }
+                                }
+                                else if (nodo.ChildNodes.Count == 8)
+                                {
+                                    Funcion funcion = clase.funciones.Existe(fun_actual);
+                                    string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                    string funcionop = nodo.ChildNodes[4].Token.Text;
+
+                                    if (clase.funciones.ExisteF(funcionop))
+                                    {
+                                        Funcion aux = clase.funciones.Existe(funcionop);
+
+
+                                        if (aux.TieneParametros())
                                         {
-                                            txtErrores.Text += "No se puede aumentar o disminuir candenas o boleanos";
+                                            txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
                                         }
                                         else
                                         {
-                                            if (temp.tipo.Equals("entero"))
-                                            {
-                                                int vop = int.Parse(temp.GetValor());
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
 
-                                                vop++;
+                                            respuesta += "\r\np = t" + contadorTemp;
+                                            respuesta += "\r\nCall " + aux.nombre + "()";
 
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + 0";
 
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
+                                            int auxt = contadorTemp;
 
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxtemp + " + 1";
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
 
-                                                respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp; 
+                                            string valor = "t" + contadorTemp;
 
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
 
-                                            }
-                                            else if (temp.tipo.Equals("decimal"))
-                                            {
-                                                double vop = double.Parse(temp.GetValor());
+                                            respuesta += "\r\np = t" + contadorTemp;
 
-                                                vop++;
+                                            respuesta += "\r\n" + temp.nombre + " =" + valor;
 
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxtemp + " + 1";
-
-                                                respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
-                                            }
-                                            else
-                                            {
-                                                char vop = char.Parse(temp.GetValor());
-
-                                                vop++;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxtemp + " + 1";
-
-                                                respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
-                                            }
                                         }
                                     }
                                     else
                                     {
-                                        if (temp.tipo.Equals("Cadena") || temp.tipo.Equals("booleano"))
+                                        txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                    }
+                                }
+                                else if (nodo.ChildNodes.Count == 9)
+                                {
+                                    Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                                    if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                    {
+                                        string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                        string funcionop = nodo.ChildNodes[4].Token.Text;
+
+
+                                        if (clase.funciones.ExisteF(funcionop))
                                         {
-                                            txtErrores.Text += "No se puede aumentar o disminuir candenas o boleanos";
+                                            string tparam = TraduccionC(nodo.ChildNodes[6]);
+
+                                            string[] parametros = tparam.Split(';');
+
+                                            Funcion aux = clase.funciones.ExisteP(funcionop, parametros.Length);
+
+                                            if (aux != null)
+                                            {
+
+                                                if (aux.variables.Buscar_existe("retorno"))
+                                                {
+
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                    int lfalse = contadorTemp;
+
+                                                    for (int x = 0; x < parametros.Length; x++)
+                                                    {
+                                                        string[] partes = parametros[x].Split(',');
+
+                                                        if (partes.Length == 2)
+                                                        {
+                                                            respuesta += partes[0];
+                                                            contadorTemp++;
+                                                            respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                            respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[1];
+
+                                                        }
+                                                        else
+                                                        {
+                                                            contadorTemp++;
+                                                            respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                            respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[0];
+                                                        }
+                                                    }
+
+                                                    respuesta += "\r\np = t" + lfalse;
+                                                    respuesta += "\r\nCall " + aux.nombre + "()";
+
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + 0";
+
+                                                    int auxt = contadorTemp;
+
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                                    string valor = "t" + contadorTemp;
+
+                                                    contadorTemp++;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                                    respuesta += "\r\np = t" + contadorTemp;
+
+                                                    respuesta += "\r\n" + temp.nombre + " = " + valor;
+
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nNo Hay Retorno en la Funcion " + funcionop;
+                                                }
+
+
+
+
+                                            }
+
+
+
                                         }
                                         else
                                         {
-                                            if (temp.tipo.Equals("entero"))
-                                            {
-                                                int vop = int.Parse(temp.GetValor());
-
-                                                vop--;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxtemp + " - 1";
-
-                                                respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
-
-                                            }
-                                            else if (temp.tipo.Equals("decimal"))
-                                            {
-                                                double vop = double.Parse(temp.GetValor());
-
-                                                vop--;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxtemp + " - 1";
-
-                                                respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
-
-                                            }
-                                            else
-                                            {
-                                                char vop = char.Parse(temp.GetValor());
-
-                                                vop--;
-
-                                                valor = vop.ToString();
-                                                temp.SetValor(valor);
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
-                                                auxtemp = contadorTemp;
-
-                                                contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxtemp + " - 1";
-
-                                                respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
-                                            }
+                                            txtErrores.Text += "\r\nNo Existe la Funcion " + funcionop;
                                         }
+
                                     }
                                 }
-                                else if (nodo.ChildNodes.Count == 6)
-                                {
-
-                                    Variable temp = clase.variables.Buscar(variable);
-                                    int auxtemp;
-
-                                    string valor = TraduccionC(nodo.ChildNodes[2]); ;
-
-                                    if (CTipos(temp.tipo, valor))
-                                    {
-
-                                        respuesta += "\r\n" + temp.nombre + " = " + valor;
-                                    }
-                                    else
-                                    {
-                                        txtErrores.Text += "\r\nError de Tipos";
-                                    }
-
-                                    temp.SetValor(valor);
-                                }
-                                else
-                                {
-                                    //Arreglo
-                                }
-
                             }
                             else
                             {
