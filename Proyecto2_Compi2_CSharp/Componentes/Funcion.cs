@@ -21,7 +21,9 @@ namespace Proyecto2_Compi2_CSharp.Componentes
         public Variables variables;
         public ParseTreeNode nodo;
 
-        private string retorno="";    
+        private string retorno="";
+
+        public string dimensiones = "";
 
         public int nParametros;
 

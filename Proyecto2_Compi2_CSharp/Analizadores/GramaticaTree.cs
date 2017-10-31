@@ -175,10 +175,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             |Cadena
                             | ruta;
 
-            Cuerpo.Rule =   RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent
-                          | RClase + ID + "[]:" + Eos + Indent + Partes + Dedent
-                          | Visibilidad + RClase + ID + "[]:" + Eos + Indent + Partes + Dedent
-                          | Visibilidad + RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent;
+            Cuerpo.Rule =   RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent//6
+                          | RClase + ID + "[]:" + Eos + Indent + Partes + Dedent//4
+                          | Visibilidad + RClase + ID + "[]:" + Eos + Indent + Partes + Dedent//5
+                          | Visibilidad + RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent;//7
 
             Partes.Rule = Globales + Componentes
                         | Componentes;
@@ -197,14 +197,14 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Componentes.Rule = Componentes + Componente
                             | Componente;
 
-            Componente.Rule = ID + "[]:" + Eos + Indent + Sentencias + Dedent
-                            | ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent
-                            | Tipo + ID + "[]:" + Eos + Indent + Sentencias + Dedent
-                            | Tipo + ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent
-                            | Visibilidad + ID + "[]:" + Eos + Indent + Sentencias + Dedent
-                            | Visibilidad + ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent
-                            | Visibilidad + Tipo + ID + "[]:" + Eos + Indent + Sentencias + Dedent
-                            | Visibilidad + Tipo + ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent;
+            Componente.Rule = ID + "[]:" + Eos + Indent + Sentencias + Dedent//3
+                            | ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent//5
+                            | Tipo + ID + "[]:" + Eos + Indent + Sentencias + Dedent//4
+                            | Tipo + ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent//6
+                            | Visibilidad + ID + "[]:" + Eos + Indent + Sentencias + Dedent//4
+                            | Visibilidad + ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent//6
+                            | Visibilidad + Tipo + ID + "[]:" + Eos + Indent + Sentencias + Dedent//5
+                            | Visibilidad + Tipo + ID + "[" + Parametros + "]:" + Eos + Indent + Sentencias + Dedent;//7
 
             Sentencias.Rule = Sentencias + Sentencia
                             | Sentencia;
@@ -237,20 +237,20 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | ID + Dimensiones + "=>" + Operacion + Eos
                             | ID + "." + ID + "=>" + Operacion + Eos; 
 
-            IF.Rule = Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS + Sino
-                      | Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + Sino
-                      | Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS
-                      | Rsi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
+            IF.Rule =   Rsi + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS + Sino//7
+                      | Rsi + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + Sino//6
+                      | Rsi + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS//6
+                      | Rsi + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;//5
 
-            SinoS.Rule = SinoS + Rsinosi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
-                         | Rsinosi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
+            SinoS.Rule =   SinoS + Rsinosi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent//7
+                         | Rsinosi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;//6
 
             Sino.Rule = Rsino + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
-            For.Rule = RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
-                        | RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
-                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent
-                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
+            For.Rule =    RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent//12
+                        | RPara + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent//12
+                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + aumentar + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent//13
+                        | RPara + Tipo + ID + "=>" + Operacion + DosPuntos + Condicion + DosPuntos + ID + disminuir + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;//13
 
             While.Rule = Rmientras + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
@@ -305,7 +305,13 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | ID
                             | ID + "[" + Operacion + "]"
                             | Rself + "." + ID
-                            | Valor;
+                            | Valor
+                            | SalidaC
+                            | aINT
+                            | aDou
+                            | intASt
+                            | douASt
+                            | douAINt;
 
             Dimensiones.Rule = Dimensiones + Dimension
                               | Dimension;
@@ -330,13 +336,13 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                        | privado
                        | protegido;
 
-            Funciones.Rule = ID + "[" + Operaciones + "]" 
-                           | ID + "[" + "]"  ;
+            Funciones.Rule = ID + "[" + Operaciones + "]" +Eos
+                           | ID + "[" + "]" +Eos ;
 
             Operaciones.Rule = Operaciones + "," + Operacion
                               | Operacion;
 
-            Elegir.Rule = Relegir + "(" + Operacion + ")" + DosPuntos + Casos;
+            Elegir.Rule = Relegir + "(" + Operacion + ")" + DosPuntos + Eos+ Casos;
 
             Casos.Rule = Caso + Casos
                         | Caso;

@@ -8,18 +8,20 @@ namespace Proyecto2_Compi2_CSharp.Componentes
 {
     public class Variable
     {
-        Arreglo[] valores;
+        
         public bool arreglo;
         public string nombre;
         public string valor;
         public string tipo;
         public string visibilidad;
+        public int poship = 0;
+        public Object[] arregloV;
+        
 
         public int posicion = 0;
-
-        int dimensiones;
-        int dim_ocupadas;
-
+        public int tamaño;
+        public string dimensiones;
+        
         public Variable siguiente;
         public Variable anterior;
 
@@ -32,7 +34,6 @@ namespace Proyecto2_Compi2_CSharp.Componentes
             siguiente = null;
             anterior = null;
 
-            valores = null;
             arreglo = false;
 
         }
@@ -47,33 +48,8 @@ namespace Proyecto2_Compi2_CSharp.Componentes
             siguiente = null;
             anterior = null;
 
-            valores = null;
-            arreglo = false;
-
-        }
-
-
-        public Variable(string t, string n, string v, int dimensiones,string valoresN)
-        {
-            nombre = n;
-            tipo = t;
-            valor = v;
-            visibilidad = "publico";
-            siguiente = null;
-            anterior = null;
-
-            valores = new Arreglo[dimensiones];
-            string[] dimension = valoresN.Split(',');
-
-            for(int x = 0; x < dimensiones; x++)
-            {
-                valores[x] = new Arreglo();
-                valores[x].SetMax(Convert.ToInt32(dimension[x]));
-            }
-
-            arreglo = true;
-            this.dimensiones = dimensiones;
             
+            arreglo = false;
 
         }
 
@@ -109,39 +85,15 @@ namespace Proyecto2_Compi2_CSharp.Componentes
             return tipo;
         }
 
-        void Agregar_Valores(string[] datos,int dimension)
-        {
-            int tope = datos.Length;
-
-            if (tope > 1)
-            {
-                for (int x = 0; x < tope; x++)
-                {
-                    Valores nuevo = new Valores(datos[x], x);
-
-                    valores[dimension].insertar(nuevo);
-                }
-                
-            }
-            else
-            {
-                Valores nuevo = new Valores(datos[0], dimension);
-                valores[dimension].insertar(nuevo);
-            }
-        }
-
-        public string GetValor_Arr(int dimension,int indice)
-        {
-            string respuesta = "";
-
-            respuesta=valores[dimension].ObtenerValor(indice);
-
-            return respuesta;
-        }
 
         public void SetVisibilidad(string v)
         {
             visibilidad = v;
+        }
+
+        public void CArreglo(int x)
+        {
+            arregloV= new Object[x];
         }
     }
 }
