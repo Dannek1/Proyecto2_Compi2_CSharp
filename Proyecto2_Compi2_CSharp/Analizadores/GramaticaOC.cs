@@ -25,7 +25,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             RegexBasedTerminal Clase = new RegexBasedTerminal("clase", "clase");
             RegexBasedTerminal Herencia = new RegexBasedTerminal("hereda_de", "hereda_de");
-            RegexBasedTerminal Este = new RegexBasedTerminal("este", "este");
+            RegexBasedTerminal Este = new RegexBasedTerminal("este", "este.");
             RegexBasedTerminal Sobrescribir = new RegexBasedTerminal("Sobrescribir", "@Sobrescribir");
             RegexBasedTerminal Llamar = new RegexBasedTerminal("llamar", "llamar\\(");
             RegexBasedTerminal Importar = new RegexBasedTerminal("importar", "importar\\(");
@@ -118,7 +118,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                 Declaracion = new NonTerminal("Declaracion"),
                 Asignacion = new NonTerminal("Asignacion"),
                 While = new NonTerminal("While"),
-                Do_While = new NonTerminal("Do_While"),    
+                Do_While = new NonTerminal("Do_While"),
                 IF = new NonTerminal("If"),
                 For = new NonTerminal("for"),
                 SX = new NonTerminal("SX"),
@@ -141,8 +141,9 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                 Logica = new NonTerminal("Logica"),
                 Relacional = new NonTerminal("Relacional"),
                 Valor = new NonTerminal("Valor"),
+                Instancia = new NonTerminal("Instancia"),
                 Sino = new NonTerminal("Sino");
-            
+
 
 
             S.Rule = Cabeza + Cuerpo
@@ -175,18 +176,20 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | Componentes;
 
             Globales.Rule = Globales + Global
-                         | Global;   
+                         | Global;
 
-            Global.Rule =   Visibilidad + Tipo + ID + finSentencia//4
+            Global.Rule = Visibilidad + Tipo + ID + finSentencia//4
                           | Visibilidad + Tipo + ID + "=" + Operacion + finSentencia//6
                           | Visibilidad + Tipo + ID + Dimensiones + finSentencia//5
                           | Visibilidad + Tipo + ID + Dimensiones + "=" + "{" + AsignacionesArreglo + "}" + finSentencia//9
-                          | Visibilidad + Tipo + ID + Dimensiones + "=" + "{" + AsignacionArreglo + "}" + finSentencia//9
+                          | Visibilidad + ID + ID + finSentencia//4
+                          | Visibilidad + ID + ID + "=" + "new " + ID + "()" + finSentencia//8
+                          | ID + ID + finSentencia//3
+                          | ID + ID + "=" + "new " + ID + "()" + finSentencia//7
                           | Tipo + ID + finSentencia//3
                           | Tipo + ID + "=" + Operacion + finSentencia//5
                           | Tipo + ID + Dimensiones + finSentencia//4
-                          | Tipo + ID + Dimensiones + "=" + "{" + AsignacionesArreglo + "}" + finSentencia//8
-                          | Tipo + ID + Dimensiones + "=" + "{" + AsignacionArreglo + "}" + finSentencia;//8
+                          | Tipo + ID + Dimensiones + "=" + "{" + AsignacionesArreglo + "}" + finSentencia;//8
 
             Global.ErrorRule = SyntaxError + finSentencia;
 
@@ -194,17 +197,17 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | Componente;
 
             Componente.Rule = ID + "(" + Parametros + ")" + iniCuerpo + Sentencias + finCuerpo //7
-                            | ID + "(" + Parametros + ")" + iniCuerpo +finCuerpo //6
+                            | ID + "(" + Parametros + ")" + iniCuerpo + finCuerpo //6
                             | ID + "(" + ")" + iniCuerpo + Sentencias + finCuerpo//6
-                            | ID + "(" + ")" + iniCuerpo  + finCuerpo//5
+                            | ID + "(" + ")" + iniCuerpo + finCuerpo//5
                             | Tipo + ID + "(" + Parametros + ")" + iniCuerpo + Sentencias + finCuerpo //8
-                            | Tipo + ID + "(" + Parametros + ")" + iniCuerpo  + finCuerpo //7
+                            | Tipo + ID + "(" + Parametros + ")" + iniCuerpo + finCuerpo //7
                             | Tipo + ID + "(" + ")" + iniCuerpo + Sentencias + finCuerpo //7
                             | Tipo + ID + "(" + ")" + iniCuerpo + finCuerpo //6
                             | Sobrescribir + Tipo + ID + "(" + Parametros + ")" + iniCuerpo + Sentencias + finCuerpo //9
                             | Sobrescribir + Tipo + ID + "(" + Parametros + ")" + iniCuerpo + finCuerpo //8
                             | Sobrescribir + Tipo + ID + "(" + ")" + iniCuerpo + Sentencias + finCuerpo //8
-                            | Sobrescribir + Tipo + ID + "(" + ")" + iniCuerpo  + finCuerpo //7
+                            | Sobrescribir + Tipo + ID + "(" + ")" + iniCuerpo + finCuerpo //7
                             | Tipo + "[]" + ID + "(" + Parametros + ")" + iniCuerpo + Sentencias + finCuerpo//9
                             | Tipo + "[]" + ID + "(" + Parametros + ")" + iniCuerpo + finCuerpo//8
                             | Tipo + "[]" + ID + "(" + ")" + iniCuerpo + Sentencias + finCuerpo//8
@@ -282,10 +285,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             Operaciones.Rule = Operaciones + "," + Operacion
                               | Operacion;
-                
+
             Asignacion.Rule = ID + "=" + Operacion + finSentencia//4  
-                            | ID + "=" + ID+"("+")" + finSentencia//6
-                            | ID + "=" + ID + "(" + Operaciones+")" + finSentencia//7
+                            | ID + "=" + ID + "(" + ")" + finSentencia//6
+                            | ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//7
                             | ID + aumentar + finSentencia//3
                             | ID + disminuir + finSentencia//3
                             | ID + Dimensiones + "=" + Operacion + finSentencia//5
@@ -293,14 +296,16 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | ID + Dimensiones + "=" + ID + "(" + Operaciones + ")" + finSentencia//8
                             | ID + Dimensiones + aumentar + finSentencia//4
                             | ID + Dimensiones + aumentar + finSentencia//4
-                            | Este + "." + ID + "=" + Operacion + finSentencia
-                            | Este + "." + ID + "=" + ID + "(" + ")" + finSentencia//8
-                            | Este + "." + ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//9
-                            | Este + "." + ID + aumentar + finSentencia//5
-                            | Este + "." + ID + disminuir + finSentencia//5
-                            | Este + "." + ID + Dimensiones + "=" + ID + "(" + ")" + finSentencia//9
-                            | Este + "." + ID + Dimensiones + "=" + ID + "(" + Operaciones + ")" + finSentencia//10
-                            | Este + "." + ID + Dimensiones + "=" + Operacion + finSentencia;//7
+                            | Este + ID + "=" + Operacion + finSentencia//5
+                            | Este + ID + "=" + ID + "(" + ")" + finSentencia//7
+                            | Este + ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//8
+                            | Este + ID + aumentar + finSentencia//4
+                            | Este + ID + disminuir + finSentencia//4
+                            | Este + ID + Dimensiones + aumentar + finSentencia//5
+                            | Este + ID + Dimensiones + disminuir + finSentencia//5
+                            | Este + ID + Dimensiones + "=" + Operacion + finSentencia//6
+                            | Este + ID + Dimensiones + "=" + ID + "(" + Operaciones + ")" + finSentencia//9
+                            | Este + ID + Dimensiones + "=" + ID + "(" + ")" + finSentencia;//8
 
             Asignacion.ErrorRule = SyntaxError + finSentencia;
 
@@ -319,7 +324,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             IF.ErrorRule = SyntaxError + finCuerpo;
 
 
-            For.Rule =   RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + Sentencias + finCuerpo//13
+            For.Rule = RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + Sentencias + finCuerpo//13
                        | RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + aumentar + ")" + iniCuerpo + finCuerpo//12
                        | RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + Sentencias + finCuerpo//13
                        | RPara + ID + "=" + Operacion + ";" + Condicion + ";" + ID + disminuir + ")" + iniCuerpo + finCuerpo//12
@@ -337,7 +342,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             SX.Rule = RX + Condicion + "," + Condicion + ")" + iniCuerpo + Sentencias + finCuerpo
                     | RX + Condicion + "," + Condicion + ")" + iniCuerpo + finCuerpo;
-            
+
             SX.ErrorRule = SyntaxError + finCuerpo;
 
             Repetir.Rule = Rrepetir + Sentencias + finCuerpo + RUntil + Condicion + ")" + finSentencia
@@ -345,7 +350,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             Repetir.ErrorRule = SyntaxError + finSentencia;
 
-            Do_While.Rule = Rhacer +  Sentencias + finCuerpo + Rmientras + Condicion + ")" + finSentencia
+            Do_While.Rule = Rhacer + Sentencias + finCuerpo + Rmientras + Condicion + ")" + finSentencia
                           | Rhacer + finCuerpo + Rmientras + Condicion + ")" + finSentencia;
 
             Do_While.ErrorRule = SyntaxError + finCuerpo;
@@ -380,6 +385,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | "(" + Operacion + ")"
                             | ID
                             | ID + Dimensiones
+                            | Instancia
                             | Valor;
 
             Dimensiones.Rule = Dimensiones + Dimension
@@ -400,6 +406,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                  | Caracter
                  | Doble
                  | Cadena;
+
+            Instancia.Rule = ID + "." + Instancia
+                            | ID;
+
 
             this.Root = S;
         }

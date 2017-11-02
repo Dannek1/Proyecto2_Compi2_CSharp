@@ -625,22 +625,62 @@ namespace Proyecto2_Compi2_CSharp
                     {
                         if (nodo.ChildNodes.Count == 3)
                         {
-
                             Clase temp = clases.Existe(clase_actual);
 
-                            String tipo = ActuarC(nodo.ChildNodes[0]);
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                string tipo = nodo.ChildNodes[0].Token.Text;
 
-                            Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text);
+                                Clase instancia = clases.Existe(tipo);
 
-                            nuevo.SetVisibilidad("publico");
+                                if (instancia != null)
+                                {
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
 
-                            temp.variables.Insertar(nuevo);
+                                    Variable nuevo = new Variable(tipo, nombre);
+
+                                    nuevo.SetVisibilidad("publico");
+
+                                    temp.variables.Insertar(nuevo);
+                                }
+                            }
+                            else
+                            {
+                                string tipo = ActuarC(nodo.ChildNodes[0]);
+
+                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text);
+
+                                nuevo.SetVisibilidad("publico");
+
+                                temp.variables.Insertar(nuevo);
+                            }
+
+
 
                         }
                         else if (nodo.ChildNodes.Count == 4)
                         {
 
-                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            if (nodo.ChildNodes[1].Term.Name.ToString() == "ID" && nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+                                Clase temp = clases.Existe(clase_actual);
+
+                                string tipo = nodo.ChildNodes[1].Term.Name.ToString();
+
+                                Clase instancia = clases.Existe(tipo);
+
+                                if (instancia != null)
+                                {
+                                    Variable nuevo = new Variable(tipo, nodo.ChildNodes[2].Token.Text);
+
+                                    nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));
+
+                                    temp.variables.Insertar(nuevo);
+                                }
+
+
+                            }
+                            else if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
                             {
                                 Clase temp = clases.Existe(clase_actual);
 
@@ -654,7 +694,35 @@ namespace Proyecto2_Compi2_CSharp
                             }
                             else
                             {
-                                //Arreglo
+                                Clase temp = clases.Existe(clase_actual);
+
+                                string tipo = ActuarC(nodo.ChildNodes[1]);
+
+
+                                string dimensiones = ActuarC(nodo.ChildNodes[2]);
+
+                                string[] dim = dimensiones.Split(',');
+
+                                int total = 0;
+                                for (int x = 0; x < dim.Length; x++)
+                                {
+                                    if (x == 0)
+                                    {
+                                        total = Int32.Parse(dim[x]);
+                                    }
+                                    else
+                                    {
+                                        total = total * Int32.Parse(dim[x]);
+                                    }
+                                }
+
+                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text);
+                                nuevo.arreglo = true;
+
+                                nuevo.dimensiones = dimensiones;
+                                nuevo.CArreglo(total);
+
+                                temp.variables.Insertar(nuevo);
                             }
                         }
                         else if (nodo.ChildNodes.Count == 5)
@@ -685,9 +753,29 @@ namespace Proyecto2_Compi2_CSharp
 
                                 string dimensiones = ActuarC(nodo.ChildNodes[3]);
 
+                                string[] dim = dimensiones.Split(',');
+
+                                int total = 0;
+                                for (int x = 0; x < dim.Length; x++)
+                                {
+                                    if (x == 0)
+                                    {
+                                        total = Int32.Parse(dim[x]);
+                                    }
+                                    else
+                                    {
+                                        total = total * Int32.Parse(dim[x]);
+                                    }
+                                }
+
                                 Variable nuevo = new Variable(tipo, nodo.ChildNodes[2].Token.Text);
 
                                 nuevo.SetVisibilidad(visi);
+                                nuevo.arreglo = true;
+                                nuevo.dimensiones = dimensiones;
+                                nuevo.CArreglo(total);
+
+                                temp.variables.Insertar(nuevo);
 
 
                             }
@@ -713,11 +801,128 @@ namespace Proyecto2_Compi2_CSharp
                         }
                         else if (nodo.ChildNodes.Count == 8)
                         {
-                            resultado = ActuarC(nodo.ChildNodes[0]);
+
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+
+                                string t = nodo.ChildNodes[5].Token.Text;
+                                Clase temp = clases.Existe(clase_actual);
+
+                                string tipo = nodo.ChildNodes[1].Token.Text;
+
+                                Clase instancia = clases.Existe(tipo);
+
+                                if (instancia != null)
+                                {
+
+                                    if (t.Equals(tipo))
+                                    {
+                                        string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                        Variable nuevo = new Variable(tipo, nombre);
+
+                                        nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));
+
+                                        temp.variables.Insertar(nuevo);
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                Clase temp = clases.Existe(clase_actual);
+
+                                string tipo = ActuarC(nodo.ChildNodes[1]);
+
+
+                                string dimensiones = ActuarC(nodo.ChildNodes[2]);
+
+                                string[] dim = dimensiones.Split(',');
+
+                                int total = 0;
+                                for (int x = 0; x < dim.Length; x++)
+                                {
+                                    if (x == 0)
+                                    {
+                                        total = Int32.Parse(dim[x]);
+                                    }
+                                    else
+                                    {
+                                        total = total * Int32.Parse(dim[x]);
+                                    }
+                                }
+
+                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text);
+
+                                nuevo.arreglo = true;
+                                nuevo.dimensiones = dimensiones;
+
+                                nuevo.CArreglo(total);
+
+                                temp.variables.Insertar(nuevo);
+                            }
+                            
                         }
                         else if (nodo.ChildNodes.Count == 9)
                         {
-                            resultado = ActuarC(nodo.ChildNodes[0]);
+                            Clase temp = clases.Existe(clase_actual);
+
+                            string tipo = ActuarC(nodo.ChildNodes[1]);
+
+                            string visi = ActuarC(nodo.ChildNodes[0]);
+
+                            string dimensiones = ActuarC(nodo.ChildNodes[3]);
+
+                            string[] dim = dimensiones.Split(',');
+
+                            int total = 0;
+                            for (int x = 0; x < dim.Length; x++)
+                            {
+                                if (x == 0)
+                                {
+                                    total = Int32.Parse(dim[x]);
+                                }
+                                else
+                                {
+                                    total = total * Int32.Parse(dim[x]);
+                                }
+                            }
+
+                            Variable nuevo = new Variable(tipo, nodo.ChildNodes[2].Token.Text);
+
+                            nuevo.SetVisibilidad(visi);
+                            nuevo.dimensiones = dimensiones;
+
+                            nuevo.arreglo = true;
+                            nuevo.CArreglo(total);
+
+                            temp.variables.Insertar(nuevo);
+                        }
+                        else if (nodo.ChildNodes.Count == 7)
+                        {
+
+                            string t= nodo.ChildNodes[4].Token.Text;
+                            Clase temp = clases.Existe(clase_actual);
+
+                            string tipo = nodo.ChildNodes[0].Token.Text;
+
+                            Clase instancia = clases.Existe(tipo);
+
+                            if (instancia != null)
+                            {
+
+                                if(t.Equals(tipo))
+                                {
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    Variable nuevo = new Variable(tipo, nombre);
+
+                                    nuevo.SetVisibilidad("publico");
+
+                                    temp.variables.Insertar(nuevo);
+                                }
+                                
+                            }
                         }
 
                         break;
@@ -6027,16 +6232,69 @@ namespace Proyecto2_Compi2_CSharp
 
                             }
                         }
-                        /*
                         else if (nodo.ChildNodes.Count == 8)
                         {
-                            resultado = ActuarC(nodo.ChildNodes[0]);
+                            Clase clase = clases.Existe(clase_actual);
+
+                            string nombre= nodo.ChildNodes[1].Token.Text;
+
+                            Variable var = clase.variables.Buscar(nombre);
+
+                            if (var.arreglo)
+                            {
+                                string dimensiones = ActuarC(nodo.ChildNodes[2]);
+                                string valores = ActuarC(nodo.ChildNodes[5]);
+
+                                string[] dim = dimensiones.Split(',');
+                                int total = 0;
+
+                                for (int x = 0; x < dim.Length; x++)
+                                {
+                                    if (x == 0)
+                                    {
+                                        total = Int32.Parse(dim[x]);
+                                    }
+                                    else
+                                    {
+                                        total = total * Int32.Parse(dim[x]);
+                                    }
+                                }
+
+                                int contador = 0;
+
+                                string[] tuplas = valores.Split(';');
+
+                                for(int x = 0; x < tuplas.Length; x++)
+                                {
+                                    string[] valor = tuplas[x].Split(',');
+
+                                    for (int y = 0; y < valor.Length; y++)
+                                    {
+                                        respuesta += "\r\n" + var.nombre + "[" + contador + "] = " + valor[y];
+
+                                        if (contador < total)
+                                        {
+                                            contador++;
+                                        }
+                                        else
+                                        {
+                                            respuesta="";
+                                            txtErrores.Text += "\r\nDesboradmiento";
+                                        }
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                txtErrores.Text += "\r\nLa Variable " + nombre + " No es Arreglo";
+                            }
                         }
                         else if (nodo.ChildNodes.Count == 9)
                         {
-                            resultado = ActuarC(nodo.ChildNodes[0]);
+                           // resultado = ActuarC(nodo.ChildNodes[0]);
                         }
-                        */
+                        
                         break;
                     }
 
@@ -6142,7 +6400,7 @@ namespace Proyecto2_Compi2_CSharp
                                     Funcion nuevo = new Funcion(tipo, nombre, "publico");
                                     temp.funciones.Insertar(nuevo);
 
-                                    respuesta = "fuction " + nombre + "()" + "{" + "}";
+                                    respuesta = "\r\nfuction " + nombre + "()" + "{" + "}";
 
                                 }
                                 else
@@ -8082,27 +8340,139 @@ namespace Proyecto2_Compi2_CSharp
                                 if (nodo.ChildNodes.Count == 4)
                                 {
 
-                                    //string valor = OperacionesC(nodo.ChildNodes[2]);
-                                    string valor = ActuarC(nodo.ChildNodes[2]);
-
-                                    string preR = TraduccionC(nodo.ChildNodes[2]);
-
-                                    string[] partes = preR.Split(',');
-
-                                    if (partes.Length == 2)
+                                    if (nodo.ChildNodes[1].Term.Name.Equals("="))
                                     {
-                                        respuesta += partes[0];
-                                        valor = partes[1];
+                                        //string valor = OperacionesC(nodo.ChildNodes[2]);
+                                        string valor = ActuarC(nodo.ChildNodes[2]);
+
+                                        string preR = TraduccionC(nodo.ChildNodes[2]);
+
+                                        string[] partes = preR.Split(',');
+
+                                        if (partes.Length == 2)
+                                        {
+                                            respuesta += partes[0];
+                                            valor = partes[1];
+                                        }
+                                        else
+                                        {
+
+                                        }
+
+                                        respuesta += "\r\n" + temp.nombre + " = " + valor;
+                                    }
+                                    else if (nodo.ChildNodes[2].Term.Name.ToString() == "aumentar")
+                                    {
+
+
+                                        string dimensiones = ActuarC(nodo.ChildNodes[1]);
+
+                                        string[] dim = dimensiones.Split(',');
+
+                                        string[] dimO = temp.dimensiones.Split(',');
+
+                                        if (dim.Length == dimO.Length)
+                                        {
+                                            int pos = 0;
+                                            int total = 0;
+
+                                            for (int x = 0; x < dim.Length; x++)
+                                            {
+                                                if (x == 0)
+                                                {
+                                                    pos = Int32.Parse(dim[x]);
+                                                    total = Int32.Parse(dimO[x]);
+                                                }
+                                                else
+                                                {
+                                                    pos = pos * Int32.Parse(dimO[x]) + Int32.Parse(dim[x]) - 1;
+                                                    total = total * Int32.Parse(dimO[x]);
+                                                }
+
+                                            }
+
+                                            if (pos < total)
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" +contadorTemp+" = "+ temp.nombre + "["+pos+"]";
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxt + "+ 1";
+
+                                                respuesta += "\r\n" + temp.nombre + "[" + pos + "] = t" + contadorTemp;
+
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nDesbordamiento";
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nDesbordamiento";
+                                        }
+
+
                                     }
                                     else
                                     {
 
+
+                                        string dimensiones = ActuarC(nodo.ChildNodes[1]);
+
+                                        string[] dim = dimensiones.Split(',');
+
+                                        string[] dimO = temp.dimensiones.Split(',');
+
+                                        if (dim.Length == dimO.Length)
+                                        {
+                                            int pos = 0;
+                                            int total = 0;
+
+                                            for (int x = 0; x < dim.Length; x++)
+                                            {
+                                                if (x == 0)
+                                                {
+                                                    pos = Int32.Parse(dim[x]);
+                                                    total = Int32.Parse(dimO[x]);
+                                                }
+                                                else
+                                                {
+                                                    pos = pos * Int32.Parse(dimO[x]) + Int32.Parse(dim[x]) - 1;
+                                                    total = total * Int32.Parse(dimO[x]);
+                                                }
+
+                                            }
+
+                                            if (pos < total)
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre + "[" + pos + "]";
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " - 1";
+
+                                                respuesta += "\r\n" + temp.nombre + "[" + pos + "] = t" + contadorTemp;
+
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nDesbordamiento";
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nDesbordamiento";
+                                        }
+
+
                                     }
-
-                                    respuesta += "\r\n"+temp.nombre+" = " + valor;
-                                   
-
-
 
                                 }
                                 else if (nodo.ChildNodes.Count == 3)
@@ -8268,6 +8638,280 @@ namespace Proyecto2_Compi2_CSharp
                                         }
 
                                     }
+                                    else
+                                    {
+                                        string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                        string funcionop = nodo.ChildNodes[3].Token.Text;
+
+                                        if (clase.funciones.ExisteF(funcionop))
+                                        {
+                                            Funcion aux = clase.funciones.Existe(funcionop);
+
+
+                                            if (aux.TieneParametros())
+                                            {
+                                                txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                            }
+                                            else
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+
+                                                respuesta += "\r\np = t" + contadorTemp;
+                                                respuesta += "\r\nCall " + aux.nombre + "()";
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + 0";
+
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                                string valor = "t" + contadorTemp;
+
+                                                string dimensiones = ActuarC(nodo.ChildNodes[1]);
+
+                                                string[] dim = dimensiones.Split(',');
+
+                                                string[] dimO = temp.dimensiones.Split(',');
+
+                                                if (dim.Length == dimO.Length)
+                                                {
+                                                    int pos = 0;
+                                                    int total = 0;
+
+                                                    for (int x = 0; x < dim.Length; x++)
+                                                    {
+                                                        if (x == 0)
+                                                        {
+                                                            pos = Int32.Parse(dim[x]);
+                                                            total = Int32.Parse(dimO[x]);
+                                                        }
+                                                        else
+                                                        {
+                                                            pos = pos * Int32.Parse(dimO[x]) + Int32.Parse(dim[x]) - 1;
+                                                            total = total * Int32.Parse(dimO[x]);
+                                                        }
+
+                                                    }
+
+                                                    if (pos <= total)
+                                                    {
+                                                        respuesta += "\r\n" + temp.nombre + "[" + pos + "] = " + valor;
+
+                                                    }
+                                                    else
+                                                    {
+                                                        txtErrores.Text += "\r\nDesbordamiento";
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    respuesta = "";
+                                                    txtErrores.Text += "\r\nDesbordamiento";
+                                                }
+
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                        }
+
+                                    }
+                                }
+                                else if (nodo.ChildNodes.Count == 5)
+                                {
+                                    string valor = ActuarC(nodo.ChildNodes[3]);
+
+                                    string preR = TraduccionC(nodo.ChildNodes[3]);
+
+                                    string[] partes = preR.Split(',');
+
+                                    if (partes.Length == 2)
+                                    {
+                                        respuesta += partes[0];
+                                        valor = partes[1];
+                                    }
+
+
+
+                                    string dimensiones = ActuarC(nodo.ChildNodes[1]);
+
+                                    string[] dim = dimensiones.Split(',');
+
+                                    string[] dimO = temp.dimensiones.Split(',');
+
+                                    if (dim.Length == dimO.Length)
+                                    {
+                                        int pos = 0;
+                                        int total = 0;
+
+                                        for (int x = 0; x < dim.Length; x++)
+                                        {
+                                            if (x == 0)
+                                            {
+                                                pos = Int32.Parse(dim[x]);
+                                                total = Int32.Parse(dimO[x]);
+                                            }
+                                            else
+                                            {
+                                                pos = pos * Int32.Parse(dimO[x]) + Int32.Parse(dim[x]) - 1;
+                                                total = total * Int32.Parse(dimO[x]);
+                                            }
+
+                                        }
+
+                                        if (pos < total)
+                                        {
+
+                                            respuesta += "\r\n" + temp.nombre + "["+pos+"] = " + valor;
+                                            
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nDesbordamiento";
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nDesbordamiento";
+                                    }
+
+
+
+
+
+                                }
+                                else
+                                {
+                                    string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                    string funcionop = nodo.ChildNodes[3].Token.Text;
+
+
+                                    if (clase.funciones.ExisteF(funcionop))
+                                    {
+                                        string tparam = TraduccionC(nodo.ChildNodes[4]);
+
+                                        string[] parametros = tparam.Split(';');
+
+                                        Funcion aux = clase.funciones.ExisteP(funcionop, parametros.Length);
+
+                                        if (aux != null)
+                                        {
+
+                                            if (aux.variables.Buscar_existe("retorno"))
+                                            {
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                int lfalse = contadorTemp;
+
+                                                for (int x = 0; x < parametros.Length; x++)
+                                                {
+                                                    string[] partes = parametros[x].Split(',');
+
+                                                    if (partes.Length == 2)
+                                                    {
+                                                        respuesta += partes[0];
+                                                        contadorTemp++;
+                                                        respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                        respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[1];
+
+                                                    }
+                                                    else
+                                                    {
+                                                        contadorTemp++;
+                                                        respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                        respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[0];
+                                                    }
+                                                }
+
+                                                respuesta += "\r\np = t" + lfalse;
+                                                respuesta += "\r\nCall " + aux.nombre + "()";
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + 0";
+
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                                string valor = "t" + contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                                respuesta += "\r\np = t" + contadorTemp;
+
+                                                string dimensiones = ActuarC(nodo.ChildNodes[1]);
+
+                                                string[] dim = dimensiones.Split(',');
+
+                                                string[] dimO = temp.dimensiones.Split(',');
+
+                                                if (dim.Length == dimO.Length)
+                                                {
+                                                    int pos = 0;
+                                                    int total = 0;
+
+                                                    for (int x = 0; x < dim.Length; x++)
+                                                    {
+                                                        if (x == 0)
+                                                        {
+                                                            pos = Int32.Parse(dim[x]);
+                                                            total = Int32.Parse(dimO[x]);
+                                                        }
+                                                        else
+                                                        {
+                                                            pos = pos * Int32.Parse(dimO[x]) + Int32.Parse(dim[x]) - 1;
+                                                            total = total * Int32.Parse(dimO[x]);
+                                                        }
+
+                                                    }
+
+                                                    if (pos < total)
+                                                    {
+
+                                                        respuesta += "\r\n" + temp.nombre + "[" + pos + "] = " + valor;
+                                                        
+                                                    }
+                                                    else
+                                                    {
+                                                        txtErrores.Text += "\r\nDesbordamiento";
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nDesbordamiento";
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nNo Hay Retorno en la Funcion " + funcionop;
+                                            }
+
+
+
+
+                                        }
+
+
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nNo Existe la Funcion " + funcionop;
+                                    }
                                 }
 
                             }
@@ -8279,7 +8923,8 @@ namespace Proyecto2_Compi2_CSharp
                         }
                         else
                         {
-                            string variable = nodo.ChildNodes[2].Token.Text;
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+                            string variable = nodo.ChildNodes[1].Token.Text;
 
                             if (clase.variables.Buscar_existe(variable))
                             {
@@ -8287,38 +8932,149 @@ namespace Proyecto2_Compi2_CSharp
                                 Variable temp = clase.variables.Buscar(variable);
                                 int auxtemp;
 
-                                if (nodo.ChildNodes.Count == 6)
+                                if (nodo.ChildNodes.Count == 5)
                                 {
-
-                                    //string valor = OperacionesC(nodo.ChildNodes[2]);
-                                    string valor = ActuarC(nodo.ChildNodes[4]);
-
-                                    string preR = TraduccionC(nodo.ChildNodes[4]);
-
-                                    string[] partes = preR.Split(',');
-
-                                    if (partes.Length == 2)
+                                    if (nodo.ChildNodes[2].Term.Name.Equals("="))
                                     {
-                                        respuesta += partes[0];
-                                        valor = partes[1];
+                                        //string valor = OperacionesC(nodo.ChildNodes[2]);
+                                        string valor = ActuarC(nodo.ChildNodes[3]);
+
+                                        string preR = TraduccionC(nodo.ChildNodes[3]);
+
+                                        string[] partes = preR.Split(',');
+
+                                        if (partes.Length == 2)
+                                        {
+                                            respuesta += partes[0];
+                                            valor = partes[1];
+                                        }
+                                        else
+                                        {
+
+                                        }
+
+                                        respuesta += "\r\n" + temp.nombre + " = " + valor;
+                                    }
+                                    else if (nodo.ChildNodes[3].Term.Name.ToString() == "aumentar")
+                                    {
+
+
+                                        string dimensiones = ActuarC(nodo.ChildNodes[2]);
+
+                                        string[] dim = dimensiones.Split(',');
+
+                                        string[] dimO = temp.dimensiones.Split(',');
+
+                                        if (dim.Length == dimO.Length)
+                                        {
+                                            int pos = 0;
+                                            int total = 0;
+
+                                            for (int x = 0; x < dim.Length; x++)
+                                            {
+                                                if (x == 0)
+                                                {
+                                                    pos = Int32.Parse(dim[x]);
+                                                    total = Int32.Parse(dimO[x]);
+                                                }
+                                                else
+                                                {
+                                                    pos = pos * Int32.Parse(dimO[x]) + Int32.Parse(dim[x]) - 1;
+                                                    total = total * Int32.Parse(dimO[x]);
+                                                }
+
+                                            }
+
+                                            if (pos < total)
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre + "[" + pos + "]";
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxt + "+ 1";
+
+                                                respuesta += "\r\n" + temp.nombre + "[" + pos + "] = t" + contadorTemp;
+
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nDesbordamiento";
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nDesbordamiento";
+                                        }
+
+
                                     }
                                     else
                                     {
 
+
+                                        string dimensiones = ActuarC(nodo.ChildNodes[2]);
+
+                                        string[] dim = dimensiones.Split(',');
+
+                                        string[] dimO = temp.dimensiones.Split(',');
+
+                                        if (dim.Length == dimO.Length)
+                                        {
+                                            int pos = 0;
+                                            int total = 0;
+
+                                            for (int x = 0; x < dim.Length; x++)
+                                            {
+                                                if (x == 0)
+                                                {
+                                                    pos = Int32.Parse(dim[x]);
+                                                    total = Int32.Parse(dimO[x]);
+                                                }
+                                                else
+                                                {
+                                                    pos = pos * Int32.Parse(dimO[x]) + Int32.Parse(dim[x]) - 1;
+                                                    total = total * Int32.Parse(dimO[x]);
+                                                }
+
+                                            }
+
+                                            if (pos < total)
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre + "[" + pos + "]";
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " - 1";
+
+                                                respuesta += "\r\n" + temp.nombre + "[" + pos + "] = t" + contadorTemp;
+
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nDesbordamiento";
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nDesbordamiento";
+                                        }
+
+
                                     }
 
-                                    respuesta += "\r\n" + temp.nombre + " = " + valor;
-
-
-
-
                                 }
-                                else if (nodo.ChildNodes.Count == 5)
+                                else if (nodo.ChildNodes.Count == 4)
                                 {
 
                                     string valor;
 
-                                    if (nodo.ChildNodes[3].Term.Name.ToString() == "aumentar")
+                                    if (nodo.ChildNodes[2].Term.Name.ToString() == "aumentar")
                                     {
                                         contadorTemp++;
                                         respuesta = "\r\nt" + contadorTemp + " = " + temp.nombre;
@@ -8341,12 +9097,12 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta = "\r\n" + temp.nombre + " = t" + contadorTemp;
                                     }
                                 }
-                                else if (nodo.ChildNodes.Count == 8)
+                                else if (nodo.ChildNodes.Count == 7)
                                 {
-                                    Funcion funcion = clase.funciones.Existe(fun_actual);
-                                    string nombre = nodo.ChildNodes[2].Token.Text;
+                                    
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
 
-                                    string funcionop = nodo.ChildNodes[4].Token.Text;
+                                    string funcionop = nodo.ChildNodes[3].Token.Text;
 
                                     if (clase.funciones.ExisteF(funcionop))
                                     {
@@ -8389,15 +9145,15 @@ namespace Proyecto2_Compi2_CSharp
                                         txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
                                     }
                                 }
-                                else if (nodo.ChildNodes.Count == 9)
+                                else if (nodo.ChildNodes.Count == 8)
                                 {
-                                    Funcion funcion = clase.funciones.Existe(fun_actual);
+                                    
 
-                                    if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                                    if (nodo.ChildNodes[1].Term.Name.ToString() == "ID")
                                     {
-                                        string nombre = nodo.ChildNodes[2].Token.Text;
+                                        string nombre = nodo.ChildNodes[1].Token.Text;
 
-                                        string funcionop = nodo.ChildNodes[4].Token.Text;
+                                        string funcionop = nodo.ChildNodes[3].Token.Text;
 
 
                                         if (clase.funciones.ExisteF(funcionop))
@@ -8479,6 +9235,192 @@ namespace Proyecto2_Compi2_CSharp
 
                                     }
                                 }
+                                else if (nodo.ChildNodes.Count == 6)
+                                {
+                                    string valor = ActuarC(nodo.ChildNodes[4]);
+
+                                    string preR = TraduccionC(nodo.ChildNodes[4]);
+
+                                    string[] partes = preR.Split(',');
+
+                                    if (partes.Length == 2)
+                                    {
+                                        respuesta += partes[0];
+                                        valor = partes[1];
+                                    }
+
+
+
+                                    string dimensiones = ActuarC(nodo.ChildNodes[2]);
+
+                                    string[] dim = dimensiones.Split(',');
+
+                                    string[] dimO = temp.dimensiones.Split(',');
+
+                                    if (dim.Length == dimO.Length)
+                                    {
+                                        int pos = 0;
+                                        int total = 0;
+
+                                        for (int x = 0; x < dim.Length; x++)
+                                        {
+                                            if (x == 0)
+                                            {
+                                                pos = Int32.Parse(dim[x]);
+                                                total = Int32.Parse(dimO[x]);
+                                            }
+                                            else
+                                            {
+                                                pos = pos * Int32.Parse(dimO[x]) + Int32.Parse(dim[x]) - 1;
+                                                total = total * Int32.Parse(dimO[x]);
+                                            }
+
+                                        }
+
+                                        if (pos < total)
+                                        {
+
+                                            respuesta += "\r\n" + temp.nombre + "[" + pos + "] = " + valor;
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nDesbordamiento";
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nDesbordamiento";
+                                    }
+
+                                }
+                                else
+                                {
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    string funcionop = nodo.ChildNodes[4].Token.Text;
+
+
+                                    if (clase.funciones.ExisteF(funcionop))
+                                    {
+                                        string tparam = TraduccionC(nodo.ChildNodes[4]);
+
+                                        string[] parametros = tparam.Split(';');
+
+                                        Funcion aux = clase.funciones.ExisteP(funcionop, parametros.Length);
+
+                                        if (aux != null)
+                                        {
+
+                                            if (aux.variables.Buscar_existe("retorno"))
+                                            {
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                int lfalse = contadorTemp;
+
+                                                for (int x = 0; x < parametros.Length; x++)
+                                                {
+                                                    string[] partes = parametros[x].Split(',');
+
+                                                    if (partes.Length == 2)
+                                                    {
+                                                        respuesta += partes[0];
+                                                        contadorTemp++;
+                                                        respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                        respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[1];
+
+                                                    }
+                                                    else
+                                                    {
+                                                        contadorTemp++;
+                                                        respuesta += "\r\nt" + contadorTemp + " = t" + lfalse + " + " + (x + 1);
+                                                        respuesta += "\r\npila[t" + contadorTemp + "] = " + partes[0];
+                                                    }
+                                                }
+
+                                                respuesta += "\r\np = t" + lfalse;
+                                                respuesta += "\r\nCall " + aux.nombre + "()";
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + 0";
+
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                                string valor = "t" + contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                                respuesta += "\r\np = t" + contadorTemp;
+
+                                                string dimensiones = ActuarC(nodo.ChildNodes[1]);
+
+                                                string[] dim = dimensiones.Split(',');
+
+                                                string[] dimO = temp.dimensiones.Split(',');
+
+                                                if (dim.Length == dimO.Length)
+                                                {
+                                                    int pos = 0;
+                                                    int total = 0;
+
+                                                    for (int x = 0; x < dim.Length; x++)
+                                                    {
+                                                        if (x == 0)
+                                                        {
+                                                            pos = Int32.Parse(dim[x]);
+                                                            total = Int32.Parse(dimO[x]);
+                                                        }
+                                                        else
+                                                        {
+                                                            pos = pos * Int32.Parse(dimO[x]) + Int32.Parse(dim[x]) - 1;
+                                                            total = total * Int32.Parse(dimO[x]);
+                                                        }
+
+                                                    }
+
+                                                    if (pos < total)
+                                                    {
+
+                                                        respuesta += "\r\n" + temp.nombre + "[" + pos + "] = " + valor;
+
+                                                    }
+                                                    else
+                                                    {
+                                                        txtErrores.Text += "\r\nDesbordamiento";
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    txtErrores.Text += "\r\nDesbordamiento";
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                txtErrores.Text += "\r\nNo Hay Retorno en la Funcion " + funcionop;
+                                            }
+
+
+
+
+                                        }
+
+
+
+                                    }
+                                    else
+                                    {
+                                        txtErrores.Text += "\r\nNo Existe la Funcion " + funcionop;
+                                    }
+                                }
+
                             }
                             else
                             {

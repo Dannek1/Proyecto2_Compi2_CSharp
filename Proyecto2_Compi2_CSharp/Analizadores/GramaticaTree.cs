@@ -30,18 +30,18 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             RegexBasedTerminal Rretorna = new RegexBasedTerminal("Rretorna", "retornar ");
             RegexBasedTerminal Rimprimir = new RegexBasedTerminal("Rimprimir", "imprimir\\[");
             RegexBasedTerminal Rself = new RegexBasedTerminal("Rself", "self");
-            RegexBasedTerminal Rsi = new RegexBasedTerminal("Rsi", "SI\\[");
-            RegexBasedTerminal Rsino = new RegexBasedTerminal("Rsino", "SI_NO");
-            RegexBasedTerminal Rsinosi = new RegexBasedTerminal("Rsinosi", "SI_NO_SI");
+            RegexBasedTerminal Rsi = new RegexBasedTerminal("Rsi", "SI ");
+            RegexBasedTerminal Rsino = new RegexBasedTerminal("Rsino", "SI_NO ");
+            RegexBasedTerminal Rsinosi = new RegexBasedTerminal("Rsinosi", "SI_NO_SI ");
             RegexBasedTerminal Rsalir = new RegexBasedTerminal("Rsalir", "salir ");
             RegexBasedTerminal Relegir = new RegexBasedTerminal("Relejir", "ELEGIR CASO ");
             RegexBasedTerminal Rcontinuar = new RegexBasedTerminal("Rcontinuar", "CONTINUAR ");
-            RegexBasedTerminal Rmientras = new RegexBasedTerminal("Rmientras", "MIENTRAS\\[");
-            RegexBasedTerminal Rhacer = new RegexBasedTerminal("Rhacer", "HACER");
-            RegexBasedTerminal Rrepetir = new RegexBasedTerminal("Rrepetir", "REPETIR");
-            RegexBasedTerminal Rhasta = new RegexBasedTerminal("Rhasta", "HASTA\\[");
+            RegexBasedTerminal Rmientras = new RegexBasedTerminal("Rmientras", "MIENTRAS ");
+            RegexBasedTerminal Rhacer = new RegexBasedTerminal("Rhacer", "HACER ");
+            RegexBasedTerminal Rrepetir = new RegexBasedTerminal("Rrepetir", "REPETIR ");
+            RegexBasedTerminal Rhasta = new RegexBasedTerminal("Rhasta", "HASTA ");
             RegexBasedTerminal RPara = new RegexBasedTerminal("Rpara", "Para\\[");
-            RegexBasedTerminal Rloop = new RegexBasedTerminal("Rloop", "loop");
+            RegexBasedTerminal Rloop = new RegexBasedTerminal("Rloop", "loop ");
             RegexBasedTerminal RoutS = new RegexBasedTerminal("RoutS", "out_string\\[");
             RegexBasedTerminal RParseint = new RegexBasedTerminal("RParseint", "ParseInt\\[");
             RegexBasedTerminal RParseD = new RegexBasedTerminal("RParseD", "ParseDouble\\[");
@@ -161,7 +161,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                     Sino = new NonTerminal("Sino"),
                     Salir = new NonTerminal("Salir"),
                     Repetir = new NonTerminal("Repetir"),
-                    SinoS = new NonTerminal("SinoS");
+                    SinoS = new NonTerminal("SinoS"),
+                    K = new NonTerminal("K");
 
             S.Rule = Cabeza + Cuerpo
                    | Cuerpo;
@@ -237,10 +238,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | ID + Dimensiones + "=>" + Operacion + Eos
                             | ID + "." + ID + "=>" + Operacion + Eos; 
 
-            IF.Rule =   Rsi + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS + Sino//7
-                      | Rsi + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + Sino//6
-                      | Rsi + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS//6
-                      | Rsi + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;//5
+            IF.Rule =   Rsi + Condicion + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS + Sino//7
+                      | Rsi + Condicion + DosPuntos + Eos + Indent + Sentencias + Dedent + Sino//6
+                      | Rsi + Condicion + DosPuntos + Eos + Indent + Sentencias + Dedent + SinoS//6
+                      | Rsi + Condicion + DosPuntos + Eos + Indent + Sentencias + Dedent;//5
 
             SinoS.Rule =   SinoS + Rsinosi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent//7
                          | Rsinosi + "[" + Condicion + "]" + DosPuntos + Eos + Indent + Sentencias + Dedent;//6
@@ -280,29 +281,30 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             Condicion.Rule = Logica;
 
-            Logica.Rule = Logica + Logica + Or
-                        | Logica + Logica + and
-                        | Logica + Logica + XOR
-                        | not + Logica
-                        | "(" + Logica + ")"
+            Logica.Rule = "{" + Logica + Logica + Or + "}"
+                        | "{" + Logica + Logica + and + "}"
+                        | "{" + Logica + Logica + XOR + "}"
+                        | "{" + not + Logica + "}"
                         | Relacional;
 
-            Relacional.Rule = Relacional + Relacional + Igual
-                            | Relacional + Relacional + Diferente
-                            | Relacional + Relacional + Menor
-                            | Relacional + Relacional + MenorQue
-                            | Relacional + Relacional + Mayor
-                            | Relacional + Relacional + MayorQue
-                            | "(" + Relacional + ")"
+            Relacional.Rule = "[" + Relacional + Relacional + Igual    + "]"
+                            | "[" + Relacional + Relacional + Diferente+ "]"
+                            | "[" + Relacional + Relacional + Menor    + "]"
+                            | "[" + Relacional + Relacional + MenorQue + "]"
+                            | "[" + Relacional + Relacional + Mayor    + "]"
+                            | "[" + Relacional + Relacional + MayorQue + "]"
                             | Operacion;
 
-            Operacion.Rule =  Operacion + Operacion + suma 
-                            | Operacion + Operacion + resta 
-                            | Operacion + Operacion + division 
-                            | Operacion + Operacion + multiplicacion
-                            | Operacion + Operacion + potencia
-                            | "(" + Operacion + ")"
-                            | ID
+            Operacion.Rule = "(" + Operacion + Operacion + suma + ")"
+                            | "(" + Operacion + Operacion + resta + ")"
+                            | "(" + Operacion + Operacion + division + ")"
+                            | "(" + Operacion + Operacion + multiplicacion + ")"
+                            | "(" + Operacion + Operacion + potencia + ")"
+                            | K;
+
+
+
+               K.Rule=ID
                             | ID + "[" + Operacion + "]"
                             | Rself + "." + ID
                             | Valor
