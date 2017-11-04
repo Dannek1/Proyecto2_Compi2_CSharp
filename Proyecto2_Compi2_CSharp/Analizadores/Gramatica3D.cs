@@ -1,0 +1,195 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Irony.Parsing;
+
+
+namespace Proyecto2_Compi2_CSharp.Analizadores
+{
+    class Gramatica3D:Grammar
+    {
+        public Gramatica3D() : base(false)
+        {
+
+            RegexBasedTerminal iniCuerpo = new RegexBasedTerminal("iniCuerpo", "{");
+            RegexBasedTerminal finCuerpo = new RegexBasedTerminal("finCuerpo", "}");
+
+            RegexBasedTerminal ParA = new RegexBasedTerminal("ParA", "\\(");
+            RegexBasedTerminal ParC = new RegexBasedTerminal("ParC", "\\)");
+
+
+            //Visibilidad 
+            RegexBasedTerminal publico = new RegexBasedTerminal("publico", "publico ");
+            RegexBasedTerminal privado = new RegexBasedTerminal("privado", "privado ");
+            RegexBasedTerminal protegido = new RegexBasedTerminal("protegido", "protegido ");
+
+
+            //Reservadas
+            RegexBasedTerminal funcion = new RegexBasedTerminal("funcion", "fuction ");
+
+            //Identificador normal
+            IdentifierTerminal ID = new IdentifierTerminal("ID");
+
+            //Temporales
+            RegexBasedTerminal temporal = new RegexBasedTerminal("temporal", "t[0-9]+");
+
+            //Etiquetas
+            RegexBasedTerminal etiqueta = new RegexBasedTerminal("etiqueta", "L[0-9]+");
+
+            RegexBasedTerminal Goto = new RegexBasedTerminal("Goto", "Goto ");
+
+            RegexBasedTerminal RIF = new RegexBasedTerminal("IF", "if ");
+            RegexBasedTerminal RIFALSE = new RegexBasedTerminal("IFFalse", "iffalse ");
+
+            RegexBasedTerminal RPrint = new RegexBasedTerminal("Print", "Print\\(");
+
+            //tipos de datos
+            NumberLiteral Entero = new NumberLiteral("entero");
+
+            RegexBasedTerminal Doble = new RegexBasedTerminal("Doble", "[0-9]+\\.[0-9]{6}");
+
+            RegexBasedTerminal Verdadero = new RegexBasedTerminal("verdadero", "verdadero|true");
+            RegexBasedTerminal Falso = new RegexBasedTerminal("falso", "falso|false");
+
+            RegexBasedTerminal Caracter = new RegexBasedTerminal("Caracter", "\'([a-zA-Z0-9]|#(n|f|t)|#|\\[|\\])\'");
+        
+            StringLiteral Cadena = new StringLiteral("Cadena", "\"");
+
+            //Relaciones
+            RegexBasedTerminal Igual = new RegexBasedTerminal("igual", "==");
+            RegexBasedTerminal Diferente = new RegexBasedTerminal("Diferente", "!=");
+            RegexBasedTerminal Menor = new RegexBasedTerminal("menor", "<");
+            RegexBasedTerminal Mayor = new RegexBasedTerminal("mayor", ">");
+            RegexBasedTerminal MenorQue = new RegexBasedTerminal("menor_que", "<=");
+            RegexBasedTerminal MayorQue = new RegexBasedTerminal("mayor_que", ">=");
+
+            //Artimeticos
+            RegexBasedTerminal suma = new RegexBasedTerminal("suma", "\\+");
+            RegexBasedTerminal resta = new RegexBasedTerminal("resta", "-");
+            RegexBasedTerminal multiplicacion = new RegexBasedTerminal("multi", "\\*");
+            RegexBasedTerminal division = new RegexBasedTerminal("div", "\\/");
+            RegexBasedTerminal potencia = new RegexBasedTerminal("power", "\\^");
+
+            //Otros
+
+
+            NonTerminal S = new NonTerminal("S"),
+                 Cabeza = new NonTerminal("Cabeza"),
+                 Visibilidad = new NonTerminal("Visibilidad"),
+                 Componentes = new NonTerminal("Componentes"),
+                 Componente = new NonTerminal("Componente"),
+                 Sentencias = new NonTerminal("Sentencias"),
+                 Sentencia = new NonTerminal("Sentencia"),
+                 If = new NonTerminal("IF"),
+                 Asignacion = new NonTerminal("Asignacion"),
+                 Imprimir = new NonTerminal("Imprimir"),
+                 Label = new NonTerminal("Label"),
+                 Globales = new NonTerminal("Globales"),
+                 Operacion = new NonTerminal("Operacion"),
+                 Operador = new NonTerminal("Operador"),
+                 Condicion = new NonTerminal("Condicion"),
+                 OCondicion = new NonTerminal("OCondicion"),
+                 Go_to = new NonTerminal("Go_to"),
+                 Valor = new NonTerminal("Valor"),
+                 Cuerpo = new NonTerminal("Cuerpo");
+
+            S.Rule = Cabeza;
+
+            Cabeza.Rule = Globales + Visibilidad + ID + iniCuerpo + Componentes + finCuerpo
+                         | Visibilidad + ID + iniCuerpo + Componentes + finCuerpo;
+
+            Globales.Rule = Asignacion + Globales
+                            | Asignacion;
+
+            Componentes.Rule = Componente + Componentes
+                            | Componente;
+
+            Componente.Rule = Visibilidad + funcion + ID + ParA+")" + iniCuerpo + Sentencias + finCuerpo;
+
+            Sentencias.Rule = Sentencia + Sentencias
+                            | Sentencia;
+
+            Sentencia.Rule = Label
+                          | If
+                          | Asignacion
+                          | Go_to
+                          | Imprimir;
+
+            Asignacion.Rule = ID + "=" + Operacion
+                            | ID + "[" + "]" + "=" + Operacion
+                            | ID + "[" + Operacion + "]" + "=" + Operacion
+                            | temporal + "=" + Operacion
+                            | temporal + "[" + "]" + "=" + Operacion
+                            | temporal + "[" + Operacion + "]" + "=" + Operacion;
+
+            Operacion.Rule = ID + Operador + ID
+                            | ID + Operador + temporal
+                            | ID + Operador + Valor
+                            | temporal + Operador + temporal
+                            | temporal + Operador + ID
+                            | temporal + Operador + Valor
+                            | ID + "[" + ID + "]"
+                            | ID + "[" + temporal + "]"
+                            | ID + "[" + Valor + "]"
+                            | ID
+                            | temporal
+                            | Valor;
+
+            If.Rule = etiqueta + Sentencias + RIF + Condicion + Goto + etiqueta
+                   | etiqueta + Sentencias + RIFALSE + Condicion + Goto + etiqueta
+                   | etiqueta + RIF + Condicion + Goto + etiqueta
+                   | etiqueta + RIFALSE + Condicion + Goto + etiqueta
+                   | RIF + Condicion + Goto + etiqueta
+                   | RIFALSE + Condicion + Goto + etiqueta;
+
+            Imprimir.Rule = RPrint + Operacion + ")";
+
+            Label.Rule = etiqueta + Sentencias
+                        | etiqueta;
+
+            Valor.Rule = Entero
+                  | Verdadero
+                  | Falso
+                  | Caracter
+                  | Doble
+                  | Cadena;
+
+            Condicion.Rule = ID + OCondicion + ID
+                           | ID + OCondicion + temporal
+                           | ID + OCondicion + Valor
+                           | temporal + OCondicion + temporal
+                           | temporal + OCondicion + ID
+                           | temporal + OCondicion + Valor
+                           | ID + "[" + ID + "]"
+                           | ID + "[" + temporal + "]"
+                           | ID + "[" + Valor + "]"
+                           | Valor;
+
+            Operador.Rule = suma
+                           | resta
+                           | multiplicacion
+                           | division
+                           | potencia;
+
+            OCondicion.Rule = Igual
+                            | Diferente
+                            | Mayor
+                            | Menor
+                            | MayorQue
+                            | MenorQue;
+
+            Visibilidad.Rule = publico
+                        | privado
+                        | protegido;
+
+            Go_to.Rule = Goto + etiqueta;
+
+
+            this.Root = S;
+
+
+        }
+    }
+}
