@@ -54,10 +54,13 @@
     <Compile Include="Analizadores\Gramatica3D.cs" />
     <Compile Include="Analizadores\GramaticaOC.cs" />
     <Compile Include="Analizadores\GramaticaTree.cs" />
+    <Compile Include="Componente3D\Clase3D.cs" />
     <Compile Include="Componente3D\Etiqueta.cs" />
     <Compile Include="Componente3D\Etiquetas.cs" />
     <Compile Include="Componente3D\Funcion3D.cs" />
     <Compile Include="Componente3D\Funciones3D.cs" />
+    <Compile Include="Componente3D\Temporal.cs" />
+    <Compile Include="Componente3D\Temporales.cs" />
     <Compile Include="Componentes\Clase.cs" />
     <Compile Include="Componentes\Clases.cs" />
     <Compile Include="Componentes\Funcion.cs" />

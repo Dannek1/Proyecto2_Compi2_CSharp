@@ -16,9 +16,6 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             RegexBasedTerminal iniCuerpo = new RegexBasedTerminal("iniCuerpo", "{");
             RegexBasedTerminal finCuerpo = new RegexBasedTerminal("finCuerpo", "}");
 
-            RegexBasedTerminal ParA = new RegexBasedTerminal("ParA", "\\(");
-            RegexBasedTerminal ParC = new RegexBasedTerminal("ParC", "\\)");
-
 
             //Visibilidad 
             RegexBasedTerminal publico = new RegexBasedTerminal("publico", "publico ");
@@ -33,15 +30,15 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             IdentifierTerminal ID = new IdentifierTerminal("ID");
 
             //Temporales
-            RegexBasedTerminal temporal = new RegexBasedTerminal("temporal", "t[0-9]+");
+            RegexBasedTerminal temporal = new RegexBasedTerminal("temporal", "t[0-9]+ ");
 
             //Etiquetas
-            RegexBasedTerminal etiqueta = new RegexBasedTerminal("etiqueta", "L[0-9]+");
+            RegexBasedTerminal etiqueta = new RegexBasedTerminal("etiqueta", "L[0-9]+ ");
 
             RegexBasedTerminal Goto = new RegexBasedTerminal("Goto", "Goto ");
 
-            RegexBasedTerminal RIF = new RegexBasedTerminal("IF", "if ");
-            RegexBasedTerminal RIFALSE = new RegexBasedTerminal("IFFalse", "iffalse ");
+            RegexBasedTerminal RIF = new RegexBasedTerminal("RIF", "if ");
+            RegexBasedTerminal RIFALSE = new RegexBasedTerminal("RIFFalse", "iffalse ");
 
             RegexBasedTerminal RPrint = new RegexBasedTerminal("Print", "Print\\(");
 
@@ -73,7 +70,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             RegexBasedTerminal potencia = new RegexBasedTerminal("power", "\\^");
 
             //Otros
-
+            RegexBasedTerminal llamar = new RegexBasedTerminal("llamar", "Call ");
 
             NonTerminal S = new NonTerminal("S"),
                  Cabeza = new NonTerminal("Cabeza"),
@@ -93,56 +90,58 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                  OCondicion = new NonTerminal("OCondicion"),
                  Go_to = new NonTerminal("Go_to"),
                  Valor = new NonTerminal("Valor"),
+                 Clases = new NonTerminal("Clases"),
+                 llanada = new NonTerminal("llanada"),
                  Cuerpo = new NonTerminal("Cuerpo");
 
-            S.Rule = Cabeza;
+            S.Rule = Clases;
 
-            Cabeza.Rule = Globales + Visibilidad + ID + iniCuerpo + Componentes + finCuerpo
+            Clases.Rule = Clases + Cabeza
+                          | Cabeza;  
+
+            Cabeza.Rule = Visibilidad + ID + iniCuerpo + Globales + Componentes + finCuerpo
                          | Visibilidad + ID + iniCuerpo + Componentes + finCuerpo;
 
-            Globales.Rule = Asignacion + Globales
+            Globales.Rule = Globales+ Asignacion
                             | Asignacion;
 
-            Componentes.Rule = Componente + Componentes
+            Componentes.Rule = Componentes + Componente
                             | Componente;
 
-            Componente.Rule = Visibilidad + funcion + ID + ParA+")" + iniCuerpo + Sentencias + finCuerpo;
+            Componente.Rule = Visibilidad + funcion + ID + "("+")" + iniCuerpo + Sentencias + finCuerpo;
 
-            Sentencias.Rule = Sentencia + Sentencias
+            Sentencias.Rule = Sentencias + Sentencia
                             | Sentencia;
 
             Sentencia.Rule = Label
                           | If
                           | Asignacion
                           | Go_to
-                          | Imprimir;
+                          | Imprimir
+                          | llanada;
 
             Asignacion.Rule = ID + "=" + Operacion
-                            | ID + "[" + "]" + "=" + Operacion
                             | ID + "[" + Operacion + "]" + "=" + Operacion
-                            | temporal + "=" + Operacion
-                            | temporal + "[" + "]" + "=" + Operacion
-                            | temporal + "[" + Operacion + "]" + "=" + Operacion;
+                            | temporal + "=" + Operacion;
 
-            Operacion.Rule = ID + Operador + ID
-                            | ID + Operador + temporal
-                            | ID + Operador + Valor
-                            | temporal + Operador + temporal
-                            | temporal + Operador + ID
-                            | temporal + Operador + Valor
-                            | ID + "[" + ID + "]"
-                            | ID + "[" + temporal + "]"
-                            | ID + "[" + Valor + "]"
+            Operacion.Rule = ID + Operador + ID//3
+                            | ID + Operador + temporal//3
+                            | ID + Operador + Valor//3
+                            | temporal + Operador + temporal//3
+                            | temporal + Operador + ID//3
+                            | temporal + Operador + Valor//3
+                            | Valor + Operador + temporal//3
+                            | Valor + Operador + ID//3
+                            | Valor + Operador + Valor//3
+                            | ID + "[" + ID + "]"//4
+                            | ID + "[" + temporal + "]"//4
+                            | ID + "[" + Valor + "]"//4
                             | ID
                             | temporal
                             | Valor;
 
-            If.Rule = etiqueta + Sentencias + RIF + Condicion + Goto + etiqueta
-                   | etiqueta + Sentencias + RIFALSE + Condicion + Goto + etiqueta
-                   | etiqueta + RIF + Condicion + Goto + etiqueta
-                   | etiqueta + RIFALSE + Condicion + Goto + etiqueta
-                   | RIF + Condicion + Goto + etiqueta
-                   | RIFALSE + Condicion + Goto + etiqueta;
+            If.Rule = RIF + Condicion + Goto + etiqueta//4
+                   | RIFALSE + Condicion + Goto + etiqueta;//4
 
             Imprimir.Rule = RPrint + Operacion + ")";
 
@@ -185,6 +184,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                         | protegido;
 
             Go_to.Rule = Goto + etiqueta;
+
+            llanada.Rule = llamar + ID + "()";
 
 
             this.Root = S;

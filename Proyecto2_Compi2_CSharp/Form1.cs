@@ -13,6 +13,7 @@ using Proyecto2_Compi2_CSharp.Analizadores;
 using Irony.Parsing;
 using System.Diagnostics;
 using Proyecto2_Compi2_CSharp.Componentes;
+using Proyecto2_Compi2_CSharp.Componente3D;
 using System.IO;
 using System.Data.SqlClient;
 
@@ -25,6 +26,7 @@ namespace Proyecto2_Compi2_CSharp
         int contadorL = 0;
         int posheap=0;
         int puntero = 0;
+        int punteroheap = 0;
         string graph = "";
         string errores = "";
         string TresD = "";
@@ -35,12 +37,18 @@ namespace Proyecto2_Compi2_CSharp
         bool Escond2 = false;
         bool importacion = false;
         bool retorna = false;
+        bool global = false;
+        bool ejecutar = false;
+        bool seguirejec = true;
+        bool seguireti = true;
 
         string heapsOcupados = "";
 
         
 
         Clases clases;
+        Funciones3D funciones3D;
+        Temporales temporales;
 
         Object[] Stack;
         Object[] Heap;
@@ -50,6 +58,8 @@ namespace Proyecto2_Compi2_CSharp
         {
             InitializeComponent();
             clases = new Clases();
+            funciones3D = new Funciones3D();
+            temporales = new Temporales();
 
             TreeNode inicial = new TreeNode("Sesión Actual");
             inicial.Name = "inicial";
@@ -187,14 +197,24 @@ namespace Proyecto2_Compi2_CSharp
                 }
                 else
                 {
+                    Genarbol3D(arbol.Root);
+                    GenerateGraph3D("Entrada.txt", "C:/Fuentes/");
+                    Analizar3d(arbol.Root);
+
+                    Funcion3D ejecutable = funciones3D.buscar("principal");
+
+                    if (ejecutable != null)
+                    {
+                        ejecutar = true;
+                        Analizar3d(ejecutable.nodo);
+                        ejecutar = false;
+                    }
 
                 }
 
             }
 
         }
-
-        
 
         public string esCadenaValidaC(string cadenaEntrada, Grammar gramatica)
         {
@@ -322,6 +342,18 @@ namespace Proyecto2_Compi2_CSharp
 
         }
 
+        public void Genarbol3D(ParseTreeNode raiz)
+        {
+            System.IO.StreamWriter f = new System.IO.StreamWriter("C:/Arboles/Arbol3D.txt");
+            f.Write("digraph lista{ rankdir=TB;node [shape = box, style=rounded]; ");
+            graph = "";
+            Generar(raiz);
+            f.Write(graph);
+            f.Write("}");
+            f.Close();
+
+        }
+
         public void Generar(ParseTreeNode raiz)
         {
             graph = graph + "nodo" + raiz.GetHashCode() + "[label=\"" + raiz.ToString().Replace("\"", "\\\"") + " \", fillcolor=\"red\", style =\"filled\", shape=\"circle\"]; \r\n";
@@ -345,8 +377,51 @@ namespace Proyecto2_Compi2_CSharp
                 String archivoSalida = "C:\\Arboles\\ArbolC.jpg";
 
 
-                var info = new System.Diagnostics.ProcessStartInfo("CMD.exe", "dot " + archivoEntrada + @"-o " + archivoSalida + "-Tpng");
+                string comando= "dot " + archivoEntrada + @"-o " + archivoSalida + "-Tpng";
+                Process cmd = new Process();
+                cmd.StartInfo.FileName = "cmd.exe";
+                cmd.StartInfo.RedirectStandardInput = true;
+                cmd.StartInfo.RedirectStandardOutput = true;
+                cmd.StartInfo.CreateNoWindow = true;
+                cmd.StartInfo.UseShellExecute = false;
 
+                cmd.Start();
+                cmd.StandardInput.WriteLine(comando);
+                cmd.StandardInput.Flush();
+                cmd.StandardInput.Close();
+                cmd.WaitForExit();
+                cmd.StandardOutput.ReadToEnd();
+
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private static void GenerateGraph3D(string fileName, string path)
+        {
+            try
+            {
+                //String dotPath = "C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe";
+                String archivoEntrada = "C:\\Arboles\\Arbol3D.txt";
+                String archivoSalida = "C:\\Arboles\\Arbol3D.jpg";
+
+
+                string comando = "dot " + archivoEntrada + @"-o " + archivoSalida + "-Tpng";
+                Process cmd = new Process();
+                cmd.StartInfo.FileName = "cmd.exe";
+                cmd.StartInfo.RedirectStandardInput = true;
+                cmd.StartInfo.RedirectStandardOutput = true;
+                cmd.StartInfo.CreateNoWindow = true;
+                cmd.StartInfo.UseShellExecute = false;
+
+                cmd.Start();
+                cmd.StandardInput.WriteLine(comando);
+                cmd.StandardInput.Flush();
+                cmd.StandardInput.Close();
+                cmd.WaitForExit();
+                cmd.StandardOutput.ReadToEnd();
 
             }
             catch (Exception e)
@@ -364,8 +439,20 @@ namespace Proyecto2_Compi2_CSharp
                 String archivoSalida = "C:\\Arboles\\ArbolT.jpg";
 
 
-                var info = new System.Diagnostics.ProcessStartInfo("CMD.exe", "dot " + archivoEntrada + @"-o " + archivoSalida + "-Tpng");
+                string comando="dot " + archivoEntrada + @"-o " + archivoSalida + "-Tpng";
+                Process cmd = new Process();
+                cmd.StartInfo.FileName = "cmd.exe";
+                cmd.StartInfo.RedirectStandardInput = true;
+                cmd.StartInfo.RedirectStandardOutput = true;
+                cmd.StartInfo.CreateNoWindow = true;
+                cmd.StartInfo.UseShellExecute = false;
 
+                cmd.Start();
+                cmd.StandardInput.WriteLine(comando);
+                cmd.StandardInput.Flush();
+                cmd.StandardInput.Close();
+                cmd.WaitForExit();
+                cmd.StandardOutput.ReadToEnd();
 
             }
             catch (Exception e)
@@ -1017,6 +1104,14 @@ namespace Proyecto2_Compi2_CSharp
 
                                 resultado = x + "()" + "{}";
 
+                            }else if (x.Equals("principal"))
+                            {
+                                Clase temp = clases.Existe(clase_actual);
+                                Funcion nuevo = new Funcion("principal", x, "publico");
+
+                                temp.funciones.Insertar(nuevo);
+
+                                resultado = x + "()" + "{}";
                             }
                             else
                             {
@@ -1094,6 +1189,16 @@ namespace Proyecto2_Compi2_CSharp
 
                                         resultado = x + "()" + "{\r\n" + ActuarC(nodo.ChildNodes[4]) + "\r\n}";
 
+                                    }
+                                    else if (x.Equals("principal"))
+                                    {
+                                        Clase temp = clases.Existe(clase_actual);
+                                        Funcion nuevo = new Funcion("principal", x, "publico");
+
+                                        nuevo.nodo = nodo.ChildNodes[4];
+                                        temp.funciones.Insertar(nuevo);
+
+                                        resultado = x + "()" + "{\r\n" + ActuarC(nodo.ChildNodes[4]) + "\r\n}";
                                     }
                                     else
                                     {
@@ -5201,14 +5306,14 @@ namespace Proyecto2_Compi2_CSharp
                         {
                             if (IsEntero(op2))
                             {
-                                int operacion = (int)Char.GetNumericValue(op2[1]) + Int32.Parse(op2);
+                                int operacion = (int)Char.GetNumericValue(op1[1]) + Int32.Parse(op2);
 
                                 respuesta = operacion.ToString();
 
                             }
                             else if (IsDouble(op2))
                             {
-                                double operacion = (double)Char.GetNumericValue(op2[1]) + Double.Parse(op2);
+                                double operacion = (double)Char.GetNumericValue(op1[1]) + Double.Parse(op2);
 
                                 respuesta = operacion.ToString();
 
@@ -5217,11 +5322,11 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 txtErrores.Text += "Error de Tipos";
                             }
-                            else if (op1.Equals("verdadero") || op1.Equals("true"))
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
                             {
                                 txtErrores.Text += "Error de Tipos";
                             }
-                            else if (op1.Equals("falso") || op1.Equals("false"))
+                            else if (op2.Equals("falso") || op2.Equals("false"))
                             {
                                 txtErrores.Text += "Error de Tipos";
                             }
@@ -5305,11 +5410,11 @@ namespace Proyecto2_Compi2_CSharp
                                 respuesta = op1 + op2;
 
                             }
-                            else if (op1.Equals("verdadero") || op1.Equals("true"))
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
                             {
                                 txtErrores.Text += "Error de Tipos";
                             }
-                            else if (op1.Equals("falso") || op1.Equals("false"))
+                            else if (op2.Equals("falso") || op2.Equals("false"))
                             {
                                 txtErrores.Text += "Error de Tipos";
                             }
@@ -5346,7 +5451,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
 
 
-                                int operacion = Int32.Parse(op1) - (int)Char.GetNumericValue(op2[0]);
+                                int operacion = Int32.Parse(op1) - (int)Char.GetNumericValue(op2[1]);
 
                                 respuesta = operacion.ToString();
 
@@ -5389,7 +5494,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
 
 
-                                double operacion = double.Parse(op1) - (double)Char.GetNumericValue(op2[0]);
+                                double operacion = double.Parse(op1) - (double)Char.GetNumericValue(op2[1]);
 
                                 respuesta = operacion.ToString();
 
@@ -5461,14 +5566,14 @@ namespace Proyecto2_Compi2_CSharp
 
                             if (IsEntero(op2))
                             {
-                                int operacion = Int32.Parse(op2);
+                                int operacion =0 - Int32.Parse(op2);
 
                                 respuesta = operacion.ToString();
 
                             }
                             else if (IsDouble(op2))
                             {
-                                double operacion = Double.Parse(op2);
+                                double operacion =0 - Double.Parse(op2);
 
                                 respuesta = operacion.ToString();
 
@@ -5937,6 +6042,1203 @@ namespace Proyecto2_Compi2_CSharp
             return respuesta;
         }
 
+        public string Condiciones(string op1, string op2, string sim)
+        {
+            string respuesta = "";
+
+            switch (sim)
+            {
+                case "==":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op1) == Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                                
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (Double.Parse(op1)== Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                if(Int32.Parse(op1) == (int)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                if (Int32.Parse(op1) == 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                if (Int32.Parse(op1) == 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                               if(double.Parse(op1) == double.Parse(op2))
+                                    {
+                                        respuesta = "true";
+                                    }
+                                    else
+                                    {
+                                        respuesta = "false";
+                                    }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (double.Parse(op1) == double.Parse(op2))
+                                    {
+                                        respuesta = "true";
+                                    }
+                                    else
+                                    {
+                                        respuesta = "false";
+                                    }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                if (double.Parse(op1) == (double)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                if(double.Parse(op1) == 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                if (double.Parse(op1) == 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta="false";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                               if((int)Char.GetNumericValue(op1[1]) == Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if((double)Char.GetNumericValue(op1[1]) == Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                if(op1.Equals(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                if ((int)Char.GetNumericValue(op2[1]) == 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                            }
+                            else if (op1.Equals("falso") || op1.Equals("false"))
+                            {
+                                if ((int)Char.GetNumericValue(op2[1]) == 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                            }
+                            else
+                            {
+                                respuesta = "false";
+
+                            }
+
+                        }
+                        else if (op1.Equals("verdadero") || op1.Equals("true"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op2) == 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (double.Parse(op2) == 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                respuesta = "true";
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                respuesta = "false";
+                            }
+                            else
+                            {
+                                respuesta = "false";
+
+                            }
+                        }
+                        else if (op1.Equals("falso") || op1.Equals("false"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op2) == 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (double.Parse(op2) == 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                respuesta = "false";
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                respuesta = "true";
+                            }
+                            else
+                            {
+                                respuesta = "false";
+
+                            }
+                        }
+                        else
+                        {
+                            if (IsEntero(op2))
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                txtErrores.Text += "Error de Tipos";
+
+                            }
+                            else if (op1.Equals("verdadero") || op1.Equals("true"))
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                            else if (op1.Equals("falso") || op1.Equals("false"))
+                            {
+                                txtErrores.Text += "Error de Tipos";
+                            }
+                            else
+                            {
+                                if (op1 == op2)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+
+                case "!=":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op1) != Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (Double.Parse(op1) != Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                if (Int32.Parse(op1) != (int)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                if (Int32.Parse(op1) != 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                if (Int32.Parse(op1) != 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if (double.Parse(op1) != double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (double.Parse(op1) != double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                if (double.Parse(op1) != (double)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                if (double.Parse(op1) != 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+
+                            }
+                            else if (op2.Equals("falso") || op2.Equals("false"))
+                            {
+                                if (double.Parse(op1) != 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if ((int)Char.GetNumericValue(op1[1]) != Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if ((double)Char.GetNumericValue(op1[1]) != Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                if (op1 != op2)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                            }
+                            else if (op2.Equals("verdadero") || op2.Equals("true"))
+                            {
+                                if ((int)Char.GetNumericValue(op2[1]) != 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                            }
+                            else if (op1.Equals("falso") || op1.Equals("false"))
+                            {
+                                if ((int)Char.GetNumericValue(op2[1]) != 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                            }
+                            else
+                            {
+                                if (op1 != op2)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                        }
+                        else if (op1.Equals("verdadero") || op1.Equals("true"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op2) != 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+                                
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+
+                                if (double.Parse(op2) != 1)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                if (op1 != op2)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                        }
+                        else if (op1.Equals("falso") || op1.Equals("false"))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op2) != 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (double.Parse(op2) != 0)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                if (op1 != op2)
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            if (op1 != op2)
+                            {
+                                respuesta = "true";
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+                        }
+                        break;
+                    }
+
+                case ">":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op1) > Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (Double.Parse(op1) > Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                if (Int32.Parse(op1) > (int)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if (double.Parse(op1) > double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (double.Parse(op1) > double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                if (double.Parse(op1) > (double)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if ((int)Char.GetNumericValue(op1[1]) > Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if ((double)Char.GetNumericValue(op1[1]) > Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else
+                        {
+                            respuesta = "false";
+                        }
+
+                        break;
+                    }
+
+                case "<":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op1) < Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (Double.Parse(op1) < Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                if (Int32.Parse(op1) < (int)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if (double.Parse(op1) < double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (double.Parse(op1) < double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                if (double.Parse(op1) < (double)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if ((int)Char.GetNumericValue(op1[1]) < Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if ((double)Char.GetNumericValue(op1[1]) < Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else
+                        {
+                            respuesta = "false";
+                        }
+
+                      
+
+                        break;
+                    }
+
+                case ">=":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op1) >= Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (Double.Parse(op1) >= Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                if (Int32.Parse(op1) >= (int)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if (double.Parse(op1) >= double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (double.Parse(op1) >= double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                if (double.Parse(op1) >= (double)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if ((int)Char.GetNumericValue(op1[1]) >= Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if ((double)Char.GetNumericValue(op1[1]) >= Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else
+                        {
+                            respuesta = "false";
+                        }
+
+                        break;
+                    }
+
+                case "<=":
+                    {
+                        //op1 int
+                        if (IsEntero(op1))
+                        {
+
+                            if (IsEntero(op2))
+                            {
+                                if (Int32.Parse(op1) <= Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (Double.Parse(op1) <= Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+
+
+                                if (Int32.Parse(op1) <= (int)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else if (IsDouble(op1))
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if (double.Parse(op1) <= double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if (double.Parse(op1) <= double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (op2.Length == 1)
+                            {
+                                if (double.Parse(op1) <= (double)Char.GetNumericValue(op2[0]))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+                        }
+                        else if (op1.Length == 1)
+                        {
+                            if (IsEntero(op2))
+                            {
+                                if ((int)Char.GetNumericValue(op1[1]) <= Int32.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else if (IsDouble(op2))
+                            {
+                                if ((double)Char.GetNumericValue(op1[1]) <= Double.Parse(op2))
+                                {
+                                    respuesta = "true";
+                                }
+                                else
+                                {
+                                    respuesta = "false";
+                                }
+
+                            }
+                            else
+                            {
+                                respuesta = "false";
+                            }
+
+                        }
+                        else
+                        {
+                            respuesta = "false";
+                        }
+
+
+
+                        break;
+                    }
+
+
+            }
+
+
+            return respuesta;
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -6348,7 +7650,14 @@ namespace Proyecto2_Compi2_CSharp
                                 respuesta = "\r\n " +temp.visibilidad+" fuction " + temp.nombre + " ()" + "{}";
 
                             }
-                            
+                            else if (x.Equals("principal"))
+                            {
+                                Clase clase = clases.Existe(clase_actual);
+                                Funcion temp = clase.funciones.Existe("principal");
+                                respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "{}";
+                            }
+
+
 
 
                         }
@@ -6396,10 +7705,15 @@ namespace Proyecto2_Compi2_CSharp
                                         Clase clase = clases.Existe(x);
 
                                         Funcion temp = clase.funciones.Existe(x + "_");
-
-
+                                        
                                         respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "{\r\n" + TraduccionC(nodo.ChildNodes[4]) + "\r\n}";
 
+                                    }
+                                    else if (x.Equals("principal"))
+                                    {
+                                        Clase clase = clases.Existe(clase_actual);
+                                        Funcion temp = clase.funciones.Existe("principal");
+                                        respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "{\r\n" + TraduccionC(nodo.ChildNodes[4]) + "\r\n}";
                                     }
                                     else
                                     {
@@ -9641,14 +10955,14 @@ namespace Proyecto2_Compi2_CSharp
 
                             if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
                             {
-                                respuesta += "\r\nL" + lfalso;
-                                respuesta += "\r\nL" + contadorL;
+                                respuesta += "\r\nL" + lfalso + " ";
+                                respuesta += "\r\nL" + contadorL+" ";
                                 
                             }
                             else
                             {
-                                respuesta += "\r\nL" + contadorL;
-                                respuesta += "\r\nL" + lfalso;
+                                respuesta += "\r\nL" + contadorL + " ";
+                                respuesta += "\r\nL" + lfalso + " ";
                             }
 
                             
@@ -9684,16 +10998,16 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
                                 {
-                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += "\r\nL" + lfalso + " ";
                                     respuesta += TraduccionC(nodo.ChildNodes[4]);
-                                    respuesta += "\r\nL" + contadorL;
+                                    respuesta += "\r\nL" + contadorL + " ";
 
                                 }
                                 else
                                 {
-                                    respuesta += "\r\nL" + contadorL;
+                                    respuesta += "\r\nL" + contadorL + " ";
                                     respuesta += TraduccionC(nodo.ChildNodes[4]);
-                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += "\r\nL" + lfalso + " ";
                                 }
 
 
@@ -9731,24 +11045,24 @@ namespace Proyecto2_Compi2_CSharp
                                 if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
                                 {
 
-                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += "\r\nL" + lfalso + " ";
                                     contadorL++;
-                                    respuesta += "\r\nGoto L" + contadorL;
+                                    respuesta += "\r\nGoto L" + contadorL + " ";
                                     int lsalida = contadorL;
-                                    respuesta += "\r\nL" + (contadorL-1);
+                                    respuesta += "\r\nL" + (contadorL-1) + " ";
                                     respuesta += TraduccionC(nodo.ChildNodes[5]);
-                                    respuesta += "\r\nL" + lsalida;
+                                    respuesta += "\r\nL" + lsalida + " ";
 
                                 }
                                 else
                                 {
-                                    respuesta += "\r\nL" + contadorL;
+                                    respuesta += "\r\nL" + contadorL + " ";
                                     contadorL++;
-                                    respuesta += "\r\nGoto L" + contadorL;
+                                    respuesta += "\r\nGoto L" + contadorL + " ";
                                     int lsalida = contadorL;
-                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += "\r\nL" + lfalso + " ";
                                     respuesta += TraduccionC(nodo.ChildNodes[5]);
-                                    respuesta += "\r\nL" + lsalida;
+                                    respuesta += "\r\nL" + lsalida + " ";
                                 }
 
                               
@@ -9786,24 +11100,24 @@ namespace Proyecto2_Compi2_CSharp
                                 if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
                                 {
 
-                                    respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[4]);
+                                    respuesta += "\r\nL" + lfalso + " " + TraduccionC(nodo.ChildNodes[4]);
                                     contadorL++;
-                                    respuesta += "\r\nGoto L" + contadorL;
+                                    respuesta += "\r\nGoto L" + contadorL + " ";
                                     int lsalida = contadorL;
-                                    respuesta += "\r\nL" + (contadorL - 1);
+                                    respuesta += "\r\nL" + (contadorL - 1) + " ";
                                     respuesta += TraduccionC(nodo.ChildNodes[6]);
-                                    respuesta += "\r\nL" + lsalida;
+                                    respuesta += "\r\nL" + lsalida + " ";
 
                                 }
                                 else
                                 {
-                                    respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
+                                    respuesta += "\r\nL" + contadorL + " " + TraduccionC(nodo.ChildNodes[4]);
                                     contadorL++;
-                                    respuesta += "\r\nGoto L" + contadorL;
+                                    respuesta += "\r\nGoto L" + contadorL + " ";
                                     int lsalida = contadorL;
-                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += "\r\nL" + lfalso + " ";
                                     respuesta += TraduccionC(nodo.ChildNodes[6]);
-                                    respuesta += "\r\nL" + lsalida;
+                                    respuesta += "\r\nL" + lsalida + " ";
                                 }
 
                                 
@@ -9837,21 +11151,21 @@ namespace Proyecto2_Compi2_CSharp
                                 {
 
 
-                                    respuesta += "\r\nL" + lfalso;
+                                    respuesta += "\r\nL" + lfalso + " ";
                                     contadorL++;
-                                    respuesta += "\r\nGoto L" + contadorL;
+                                    respuesta += "\r\nGoto L" + contadorL + " ";
                                    
-                                    respuesta += "\r\nL" + (contadorL-1);
-                                    respuesta += "\r\nL" + contadorL;
+                                    respuesta += "\r\nL" + (contadorL-1) + " ";
+                                    respuesta += "\r\nL" + contadorL + " ";
 
                                 }
                                 else
                                 {
-                                    respuesta += "\r\nL" + contadorL;
+                                    respuesta += "\r\nL" + contadorL + " ";
                                     contadorL++;
-                                    respuesta += "\r\nGoto L" + contadorL;
-                                    respuesta += "\r\nL" + lfalso;
-                                    respuesta += "\r\nL" + contadorL;
+                                    respuesta += "\r\nGoto L" + contadorL + " ";
+                                    respuesta += "\r\nL" + lfalso + " ";
+                                    respuesta += "\r\nL" + contadorL + " ";
                                 }
 
                                
@@ -9887,21 +11201,21 @@ namespace Proyecto2_Compi2_CSharp
                             {
 
 
-                                respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[4]);
+                                respuesta += "\r\nL" + lfalso + " " + TraduccionC(nodo.ChildNodes[4]);
                                 contadorL++;
-                                respuesta += "\r\nGoto L" + contadorL;
+                                respuesta += "\r\nGoto L" + contadorL + " ";
 
-                                respuesta += "\r\nL" + (contadorL - 1) + TraduccionC(nodo.ChildNodes[6]);
-                                respuesta += "\r\nL" + contadorL;
+                                respuesta += "\r\nL" + (contadorL - 1) + " " + TraduccionC(nodo.ChildNodes[6]);
+                                respuesta += "\r\nL" + contadorL + " ";
 
                             }
                             else
                             {
-                                respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
+                                respuesta += "\r\nL" + contadorL + " " + TraduccionC(nodo.ChildNodes[4]);
                                 contadorL++;
-                                respuesta += "\r\nGoto L" + contadorL;
-                                respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[6]);
-                                respuesta += "\r\nL" + contadorL;
+                                respuesta += "\r\nGoto L" + contadorL + " ";
+                                respuesta += "\r\nL" + lfalso + " " + TraduccionC(nodo.ChildNodes[6]);
+                                respuesta += "\r\nL" + contadorL + " ";
                             }
 
 
@@ -9938,21 +11252,21 @@ namespace Proyecto2_Compi2_CSharp
                             {
 
 
-                                respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[4]);
+                                respuesta += "\r\nL" + lfalso + " " + TraduccionC(nodo.ChildNodes[4]);
                                 contadorL++;
-                                respuesta += "\r\nGoto L" + contadorL;
+                                respuesta += "\r\nGoto L" + contadorL + " ";
 
-                                respuesta += "\r\nL" + (contadorL - 1) + TraduccionC(nodo.ChildNodes[7]);
-                                respuesta += "\r\nL" + contadorL;
+                                respuesta += "\r\nL" + (contadorL - 1) + " " + TraduccionC(nodo.ChildNodes[7]);
+                                respuesta += "\r\nL" + contadorL + " ";
 
                             }
                             else
                             {
-                                respuesta += "\r\nL" + contadorL + TraduccionC(nodo.ChildNodes[4]);
+                                respuesta += "\r\nL" + contadorL + " " + TraduccionC(nodo.ChildNodes[4]);
                                 contadorL++;
-                                respuesta += "\r\nGoto L" + contadorL;
-                                respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[7]);
-                                respuesta += "\r\nL" + contadorL;
+                                respuesta += "\r\nGoto L" + contadorL + " ";
+                                respuesta += "\r\nL" + lfalso + " " + TraduccionC(nodo.ChildNodes[7]);
+                                respuesta += "\r\nL" + contadorL + " ";
                             }
 
                         
@@ -10016,7 +11330,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     if (cond22.Contains("Goto"))
                                     {
-                                        string remplazo = "Goto L" + (contadorL - 1) + ";Goto";
+                                        string remplazo = "Goto L" + (contadorL - 1) + " ;Goto";
                                         cond22 = cond22.Replace("Goto", remplazo);
                                     }
 
@@ -10060,7 +11374,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     if (cond22.Contains("Goto"))
                                     {
-                                        string remplazo = "Goto L" + (contadorL-1) + ";Goto";
+                                        string remplazo = "Goto L" + (contadorL-1) + " ;Goto";
                                         cond22 = cond22.Replace("Goto", remplazo);
                                     }
 
@@ -10092,9 +11406,9 @@ namespace Proyecto2_Compi2_CSharp
                                 respuesta += Partes[0];
                                 contadorL++;
 
-                                respuesta += ";\r\nif " + Partes[1] + " Goto L" + contadorL;
+                                respuesta += ";\r\nif " + Partes[1] + " Goto L" + contadorL +" ";
                                 contadorL++;
-                                respuesta += ";\r\nGoto L" + contadorL;
+                                respuesta += ";\r\nGoto L" + contadorL+" ";
 
                             }
                             else
@@ -10364,9 +11678,9 @@ namespace Proyecto2_Compi2_CSharp
                             }
                         }
 
-                        respuesta += "\r\nL" + lfalso + TraduccionC(nodo.ChildNodes[4]);
-                        respuesta += "\r\nGoto L"+lciclo;
-                        respuesta += "\r\nL" + contadorL ;
+                        respuesta += "\r\nL" + lfalso + " " + TraduccionC(nodo.ChildNodes[4]);
+                        respuesta += "\r\nGoto L"+lciclo + " ";
+                        respuesta += "\r\nL" + contadorL + " ";
 
 
 
@@ -10385,7 +11699,7 @@ namespace Proyecto2_Compi2_CSharp
                             contadorL++;
                             int lciclo = contadorL;
 
-                            respuesta = "\r\nL" + lciclo;
+                            respuesta = "\r\nL" + lciclo + " ";
                             respuesta += TraduccionC(nodo.ChildNodes[1]);
 
                             string pre = TraduccionC(nodo.ChildNodes[4]);
@@ -10410,9 +11724,9 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += partes[x];
                                 }
                             }
-                            respuesta += "\r\nL" + lfalso;
-                            respuesta += "\r\nGoto L" + lciclo;
-                            respuesta += "\r\nL" + contadorL;
+                            respuesta += "\r\nL" + lfalso + " ";
+                            respuesta += "\r\nGoto L" + lciclo + " ";
+                            respuesta += "\r\nL" + contadorL + " ";
 
                         }
                         else
@@ -10424,7 +11738,7 @@ namespace Proyecto2_Compi2_CSharp
                             contadorL++;
                             int lciclo = contadorL;
 
-                            respuesta = "\r\nL" + lciclo;
+                            respuesta = "\r\nL" + lciclo + " ";
                             
 
                             string pre = TraduccionC(nodo.ChildNodes[3]);
@@ -10449,9 +11763,9 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += partes[x];
                                 }
                             }
-                            respuesta += "\r\nL" + lfalso;
-                            respuesta += "\r\nGoto L" + lciclo;
-                            respuesta += "\r\nL" + contadorL;
+                            respuesta += "\r\nL" + lfalso + " ";
+                            respuesta += "\r\nGoto L" + lciclo + " ";
+                            respuesta += "\r\nL" + contadorL + " ";
                             
                             
                         }
@@ -10504,7 +11818,7 @@ namespace Proyecto2_Compi2_CSharp
                                 contadorL++;
                                 int lciclo = contadorL;
 
-                                respuesta += "\r\nL" + lciclo;
+                                respuesta += "\r\nL" + lciclo + " ";
                                 respuesta += partescond[0];
                                 respuesta += partescond[1];
                                 respuesta += partescond[2];
@@ -10549,7 +11863,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
-                                    respuesta += "\r\nGoto L" + lciclo;
+                                    respuesta += "\r\nGoto L" + lciclo + " ";
                                     x = contadorL - 1;
                                     respuesta += "\r\nL" + x;
                                 }
@@ -10584,13 +11898,13 @@ namespace Proyecto2_Compi2_CSharp
                                 contadorL++;
                                 int lciclo = contadorL;
 
-                                respuesta += "\r\nL" + lciclo;
+                                respuesta += "\r\nL" + lciclo + " ";
                                 respuesta += partescond[0];
                                 respuesta += partescond[1];
                                 respuesta += partescond[2];
 
                                 int x = contadorL - 2;
-                                respuesta += "\r\nL" + x;
+                                respuesta += "\r\nL" + x + " ";
 
                                 if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "aumentar")
                                 {
@@ -10601,7 +11915,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " + 1";
                                     respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
 
-                                    respuesta += "\r\nGoto L" + lciclo;
+                                    respuesta += "\r\nGoto L" + lciclo + " ";
                                     x = contadorL - 1;
                                     respuesta += "\r\nL" + x;
                                 }
@@ -10614,9 +11928,9 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " - 1";
                                     respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
 
-                                    respuesta += "\r\nGoto L" + lciclo;
+                                    respuesta += "\r\nGoto L" + lciclo + " ";
                                     x = contadorL - 1;
-                                    respuesta += "\r\nL" + x;
+                                    respuesta += "\r\nL" + x + " ";
                                 }
 
                             }
@@ -10758,7 +12072,7 @@ namespace Proyecto2_Compi2_CSharp
                                     contadorL++;
                                     int lciclo = contadorL;
 
-                                    respuesta += "\r\nL" + lciclo;
+                                    respuesta += "\r\nL" + lciclo + " ";
                                     respuesta += partescond[0];
                                     respuesta += partescond[1];
                                     respuesta += partescond[2];
@@ -10785,7 +12099,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
 
-                                        respuesta += "\r\nGoto L" + lciclo;
+                                        respuesta += "\r\nGoto L" + lciclo + " ";
                                         x = contadorL - 1;
                                         respuesta += "\r\nL" + x;
                                     }
@@ -10807,9 +12121,9 @@ namespace Proyecto2_Compi2_CSharp
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
-                                        respuesta += "\r\nGoto L" + lciclo;
+                                        respuesta += "\r\nGoto L" + lciclo + " ";
                                         x = contadorL - 1;
-                                        respuesta += "\r\nL" + x;
+                                        respuesta += "\r\nL" + x + " ";
                                     }
 
                                 }
@@ -10842,7 +12156,7 @@ namespace Proyecto2_Compi2_CSharp
                                     contadorL++;
                                     int lciclo = contadorL;
 
-                                    respuesta += "\r\nL" + lciclo;
+                                    respuesta += "\r\nL" + lciclo + " ";
                                     respuesta += partescond[0];
                                     respuesta += partescond[1];
                                     respuesta += partescond[2];
@@ -10859,9 +12173,9 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " + 1";
                                         respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
 
-                                        respuesta += "\r\nGoto L" + lciclo;
+                                        respuesta += "\r\nGoto L" + lciclo + " ";
                                         x = contadorL - 1;
-                                        respuesta += "\r\nL" + x;
+                                        respuesta += "\r\nL" + x + " ";
                                     }
                                     else if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "disminuir")
                                     {
@@ -10872,9 +12186,9 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\nt" + contadorTemp + " = t" + auxt + " - 1";
                                         respuesta += "\r\n" + temp.nombre + " = t" + contadorTemp;
 
-                                        respuesta += "\r\nGoto L" + lciclo;
+                                        respuesta += "\r\nGoto L" + lciclo + " ";
                                         x = contadorL - 1;
-                                        respuesta += "\r\nL" + x;
+                                        respuesta += "\r\nL" + x + " ";
                                     }
 
                                 }
@@ -10919,13 +12233,13 @@ namespace Proyecto2_Compi2_CSharp
                                 contadorL++;
                                 int lciclo = contadorL;
 
-                                respuesta += "\r\nL" + lciclo;
+                                respuesta += "\r\nL" + lciclo + " ";
                                 respuesta += partescond[0];
                                 respuesta += partescond[1];
                                 respuesta += partescond[2];
 
                                 int x = contadorL - 2;
-                                respuesta += "\r\nL" + x;
+                                respuesta += "\r\nL" + x + " ";
 
                                 if (nodo.ChildNodes[9].Token.Terminal.Name.ToString() == "aumentar")
                                 {
@@ -10946,9 +12260,9 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
 
-                                    respuesta += "\r\nGoto L" + lciclo;
+                                    respuesta += "\r\nGoto L" + lciclo + " ";
                                     x = contadorL - 1;
-                                    respuesta += "\r\nL" + x;
+                                    respuesta += "\r\nL" + x + " ";
                                 }
                                 else if (nodo.ChildNodes[9].Token.Terminal.Name.ToString() == "disminuir")
                                 {
@@ -10968,9 +12282,9 @@ namespace Proyecto2_Compi2_CSharp
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
-                                    respuesta += "\r\nGoto L" + lciclo;
+                                    respuesta += "\r\nGoto L" + lciclo + " ";
                                     x = contadorL - 1;
-                                    respuesta += "\r\nL" + x;
+                                    respuesta += "\r\nL" + x + " ";
                                 }
 
                             }
@@ -11009,7 +12323,7 @@ namespace Proyecto2_Compi2_CSharp
                                 partes2[1] = partes2[1].Replace("if", "iffalse");
 
                                 string viejo = "L" + (contadorL + 2);
-                                string nuevo = "L" + contadorL;
+                                string nuevo = "L" + contadorL + " ";
 
                                 partes2[1] = partes2[1].Replace(viejo, nuevo);
                             }
@@ -11020,7 +12334,7 @@ namespace Proyecto2_Compi2_CSharp
                             respuesta += partes1[1];
                             respuesta += partes2[1];
                             respuesta += TraduccionC(nodo.ChildNodes[6]);
-                            respuesta += "\r\nL" + contadorL;
+                            respuesta += "\r\nL" + contadorL +" ";
                             //ActuarC(nodo.ChildNodes[6]);
                         }
                         else
@@ -11053,7 +12367,7 @@ namespace Proyecto2_Compi2_CSharp
 
                             respuesta += partes1[1];
                             respuesta += partes2[1];
-                            respuesta += "\r\nL" + contadorL;
+                            respuesta += "\r\nL" + contadorL +" ";
 
 
                             // txtConsola.Text += "\r\nCondiciones Corectas";
@@ -11075,7 +12389,7 @@ namespace Proyecto2_Compi2_CSharp
                             contadorL++;
                             int lciclo = contadorL;
 
-                            respuesta = "\r\nL" + lciclo;
+                            respuesta = "\r\nL" + lciclo + " ";
                             respuesta += TraduccionC(nodo.ChildNodes[1]);
 
                             string pre = TraduccionC(nodo.ChildNodes[4]);
@@ -11100,9 +12414,9 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += partes[x];
                                 }
                             }
-                            respuesta += "\r\nL" + contadorL;
-                            respuesta += "\r\nGoto L" + lciclo;
-                            respuesta += "\r\nL" + lfalso;
+                            respuesta += "\r\nL" + contadorL + " ";
+                            respuesta += "\r\nGoto L" + lciclo + " ";
+                            respuesta += "\r\nL" + lfalso + " ";
                         }
                         else
                         {
@@ -11113,7 +12427,7 @@ namespace Proyecto2_Compi2_CSharp
                             contadorL++;
                             int lciclo = contadorL;
 
-                            respuesta = "\r\nL" + lciclo;
+                            respuesta = "\r\nL" + lciclo + " ";
 
 
                             string pre = TraduccionC(nodo.ChildNodes[3]);
@@ -11138,9 +12452,9 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += partes[x];
                                 }
                             }
-                            respuesta += "\r\nL" + contadorL;
-                            respuesta += "\r\nGoto L" + lciclo;
-                            respuesta += "\r\nL" + lfalso;
+                            respuesta += "\r\nL" + contadorL + " ";
+                            respuesta += "\r\nGoto L" + lciclo + " ";
+                            respuesta += "\r\nL" + lfalso + " ";
 
 
                         }
@@ -12344,7 +13658,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     if (cond22.Contains("Goto"))
                                     {
-                                        string remplazo = "Goto L" + (contadorL - 1) + ";Goto";
+                                        string remplazo = "Goto L" + (contadorL - 1) + " ;Goto";
                                         cond22 = cond22.Replace("Goto", remplazo);
                                     }
 
@@ -12388,7 +13702,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     if (cond22.Contains("Goto"))
                                     {
-                                        string remplazo = "Goto L" + (contadorL - 1) + ";Goto";
+                                        string remplazo = "Goto L" + (contadorL - 1) + " ;Goto";
                                         cond22 = cond22.Replace("Goto", remplazo);
                                     }
 
@@ -12420,9 +13734,9 @@ namespace Proyecto2_Compi2_CSharp
                                 respuesta += Partes[0];
                                 contadorL++;
 
-                                respuesta += ";\r\nif " + Partes[1] + " Goto L" + contadorL;
+                                respuesta += ";\r\nif " + Partes[1] + " Goto L" + contadorL + " ";
                                 contadorL++;
-                                respuesta += ";\r\nGoto L" + contadorL;
+                                respuesta += ";\r\nGoto L" + contadorL + " ";
 
                             }
                             else
@@ -12786,6 +14100,784 @@ namespace Proyecto2_Compi2_CSharp
             return respuesta;
         }
 
+        public string Analizar3d(ParseTreeNode nodo)
+        {
+            string respuesta = "";
+
+            switch (nodo.Term.Name.ToString())
+            {
+                case "S":
+                    {
+                        respuesta = Analizar3d(nodo.ChildNodes[0]);
+
+                        break;
+                    }
+
+                case "Clases":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            Analizar3d(nodo.ChildNodes[0]);
+                            Analizar3d(nodo.ChildNodes[1]);
+
+                        }
+                        else
+                        {
+                            Analizar3d(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Cabeza":
+                    {
+                        if (nodo.ChildNodes.Count == 6)
+                        {
+                            //string visibilidad = Analizar3d(nodo.ChildNodes[0]);
+                            clase_actual = nodo.ChildNodes[1].Token.Text;
+                            Analizar3d(nodo.ChildNodes[3]);
+                            Analizar3d(nodo.ChildNodes[4]);
+                        }
+                        else
+                        {
+                            //string visibilidad = Analizar3d(nodo.ChildNodes[0]);
+                            clase_actual = nodo.ChildNodes[1].Token.Text;
+                            Analizar3d(nodo.ChildNodes[3]);
+                        }
+
+
+                        break;
+                    }
+
+                case "Componentes":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            Analizar3d(nodo.ChildNodes[0]);
+                            Analizar3d(nodo.ChildNodes[1]);
+
+                        }
+                        else
+                        {
+                            Analizar3d(nodo.ChildNodes[0]);
+                        }
+
+                        break;
+                    }
+
+                case "Componente":
+                    {
+                        fun_actual = nodo.ChildNodes[2].Token.Text;
+                        Funcion3D funcion = new Funcion3D(fun_actual, nodo.ChildNodes[6]);
+                        funciones3D.Insertar(funcion);
+
+                        Analizar3d(nodo.ChildNodes[6]);
+
+                        break;
+                    }
+
+                case "Sentencias":
+                    {
+
+                        if (ejecutar)
+                        {
+                            if (nodo.ChildNodes.Count == 2)
+                            {
+                                Analizar3d(nodo.ChildNodes[0]);
+
+                                if (seguirejec)
+                                {
+                                    Analizar3d(nodo.ChildNodes[1]);
+                                }
+                                else
+                                {
+                                    seguirejec = true;
+                                }
+                                
+                                
+
+                            }
+                            else
+                            {
+                                Analizar3d(nodo.ChildNodes[0]);
+                            }
+                        }
+                        else
+                        {
+                            if (nodo.ChildNodes.Count == 2)
+                            {
+                                Analizar3d(nodo.ChildNodes[0]);
+                                Analizar3d(nodo.ChildNodes[1]);
+
+                            }
+                            else
+                            {
+                                Analizar3d(nodo.ChildNodes[0]);
+                            }
+                        }
+                       
+
+                        break;
+                    }
+
+                case "Sentencia":
+                    {
+                        Analizar3d(nodo.ChildNodes[0]);
+                        break;
+                    }
+
+                case "Asignacion":
+                    {
+                        if (ejecutar)
+                        {
+                            if (nodo.ChildNodes.Count == 3)
+                            {
+                                if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                                {
+                                    string nombre = nodo.ChildNodes[0].Token.Text;
+                                    string valor = Analizar3d(nodo.ChildNodes[2]);
+
+
+                                    if (nombre.Equals("p"))
+                                    {
+                                        puntero = Int32.Parse(valor);
+                                    }
+                                    else if (nombre.Equals("PH"))
+                                    {
+                                        punteroheap = Int32.Parse(valor);
+                                    }
+                                    else if (nombre[0].Equals('t') && Char.IsDigit(nombre[1]))
+                                    {
+                                        Temporal nuevo = new Temporal(nombre.Trim(), valor);
+                                        temporales.Insertar(nuevo);
+                                    }
+                                    else
+                                    {
+                                        Clase clase = clases.Existe(clase_actual);
+
+
+                                        if (clase.variables.Buscar_existe(nombre))
+                                        {
+                                            Variable variable = clase.variables.Buscar(nombre);
+                                            variable.valor = valor;
+                                        }
+
+
+                                    }
+
+                                }
+                                else
+                                {
+                                    string nombre = nodo.ChildNodes[0].Token.Text;
+                                    string valor = Analizar3d(nodo.ChildNodes[2]);
+
+                                    Temporal nuevo = new Temporal(nombre.Trim(), valor);
+                                    temporales.Insertar(nuevo);
+                                }
+                            }
+                            else
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                string posicion = Analizar3d(nodo.ChildNodes[2]);
+
+                                string valor = Analizar3d(nodo.ChildNodes[5]);
+
+
+                                if (nombre.Equals("pila"))
+                                {
+                                    int p = Int32.Parse(posicion);
+                                    Stack[p] = new Object();
+                                    Stack[p] = valor;
+
+                                }
+                                else if (nombre.Equals("Heap"))
+                                {
+                                    int p = Int32.Parse(posicion);
+                                    Heap[p] = new Object();
+                                    Heap[p] = valor;
+                                }
+                                else
+                                {
+                                    Variable var = clases.Existe(clase_actual).variables.Buscar(nombre);
+
+                                    if (var.IsArreglo())
+                                    {
+                                        int p = Int32.Parse(posicion);
+                                        var.arregloV[p] = new object();
+                                        var.arregloV[p] = valor;
+                                    }
+                                }
+
+                            }
+                        }
+
+                        
+                        break;
+                    }
+
+                case "Operacion":
+                    {
+                        if (nodo.ChildNodes.Count == 4)
+                        {
+                            string posicion="";
+
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+                                string vpos = nodo.ChildNodes[2].Token.Text;
+
+                                if (vpos.Equals("p"))
+                                {
+                                    posicion = puntero.ToString();
+                                }
+                                else if (vpos.Equals("PH"))
+                                {
+                                    posicion = punteroheap.ToString();
+                                }
+                                else if (vpos[0].Equals('t') && Char.IsDigit(vpos[1]))
+                                {
+                                    Temporal temporal = temporales.Buscar(vpos);
+                                    posicion = temporal.valor;
+                                }
+                                else
+                                {
+                                    Clase clase = clases.Existe(clase_actual);
+
+
+                                    if (clase.variables.Buscar_existe(vpos))
+                                    {
+                                        Variable variable = clase.variables.Buscar(vpos);
+                                        posicion = variable.valor;
+                                    }
+
+
+                                }
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "temporal")
+                            {
+                                string vpos = nodo.ChildNodes[0].Token.Text;
+                                Variable t = clases.Existe(clase_actual).variables.Buscar(vpos);
+                                posicion = t.valor;
+                            }
+                            else
+                            {
+                                posicion = Analizar3d(nodo.ChildNodes[0]);
+                            }
+
+                            string nombre= nodo.ChildNodes[0].Token.Text;
+                            
+
+
+                            if (nombre.Equals("pila"))
+                            {
+                                int p = Int32.Parse(posicion);
+                                respuesta = Stack[p].ToString();
+
+                            }
+                            else if (nombre.Equals("Heap"))
+                            {
+                                int p = Int32.Parse(posicion);
+                                respuesta = Heap[p].ToString();
+                            }
+                            else
+                            {
+                                Variable var = clases.Existe(clase_actual).variables.Buscar(nombre);
+
+                                if (var.IsArreglo())
+                                {
+                                    int p = Int32.Parse(posicion);
+
+                                    respuesta = var.arregloV[p].ToString();
+                                }
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 3)
+                        {
+                            string op1,op2;
+                            
+                            
+                            string operador = Analizar3d(nodo.ChildNodes[1]);
+
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                if (nombre.Equals("p"))
+                                {
+                                    op1 = puntero.ToString();
+
+                                }
+                                else if (nombre.Equals("PH"))
+                                {
+                                    op1 = punteroheap.ToString();
+                                }
+                                else if (nombre[0].Equals('t') && Char.IsDigit(nombre[1]))
+                                {
+                                    Temporal t = temporales.Buscar(nombre);
+
+                                    op1 = t.valor;
+                                }
+                                else
+                                {
+                                    Variable t = clases.Existe(clase_actual).variables.Buscar(nombre);
+                                    op1 = t.valor;
+                                }
+
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "temporal")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+                                Temporal t = temporales.Buscar(nombre.Trim());
+                                op1 = t.valor;
+                            }
+                            else
+                            {
+                                op1 = Analizar3d(nodo.ChildNodes[0]);
+                            }
+
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+                                string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                if (nombre.Equals("p"))
+                                {
+                                    op2 = puntero.ToString();
+
+                                }
+                                else if (nombre.Equals("PH"))
+                                {
+                                    op2 = punteroheap.ToString();
+                                }
+                                else if (nombre[0].Equals('t') && Char.IsDigit(nombre[1]))
+                                {
+                                    Temporal t = temporales.Buscar(nombre);
+
+                                    op2 = t.valor;
+                                }
+                                else
+                                {
+                                    Variable t = clases.Existe(clase_actual).variables.Buscar(nombre);
+                                    op2 = t.valor;
+                                }
+
+                            }
+                            else if (nodo.ChildNodes[2].Term.Name.ToString() == "temporal")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+                                Temporal t = temporales.Buscar(nombre.Trim());
+                                op2 = t.valor;
+                            }
+                            else
+                            {
+                                op2 = Analizar3d(nodo.ChildNodes[2]);
+                            }
+
+                            respuesta = Operaciones(op1, op2, operador);
+
+                        }
+                        else
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                if (nombre[0].Equals('t') && Char.IsDigit(nombre[1]))
+                                {
+                                    Temporal t = temporales.Buscar(nombre);
+
+                                    respuesta = t.valor;
+                                }
+                                else
+                                {
+                                    Variable t = clases.Existe(clase_actual).variables.Buscar(nombre);
+                                    respuesta = t.valor;
+                                }
+
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "temporal")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+                                Temporal t = temporales.Buscar(nombre.Trim()); 
+                                respuesta = t.valor;
+                            }
+                            else
+                            {
+                                respuesta = Analizar3d(nodo.ChildNodes[0]);
+                            }
+                        }
+
+                        break;
+                    }
+
+                case "Operador":
+                    {
+                        respuesta= nodo.ChildNodes[0].Token.Text;
+                        break;
+                    }
+
+                case "Valor":
+                    {
+                        respuesta = nodo.ChildNodes[0].Token.Text; 
+                        break;
+
+                    }
+
+                case "Go_to":
+                    {
+                        if (ejecutar)
+                        {
+                            Funcion3D funcion = funciones3D.buscar(fun_actual);
+                            Etiqueta etiqueta = funcion.etiquetas.Buscar(nodo.ChildNodes[1].Token.Text);
+
+                            if (etiqueta.nodo != null)
+                            {
+                                Analizar3d(etiqueta.nodo);
+                            }
+
+                            
+                        }
+
+                        break;
+                    }
+
+                case "IF":
+                    {
+
+                        if (ejecutar)
+                        {
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "RIF")
+                            {
+                                string logica = Analizar3d(nodo.ChildNodes[1]);
+                                if (logica.Equals("true"))
+                                {
+                                    string etiqueta = nodo.ChildNodes[3].Token.Text;
+
+                                    Funcion3D funcion = funciones3D.buscar(fun_actual);
+                                    Etiqueta label = funcion.etiquetas.Buscar(etiqueta);
+
+                                    Analizar3d(label.nodo);
+
+                                    seguirejec = false;
+
+                                }
+                            }
+                            else
+                            {
+                                string logica = Analizar3d(nodo.ChildNodes[1]);
+                                if (logica.Equals("false"))
+                                {
+                                    string etiqueta = nodo.ChildNodes[3].Token.Text;
+
+                                    Funcion3D funcion = funciones3D.buscar(fun_actual);
+                                    Etiqueta label = funcion.etiquetas.Buscar(etiqueta);
+
+                                    Analizar3d(label.nodo);
+
+                                    seguirejec = false;
+
+                                }
+                            }
+                        }
+                        
+                        break;
+                    }
+
+                case "Label":
+                    {
+                        if (ejecutar)
+                        {
+                            if (nodo.ChildNodes.Count == 2)
+                            {
+                                if (seguireti)
+                                {
+                                    string nombre = nodo.ChildNodes[0].Token.Text;
+                                    Funcion3D funcion = funciones3D.buscar(fun_actual);
+                                    Etiqueta etiqueta = funcion.etiquetas.Buscar(nombre);
+                                    seguireti = false;
+                                    Analizar3d(etiqueta.nodo);
+
+                                    
+                                }
+                                else
+                                {
+                                    seguireti = true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (nodo.ChildNodes.Count == 2)
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                Etiqueta nuevo = new Etiqueta(nombre, nodo.ChildNodes[1]);
+                                Funcion3D funcion = funciones3D.buscar(fun_actual);
+                                funcion.etiquetas.Insertar(nuevo);
+                                
+                                Analizar3d(nodo.ChildNodes[1]);
+                            }
+                            else
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                Etiqueta nuevo = new Etiqueta(nombre, null);
+                                Funcion3D funcion = funciones3D.buscar(fun_actual);
+                                funcion.etiquetas.Insertar(nuevo);
+                            }
+                        }
+                        
+                        break;
+                    }
+
+                case "Condicion":
+                    {
+                        if (nodo.ChildNodes.Count == 4)
+                        {
+                            string posicion = "";
+
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+                                string vpos = nodo.ChildNodes[2].Token.Text;
+
+                                if (vpos.Equals("p"))
+                                {
+                                    posicion = puntero.ToString();
+                                }
+                                else if (vpos.Equals("PH"))
+                                {
+                                    posicion = punteroheap.ToString();
+                                }
+                                else if (vpos[0].Equals('t') && Char.IsDigit(vpos[1]))
+                                {
+                                    Temporal temporal = temporales.Buscar(vpos);
+                                    posicion = temporal.valor;
+                                }
+                                else
+                                {
+                                    Clase clase = clases.Existe(clase_actual);
+
+
+                                    if (clase.variables.Buscar_existe(vpos))
+                                    {
+                                        Variable variable = clase.variables.Buscar(vpos);
+                                        posicion = variable.valor;
+                                    }
+
+
+                                }
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "temporal")
+                            {
+                                string vpos = nodo.ChildNodes[0].Token.Text;
+                                Variable t = clases.Existe(clase_actual).variables.Buscar(vpos);
+                                posicion = t.valor;
+                            }
+                            else
+                            {
+                                posicion = Analizar3d(nodo.ChildNodes[0]);
+                            }
+
+                            string nombre = nodo.ChildNodes[0].Token.Text;
+
+                            string r= "";
+
+                            if (nombre.Equals("pila"))
+                            {
+                                int p = Int32.Parse(posicion);
+                                r = Stack[p].ToString();
+
+                            }
+                            else if (nombre.Equals("Heap"))
+                            {
+                                int p = Int32.Parse(posicion);
+                                r = Heap[p].ToString();
+                            }
+                            else
+                            {
+                                Variable var = clases.Existe(clase_actual).variables.Buscar(nombre);
+
+                                if (var.IsArreglo())
+                                {
+                                    int p = Int32.Parse(posicion);
+
+                                    r = var.arregloV[p].ToString();
+                                }
+                            }
+
+                            if(r.Equals("true")|| r.Equals("verdadero")||r.Equals("1"))
+                            {
+                                respuesta = "true";
+                            }
+                            else if (r.Equals("falso") || r.Equals("false") || r.Equals("0"))
+                            {
+                                respuesta = "false";
+                            }
+                        }
+                        else if (nodo.ChildNodes.Count == 3)
+                        {
+                            string op1, op2;
+
+
+                            string operador = Analizar3d(nodo.ChildNodes[1]);
+
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                if (nombre.Equals("p"))
+                                {
+                                    op1 = puntero.ToString();
+
+                                }
+                                else if (nombre.Equals("PH"))
+                                {
+                                    op1 = punteroheap.ToString();
+                                }
+                                else if (nombre[0].Equals('t') && Char.IsDigit(nombre[1]))
+                                {
+                                    Temporal t = temporales.Buscar(nombre);
+
+                                    op1 = t.valor;
+                                }
+                                else
+                                {
+                                    Variable t = clases.Existe(clase_actual).variables.Buscar(nombre);
+                                    op1 = t.valor;
+                                }
+
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "temporal")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+                                Temporal t = temporales.Buscar(nombre.Trim());
+                                op1 = t.valor;
+                            }
+                            else
+                            {
+                                op1 = Analizar3d(nodo.ChildNodes[0]);
+                            }
+
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
+                            {
+                                string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                if (nombre.Equals("p"))
+                                {
+                                    op2 = puntero.ToString();
+
+                                }
+                                else if (nombre.Equals("PH"))
+                                {
+                                    op2 = punteroheap.ToString();
+                                }
+                                else if (nombre[0].Equals('t') && Char.IsDigit(nombre[1]))
+                                {
+                                    Temporal t = temporales.Buscar(nombre);
+
+                                    op2 = t.valor;
+                                }
+                                else
+                                {
+                                    Variable t = clases.Existe(clase_actual).variables.Buscar(nombre);
+                                    op2 = t.valor;
+                                }
+
+                            }
+                            else if (nodo.ChildNodes[2].Term.Name.ToString() == "temporal")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+                                Variable t = clases.Existe(clase_actual).variables.Buscar(nombre);
+                                op2 = t.valor;
+                            }
+                            else
+                            {
+                                op2 = Analizar3d(nodo.ChildNodes[2]);
+                            }
+
+                            respuesta = Condiciones(op1, op2, operador);
+
+                        }
+                        else
+                        {
+                            string r = "";
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+
+                                if (nombre[0].Equals('t') && Char.IsDigit(nombre[1]))
+                                {
+                                    Temporal t = temporales.Buscar(nombre);
+
+                                    r = t.valor;
+                                }
+                                else
+                                {
+                                    Variable t = clases.Existe(clase_actual).variables.Buscar(nombre);
+                                    r = t.valor;
+                                }
+
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString() == "temporal")
+                            {
+                                string nombre = nodo.ChildNodes[0].Token.Text;
+                                Variable t = clases.Existe(clase_actual).variables.Buscar(nombre);
+                                r = t.valor;
+                            }
+                            else
+                            {
+                                r = Analizar3d(nodo.ChildNodes[0]);
+                            }
+
+                            if (r.Equals("true") || r.Equals("verdadero") || r.Equals("1"))
+                            {
+                                respuesta = "true";
+                            }
+                            else if (r.Equals("falso") || r.Equals("false") || r.Equals("0"))
+                            {
+                                respuesta = "false";
+                            }
+                        }
+                        break;
+                    }
+
+                case "OCondicion":
+                    {
+                        respuesta = nodo.ChildNodes[0].Token.Text;
+                        break;
+                    }
+
+                case "llanada":
+                    {
+                        if (ejecutar)
+                        {
+                            string ftemporal = fun_actual;
+
+                            fun_actual = nodo.ChildNodes[1].Token.Text;
+
+                            Funcion3D funcion = funciones3D.buscar(fun_actual);
+
+                            Analizar3d(funcion.nodo);
+
+                            fun_actual = ftemporal;
+                        }
+
+                        break;
+                    }
+
+                case "Imprimir":
+                    {
+                        if (ejecutar)
+                        {
+                            txtConsola.Text += "\r\n" + Analizar3d(nodo.ChildNodes[1]);
+                        }
+                        
+                        break;
+                    }
+
+            }
+
+            return respuesta;
+        }
         
     }
 }

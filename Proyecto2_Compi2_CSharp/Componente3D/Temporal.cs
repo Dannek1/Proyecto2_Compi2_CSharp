@@ -3,26 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Irony.Parsing;
 
 namespace Proyecto2_Compi2_CSharp.Componente3D
 {
-    public class Etiqueta
+    public class Temporal
     {
         public string nombre;
-        public ParseTreeNode nodo;
+        public string valor;
+        public Temporal siguiente;
+        public Temporal anterior;
 
-        public Etiqueta siguiente;
-        public Etiqueta anterior;
-
-        public Etiqueta(string nom,ParseTreeNode n)
+        public Temporal(string n,string v)
         {
-            nombre = nom;
-            nodo = n;
+            nombre = n;
+            valor = v;
 
             siguiente = null;
             anterior = null;
         }
-        
     }
 }

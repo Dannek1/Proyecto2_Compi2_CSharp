@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace Proyecto2_Compi2_CSharp.Componente3D
 {
-    public class Etiquetas
+    public class Temporales
     {
-        public Etiqueta cabeza;
-        public Etiqueta ultimo;
-        public Etiqueta aux;
+        public Temporal cabeza;
+        public Temporal ultimo;
+        public Temporal aux;
 
-        public Etiquetas()
+        public Temporales()
         {
             cabeza = null;
             ultimo = null;
             aux = null;
         }
 
-        public void Insertar(Etiqueta nuevo)
+        public void Insertar(Temporal nuevo)
         {
             if (cabeza == null)
             {
@@ -43,7 +43,7 @@ namespace Proyecto2_Compi2_CSharp.Componente3D
             }
         }
 
-        public Etiqueta Buscar(string nomb)
+        public Temporal Buscar(string n)
         {
             aux = cabeza;
 
@@ -51,7 +51,7 @@ namespace Proyecto2_Compi2_CSharp.Componente3D
 
             while (seguir)
             {
-                if (aux.nombre.Equals(nomb))
+                if (aux.nombre.Equals(n))
                 {
                     seguir = false;
                 }
@@ -68,7 +68,6 @@ namespace Proyecto2_Compi2_CSharp.Componente3D
                     }
                 }
             }
-
 
             return aux;
         }
