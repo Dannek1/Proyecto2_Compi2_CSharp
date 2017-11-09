@@ -296,16 +296,16 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | ID + Dimensiones + "=" + ID + "(" + Operaciones + ")" + finSentencia//8
                             | ID + Dimensiones + aumentar + finSentencia//4
                             | ID + Dimensiones + aumentar + finSentencia//4
-                            | Este + ID + "=" + Operacion + finSentencia//5
-                            | Este + ID + "=" + ID + "(" + ")" + finSentencia//7
-                            | Este + ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//8
-                            | Este + ID + aumentar + finSentencia//4
-                            | Este + ID + disminuir + finSentencia//4
-                            | Este + ID + Dimensiones + aumentar + finSentencia//5
-                            | Este + ID + Dimensiones + disminuir + finSentencia//5
-                            | Este + ID + Dimensiones + "=" + Operacion + finSentencia//6
-                            | Este + ID + Dimensiones + "=" + ID + "(" + Operaciones + ")" + finSentencia//9
-                            | Este + ID + Dimensiones + "=" + ID + "(" + ")" + finSentencia;//8
+                            | Este + "." + ID + "=" + Operacion + finSentencia//6
+                            | Este + "." + ID + "=" + ID + "(" + ")" + finSentencia//8
+                            | Este + "." + ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//9
+                            | Este + "." + ID + aumentar + finSentencia//5
+                            | Este + "." + ID + disminuir + finSentencia//5
+                            | Este + "." + ID + Dimensiones + aumentar + finSentencia//6
+                            | Este + "." + ID + Dimensiones + disminuir + finSentencia//6
+                            | Este + "." + ID + Dimensiones + "=" + Operacion + finSentencia//7
+                            | Este + "." + ID + Dimensiones + "=" + ID + "(" + Operaciones + ")" + finSentencia//10
+                            | Este + "." + ID + Dimensiones + "=" + ID + "(" + ")" + finSentencia;//9
 
             Asignacion.ErrorRule = SyntaxError + finSentencia;
 
