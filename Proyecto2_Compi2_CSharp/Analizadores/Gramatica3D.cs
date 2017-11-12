@@ -83,6 +83,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                  Asignacion = new NonTerminal("Asignacion"),
                  Imprimir = new NonTerminal("Imprimir"),
                  Label = new NonTerminal("Label"),
+                 Labels = new NonTerminal("Labels"),
                  Globales = new NonTerminal("Globales"),
                  Operacion = new NonTerminal("Operacion"),
                  Operador = new NonTerminal("Operador"),
@@ -108,13 +109,12 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Componentes.Rule = Componentes + Componente
                             | Componente;
 
-            Componente.Rule = Visibilidad + funcion + ID + "("+")" + iniCuerpo + Sentencias + finCuerpo;
+            Componente.Rule = Visibilidad + funcion + ID + "("+")" + iniCuerpo + Labels + finCuerpo;
 
             Sentencias.Rule = Sentencias + Sentencia
                             | Sentencia;
 
-            Sentencia.Rule = Label
-                          | If
+            Sentencia.Rule = If
                           | Asignacion
                           | Go_to
                           | Imprimir
@@ -145,8 +145,12 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             Imprimir.Rule = RPrint + Operacion + ")";
 
+            Labels.Rule = Labels + Label
+                        | Label;
+
             Label.Rule = etiqueta + Sentencias
-                        | etiqueta;
+                        | etiqueta
+                        | Sentencias;
 
             Valor.Rule = Entero
                   | Verdadero
@@ -164,7 +168,9 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                            | ID + "[" + ID + "]"
                            | ID + "[" + temporal + "]"
                            | ID + "[" + Valor + "]"
-                           | Valor;
+                           | Valor + OCondicion + temporal
+                           | Valor + OCondicion + ID
+                           | Valor + OCondicion + Valor;
 
             Operador.Rule = suma
                            | resta

@@ -13,6 +13,8 @@ namespace Proyecto2_Compi2_CSharp.Componentes
 
         public Funciones funciones;
         public Variables variables;
+        public int tamaño = 0;
+        public int correlactivo_var = 0;//Heap
 
 
         public Clase siguiente;

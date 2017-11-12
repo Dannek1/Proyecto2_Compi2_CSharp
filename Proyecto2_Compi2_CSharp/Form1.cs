@@ -149,6 +149,36 @@ namespace Proyecto2_Compi2_CSharp
 
                 txt3D.Text = TresD;
 
+                if (TresD != "")
+                {
+                    Gramatica3D gramatica3D = new Gramatica3D();
+                    LanguageData lenguaje = new LanguageData(gramatica3D);
+                    Parser p = new Parser(lenguaje);
+                    ParseTree arbol = p.Parse(TresD);
+
+                    if (arbol.HasErrors())
+                    {
+
+                    }
+                    else
+                    {
+                        Genarbol3D(arbol.Root);
+                        GenerateGraph3D("Entrada.txt", "C:/Fuentes/");
+                        Analizar3d(arbol.Root);
+
+                        Funcion3D ejecutable = funciones3D.buscar("principal");
+
+                        if (ejecutable != null)
+                        {
+                            ejecutar = true;
+                            Analizar3d(ejecutable.nodo);
+                            ejecutar = false;
+                        }
+
+                    }
+
+                }
+
             }
             else
             {
@@ -186,35 +216,7 @@ namespace Proyecto2_Compi2_CSharp
 
             }
 
-            if (TresD!= "")
-            {
-                Gramatica3D gramatica3D = new Gramatica3D();
-                LanguageData lenguaje = new LanguageData(gramatica3D);
-                Parser p = new Parser(lenguaje);
-                ParseTree arbol = p.Parse(TresD);
-
-                if (arbol.HasErrors())
-                {
-
-                }
-                else
-                {
-                    Genarbol3D(arbol.Root);
-                    GenerateGraph3D("Entrada.txt", "C:/Fuentes/");
-                    Analizar3d(arbol.Root);
-
-                    Funcion3D ejecutable = funciones3D.buscar("principal");
-
-                    if (ejecutable != null)
-                    {
-                        ejecutar = true;
-                        Analizar3d(ejecutable.nodo);
-                        ejecutar = false;
-                    }
-
-                }
-
-            }
+           
 
         }
 
@@ -261,7 +263,15 @@ namespace Proyecto2_Compi2_CSharp
                     GenerateGraphC("Entrada.txt", "C:/Fuentes/");
 
                     ActuarC(arbol.Root);
-                    TresD = TraduccionC(arbol.Root);
+                    if (TresD.Equals(""))
+                    {
+                        TresD += TraduccionC(arbol.Root);
+                    }
+                    else
+                    {
+                        TresD += "\r\n"+TraduccionC(arbol.Root);
+                    }
+                    
 
                 }
             }
@@ -579,6 +589,8 @@ namespace Proyecto2_Compi2_CSharp
 
                                 resultado = "class " + nodo.ChildNodes[1].Token.Text + "{" + ActuarC(nodo.ChildNodes[5]) + "}";
 
+                                DefinirTamaño(clase);
+
                                 txtConsola.Text += "Se ha creado la Clase " + clase_actual;
 
                             }
@@ -626,6 +638,8 @@ namespace Proyecto2_Compi2_CSharp
 
                                 resultado = "class " + nodo.ChildNodes[1].Token.Text + "{" + ActuarC(nodo.ChildNodes[6]) + "}";
 
+                                DefinirTamaño(clase);
+
                                 txtConsola.Text += "Se ha creado la Clase " + clase_actual;
 
                             }
@@ -650,7 +664,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 string[] imports = importaciones.Split(';');
 
-                                for (int x = 0; x < imports.Length; x++)
+                                for (int x = 0; x < (imports.Length-1); x++)
                                 {
                                     Clase tempI = clases.Existe(imports[x]);
 
@@ -662,6 +676,8 @@ namespace Proyecto2_Compi2_CSharp
                             clases.Insertar(clase);
 
                             resultado = "class " + nodo.ChildNodes[2].Token.Text + "{" + ActuarC(nodo.ChildNodes[4]) + "}";
+
+                            DefinirTamaño(clase);
 
                             txtConsola.Text += "Se ha creado la Clase " + clase_actual;
 
@@ -692,6 +708,8 @@ namespace Proyecto2_Compi2_CSharp
                             }
 
                             resultado = "class " + nodo.ChildNodes[1].Token.Text + "{" + ActuarC(nodo.ChildNodes[3]) + "}";
+
+                            DefinirTamaño(clase);
                             txtConsola.Text += "Se ha creado la Clase " + clase_actual;
                         }
 
@@ -748,6 +766,9 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Variable nuevo = new Variable(tipo, nombre);
 
+                                    nuevo.posicion = temp.correlactivo_var;
+                                    temp.correlactivo_var++;
+
                                     nuevo.SetVisibilidad("publico");
 
                                     temp.variables.Insertar(nuevo);
@@ -760,6 +781,9 @@ namespace Proyecto2_Compi2_CSharp
                                 Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text);
 
                                 nuevo.SetVisibilidad("publico");
+
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
 
                                 temp.variables.Insertar(nuevo);
                             }
@@ -784,6 +808,9 @@ namespace Proyecto2_Compi2_CSharp
 
                                     nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));
 
+                                    nuevo.posicion = temp.correlactivo_var;
+                                    temp.correlactivo_var++;
+
                                     temp.variables.Insertar(nuevo);
                                 }
 
@@ -798,6 +825,9 @@ namespace Proyecto2_Compi2_CSharp
                                 Variable nuevo = new Variable(tipo, nodo.ChildNodes[2].Token.Text);
 
                                 nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));
+
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
 
                                 temp.variables.Insertar(nuevo);
                             }
@@ -831,6 +861,9 @@ namespace Proyecto2_Compi2_CSharp
                                 nuevo.dimensiones = dimensiones;
                                 nuevo.CArreglo(total);
 
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
+
                                 temp.variables.Insertar(nuevo);
                             }
                         }
@@ -845,6 +878,9 @@ namespace Proyecto2_Compi2_CSharp
 
                                 Variable nuevo = new Variable(tipo, nodo.ChildNodes[1].Token.Text, ActuarC(nodo.ChildNodes[3]));
                                 resultado = nodo.ChildNodes[1].Token.Text + " = " + ActuarC(nodo.ChildNodes[3]);
+
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
 
                                 nuevo.SetVisibilidad("publico");
 
@@ -884,6 +920,9 @@ namespace Proyecto2_Compi2_CSharp
                                 nuevo.dimensiones = dimensiones;
                                 nuevo.CArreglo(total);
 
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
+
                                 temp.variables.Insertar(nuevo);
 
 
@@ -902,6 +941,9 @@ namespace Proyecto2_Compi2_CSharp
 
                                 nuevo.SetValor(ActuarC(nodo.ChildNodes[4]));
                                 nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));
+
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
 
                                 temp.variables.Insertar(nuevo);
 
@@ -931,6 +973,9 @@ namespace Proyecto2_Compi2_CSharp
                                         Variable nuevo = new Variable(tipo, nombre);
 
                                         nuevo.SetVisibilidad(ActuarC(nodo.ChildNodes[0]));
+
+                                        nuevo.posicion = temp.correlactivo_var;
+                                        temp.correlactivo_var++;
 
                                         temp.variables.Insertar(nuevo);
                                     }
@@ -968,6 +1013,9 @@ namespace Proyecto2_Compi2_CSharp
 
                                 nuevo.CArreglo(total);
 
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
+
                                 temp.variables.Insertar(nuevo);
                             }
                             
@@ -976,36 +1024,63 @@ namespace Proyecto2_Compi2_CSharp
                         {
                             Clase temp = clases.Existe(clase_actual);
 
-                            string tipo = ActuarC(nodo.ChildNodes[1]);
-
-                            string visi = ActuarC(nodo.ChildNodes[0]);
-
-                            string dimensiones = ActuarC(nodo.ChildNodes[3]);
-
-                            string[] dim = dimensiones.Split(',');
-
-                            int total = 0;
-                            for (int x = 0; x < dim.Length; x++)
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
                             {
-                                if (x == 0)
+                                string tipo = nodo.ChildNodes[0].Token.Text;
+
+                                Clase instancia = clases.Existe(tipo);
+
+                                if (instancia != null)
                                 {
-                                    total = Int32.Parse(dim[x]);
-                                }
-                                else
-                                {
-                                    total = total * Int32.Parse(dim[x]);
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    Variable nuevo = new Variable(tipo, nombre);
+
+                                    nuevo.SetVisibilidad("publico");
+
+                                    nuevo.posicion = temp.correlactivo_var;
+                                    temp.correlactivo_var++;
+
+                                    temp.variables.Insertar(nuevo);
                                 }
                             }
+                            else
+                            { 
+                                string tipo = ActuarC(nodo.ChildNodes[1]);
 
-                            Variable nuevo = new Variable(tipo, nodo.ChildNodes[2].Token.Text);
+                                string visi = ActuarC(nodo.ChildNodes[0]);
 
-                            nuevo.SetVisibilidad(visi);
-                            nuevo.dimensiones = dimensiones;
+                                string dimensiones = ActuarC(nodo.ChildNodes[3]);
 
-                            nuevo.arreglo = true;
-                            nuevo.CArreglo(total);
+                                string[] dim = dimensiones.Split(',');
 
-                            temp.variables.Insertar(nuevo);
+                                int total = 0;
+                                for (int x = 0; x < dim.Length; x++)
+                                {
+                                    if (x == 0)
+                                    {
+                                        total = Int32.Parse(dim[x]);
+                                    }
+                                    else
+                                    {
+                                        total = total * Int32.Parse(dim[x]);
+                                    }
+                                }
+
+                                Variable nuevo = new Variable(tipo, nodo.ChildNodes[2].Token.Text);
+
+                                nuevo.SetVisibilidad(visi);
+                                nuevo.dimensiones = dimensiones;
+
+                                nuevo.arreglo = true;
+                                nuevo.CArreglo(total);
+
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
+
+                                temp.variables.Insertar(nuevo);
+                            }
+                            
                         }
                         else if (nodo.ChildNodes.Count == 7)
                         {
@@ -1028,12 +1103,37 @@ namespace Proyecto2_Compi2_CSharp
 
                                     nuevo.SetVisibilidad("publico");
 
+                                    nuevo.posicion = temp.correlactivo_var;
+                                    temp.correlactivo_var++;
+
                                     temp.variables.Insertar(nuevo);
                                 }
                                 
                             }
                         }
+                        else
+                        {
+                            Clase temp = clases.Existe(clase_actual);
 
+                            string tipo = nodo.ChildNodes[0].Token.Text;
+
+                            Clase instancia = clases.Existe(tipo);
+
+                            if (instancia != null)
+                            {
+                                string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                Variable nuevo = new Variable(tipo, nombre);
+
+                                nuevo.SetVisibilidad("publico");
+
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
+
+                                temp.variables.Insertar(nuevo);
+                            }
+
+                        }
                         break;
                     }
 
@@ -3121,16 +3221,44 @@ namespace Proyecto2_Compi2_CSharp
 
                             Funcion temp = tempoC.funciones.Existe(fun_actual);
 
-                            string tipo = ActuarC(nodo.ChildNodes[0]);
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
+                            {
+                                string tipo = ActuarC(nodo.ChildNodes[0]);
 
-                            string nombre = nodo.ChildNodes[1].Token.Text;
+                                string nombre = nodo.ChildNodes[1].Token.Text;
 
-                            Variable nuevo = new Variable(tipo, nombre);
+                                Variable nuevo = new Variable(tipo, nombre);
 
-                            nuevo.posicion = temp.correlactivo_var;
-                            temp.correlactivo_var++;
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
 
-                            temp.variables.Insertar(nuevo);
+                                temp.variables.Insertar(nuevo);
+                            }
+                            else
+                            {
+                                string tipo = nodo.ChildNodes[0].Token.Text;
+
+                                Clase instancia = clases.Existe(tipo);
+
+                                if (instancia != null)
+                                {
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    Variable nuevo = new Variable(tipo, nombre);
+
+                                    nuevo.posicion = temp.correlactivo_var;
+                                    temp.correlactivo_var++;
+
+                                    temp.variables.Insertar(nuevo);
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nNo Existe la Clase " + tipo;
+                                }
+
+                                
+                            }
+                            
 
                         }
                         else if (nodo.ChildNodes.Count == 4)
@@ -3196,50 +3324,79 @@ namespace Proyecto2_Compi2_CSharp
 
                             Funcion temp = tempoC.funciones.Existe(fun_actual);
 
-                            string tipo = ActuarC(nodo.ChildNodes[0]);
-
-                            string nombre = nodo.ChildNodes[1].Token.Text;
-
-                            string funcion = nodo.ChildNodes[3].Token.Text;
-
-                            if (tempoC.funciones.ExisteF(funcion))
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
                             {
-                                Funcion aux = tempoC.funciones.Existe(funcion);
+                                string tipo = ActuarC(nodo.ChildNodes[0]);
 
-                                string temporal = fun_actual;
+                                string nombre = nodo.ChildNodes[1].Token.Text;
 
-                                if (aux.TieneParametros())
+                                string funcion = nodo.ChildNodes[3].Token.Text;
+
+                                if (tempoC.funciones.ExisteF(funcion))
                                 {
-                                    txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
-                                }
-                                else
-                                {
-                                    if (aux.tipo.Equals(tipo))
+                                    Funcion aux = tempoC.funciones.Existe(funcion);
+
+                                    string temporal = fun_actual;
+
+                                    if (aux.TieneParametros())
                                     {
-                                        fun_actual = aux.GetNombre();
-                                        ActuarC(aux.nodo);
-                                        fun_actual = temporal;
-                                        string valor = aux.GetRetorno();
-
-                                        Variable nuevo = new Variable(tipo, nombre, valor);
-                                        nuevo.posicion = temp.correlactivo_var;
-                                        temp.correlactivo_var++;
-
-                                        temp.variables.Insertar(nuevo);
-
+                                        txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
                                     }
                                     else
                                     {
-                                        txtErrores.Text += "\r\nError de Tipos";
+                                        if (aux.tipo.Equals(tipo))
+                                        {
+                                            fun_actual = aux.GetNombre();
+                                            ActuarC(aux.nodo);
+                                            fun_actual = temporal;
+                                            string valor = aux.GetRetorno();
+
+                                            Variable nuevo = new Variable(tipo, nombre, valor);
+                                            nuevo.posicion = temp.correlactivo_var;
+                                            temp.correlactivo_var++;
+
+                                            temp.variables.Insertar(nuevo);
+
+                                        }
+                                        else
+                                        {
+                                            txtErrores.Text += "\r\nError de Tipos";
+                                        }
                                     }
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
                                 }
                             }
                             else
                             {
-                                txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                string tipo = nodo.ChildNodes[1].Token.Text;
+
+                                Clase instancia = clases.Existe(tipo);
+
+                                if (instancia != null)
+                                {
+                                    string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                    Variable nuevo = new Variable(tipo, nombre);
+
+                                    nuevo.posicion = temp.correlactivo_var;
+                                    
+                                    temp.correlactivo_var++;
+
+                                    temp.variables.Insertar(nuevo);
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nNo Existe la Clase " + tipo;
+                                }
+
+
+
+
                             }
-
-
 
 
                         }
@@ -3341,73 +3498,27 @@ namespace Proyecto2_Compi2_CSharp
 
                             Funcion temp = tempoC.funciones.Existe(fun_actual);
 
-                            string tipo = ActuarC(nodo.ChildNodes[0]);
+                            string tipo = nodo.ChildNodes[0].Token.Text;
 
-                            string nombre = nodo.ChildNodes[1].Token.Text;
+                            Clase instancia = clases.Existe(tipo);
 
-                            string funcion = nodo.ChildNodes[4].Token.Text;
-
-                            Funcion aux = tempoC.funciones.Existe(funcion);
-
-                            string dimeniones = ActuarC(nodo.ChildNodes[2]);
-
-                            if (aux.tipo.Equals(tipo))
+                            if (instancia != null)
                             {
-                                if (aux.IsArreglo())
-                                {
-                                    string temporal = fun_actual;
-                                    fun_actual = funcion;
+                                string nombre = nodo.ChildNodes[1].Token.Text;
 
+                                Variable nuevo = new Variable(tipo, nombre);
 
+                                nuevo.posicion = temp.correlactivo_var;
+                                temp.correlactivo_var++;
 
-                                    string param = ActuarC(nodo.ChildNodes[6]);
-                                    string[] variables = param.Split(',');
-
-                                    fun_actual = funcion;
-                                    tempoC.funciones.Existe(funcion);
-
-                                    if (variables.Length == aux.nParametros)
-                                    {
-                                        for (int x = 0; x < variables.Length; x++)
-                                        {
-                                            string n = aux.parametros.GetNOmbreP(x + 1);
-
-                                            aux.variables.Buscar(n);
-
-                                            aux.variables.aux.SetValor(variables[x]);
-
-                                        }
-
-                                        ActuarC(aux.nodo);
-
-                                        string valor = aux.GetRetorno();
-
-                                        fun_actual = temporal;
-
-                                        Variable nuevo = new Variable(tipo, nombre);
-
-                                        nuevo.posicion = temp.correlactivo_var;
-                                        temp.correlactivo_var++;
-
-                                        temp.variables.Insertar(nuevo);
-                                    }
-                                    else
-                                    {
-                                        txtErrores.Text += "\r\nNo Coinciden los Parametros";
-                                    }
-
-
-                                }
-                                else
-                                {
-                                    txtErrores.Text += "\r\nLa Funcion " + funcion + " NO es Arreglo";
-                                }
-
+                                temp.variables.Insertar(nuevo);
                             }
                             else
                             {
-                                txtErrores.Text += "\r\nError de Tipos";
+                                txtErrores.Text += "\r\nNo Existe la Clase " + tipo;
                             }
+
+
 
                         }
                         break;
@@ -5269,7 +5380,13 @@ namespace Proyecto2_Compi2_CSharp
             {
                 if (padre.funciones.aux.visibilidad.Equals("publico"))
                 {
-                    hijo.funciones.Insertar(padre.funciones.aux);
+                    if (padre.funciones.aux.tipo.Equals("constructor")||padre.funciones.aux.tipo.Equals("principal"))
+                    {
+                        
+                    }else{
+                        hijo.funciones.Insertar(padre.funciones.aux);
+                    }
+                    
                 }
 
 
@@ -7427,7 +7544,9 @@ namespace Proyecto2_Compi2_CSharp
         {
             if (path.Contains(".tree"))
             {
-                System.IO.StreamReader sr = new System.IO.StreamReader(path);
+                string ruta=path.Substring(1,path.Length-2);
+
+                System.IO.StreamReader sr = new System.IO.StreamReader(ruta);
                 string archivo = sr.ReadToEnd();
                 
                 sr.Close();
@@ -7447,8 +7566,9 @@ namespace Proyecto2_Compi2_CSharp
                 SqlConnection conexion = new SqlConnection("Data Source=DANNEK-PC\\DANNEK;Initial Catalog=Repositorio_Compi2;Integrated Security=True");
 
                 conexion.Open();
+                string ruta = path.Substring(1, path.Length - 2);
 
-                SqlCommand comando = new SqlCommand("SELECT Codigo FROM ARCHIVO WHERE path= '" + path + "'", conexion);
+                SqlCommand comando = new SqlCommand("SELECT Codigo FROM ARCHIVO WHERE path= '" + ruta + "'", conexion);
 
                 SqlDataReader lector = comando.ExecuteReader();
                 while (lector.Read())
@@ -7479,6 +7599,8 @@ namespace Proyecto2_Compi2_CSharp
         {
             if (path.Contains(".olc"))
             {
+
+                string ruta = path.Substring(1, path.Length - 2);
                 System.IO.StreamReader sr = new System.IO.StreamReader(path);
                 string archivo = sr.ReadToEnd();
 
@@ -7499,8 +7621,8 @@ namespace Proyecto2_Compi2_CSharp
                 SqlConnection conexion = new SqlConnection("Data Source=DANNEK-PC\\DANNEK;Initial Catalog=Repositorio_Compi2;Integrated Security=True");
 
                 conexion.Open();
-
-                SqlCommand comando = new SqlCommand("SELECT Codigo FROM ARCHIVO WHERE path= '" + path + "'", conexion);
+                string ruta = path.Substring(1, path.Length - 2);
+                SqlCommand comando = new SqlCommand("SELECT Codigo FROM ARCHIVO WHERE path= '" + ruta + "'", conexion);
 
                 SqlDataReader lector = comando.ExecuteReader();
                 while (lector.Read())
@@ -7668,65 +7790,419 @@ namespace Proyecto2_Compi2_CSharp
                         {
                             Clase clase = clases.Existe(clase_actual);
 
-                            string nombre= nodo.ChildNodes[1].Token.Text;
-
-                            Variable var = clase.variables.Buscar(nombre);
-
-                            if (var.arreglo)
+                            if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
                             {
-                                string dimensiones = ActuarC(nodo.ChildNodes[2]);
-                                string valores = ActuarC(nodo.ChildNodes[5]);
+                                string nombre = nodo.ChildNodes[1].Token.Text;
 
-                                string[] dim = dimensiones.Split(',');
-                                int total = 0;
+                                Variable var = clase.variables.Buscar(nombre);
 
-                                for (int x = 0; x < dim.Length; x++)
+                                Clase Instancia = clases.Existe(var.tipo);
+
+                                var.poship = posheap;
+
+                                respuesta += "\r\nPH = " + var.poship;
+
+                                respuesta += "\r\n" + var.nombre + " = " + posheap;
+
+                                respuesta += "\r\nCall " + var.tipo + "_()";
+
+                                Instancia.variables.aux = Instancia.variables.cabeza;
+
+                                for(int x = 0; x < Instancia.correlactivo_var; x++)
                                 {
-                                    if (x == 0)
-                                    {
-                                        total = Int32.Parse(dim[x]);
-                                    }
-                                    else
-                                    {
-                                        total = total * Int32.Parse(dim[x]);
-                                    }
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp+" = p +"+ x;
+                                    int aux = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = pila[t"+aux+"]";
+                                    aux = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta+="\r\nt"+contadorTemp+" = PH + "+ x;
+                                    respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
                                 }
+                                posheap = posheap + Instancia.tamaño;
+                            }
+                            else
+                            {
+                                string nombre = nodo.ChildNodes[1].Token.Text;
 
-                                int contador = 0;
+                                Variable var = clase.variables.Buscar(nombre);
 
-                                string[] tuplas = valores.Split(';');
-
-                                for(int x = 0; x < tuplas.Length; x++)
+                                if (var.arreglo)
                                 {
-                                    string[] valor = tuplas[x].Split(',');
+                                    string dimensiones = ActuarC(nodo.ChildNodes[2]);
+                                    string valores = ActuarC(nodo.ChildNodes[5]);
 
-                                    for (int y = 0; y < valor.Length; y++)
+                                    string[] dim = dimensiones.Split(',');
+                                    int total = 0;
+
+                                    for (int x = 0; x < dim.Length; x++)
                                     {
-                                        respuesta += "\r\n" + var.nombre + "[" + contador + "] = " + valor[y];
-
-                                        if (contador < total)
+                                        if (x == 0)
                                         {
-                                            contador++;
+                                            total = Int32.Parse(dim[x]);
                                         }
                                         else
                                         {
-                                            respuesta="";
-                                            txtErrores.Text += "\r\nDesboradmiento";
+                                            total = total * Int32.Parse(dim[x]);
                                         }
                                     }
+
+                                    int contador = 0;
+
+                                    string[] tuplas = valores.Split(';');
+
+                                    for (int x = 0; x < tuplas.Length; x++)
+                                    {
+                                        string[] valor = tuplas[x].Split(',');
+
+                                        for (int y = 0; y < valor.Length; y++)
+                                        {
+                                            respuesta += "\r\n" + var.nombre + "[" + contador + "] = " + valor[y];
+
+                                            if (contador < total)
+                                            {
+                                                contador++;
+                                            }
+                                            else
+                                            {
+                                                respuesta = "";
+                                                txtErrores.Text += "\r\nDesboradmiento";
+                                            }
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nLa Variable " + nombre + " No es Arreglo";
+                                }
+                            }
+
+                            
+                        }
+                        else if (nodo.ChildNodes.Count == 9)
+                        {
+                            Clase clase = clases.Existe(clase_actual);
+
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
+                            {
+                                string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                Variable var = clase.variables.Buscar(nombre);
+
+                                string Datos = TraduccionC(nodo.ChildNodes[6]);
+
+                                Clase Instancia = clases.Existe(var.tipo);
+
+                                string[] parametros = Datos.Split(';');
+                                Funcion Aejec = null;
+                                if (nombre.Equals(clase_actual))
+                                {
+                                    Aejec = Instancia.funciones.ExisteP(nombre + "_", parametros.Length);
+
+                                }
+                                else
+                                {
+                                    Aejec = Instancia.funciones.Existe(nombre);
+
+                                    if (parametros.Length != Aejec.nParametros)
+                                    {
+                                        Aejec = null;
+                                    }
+
+                                }
+
+                                if (Aejec != null)
+                                {
+
+                                    bool retorna = Aejec.variables.Buscar_existe("retorno");
+
+
+                                    for (int x = 0; x < parametros.Length; x++)
+                                    {
+                                        string[] partes = parametros[x].Split(',');
+
+                                        if (partes.Length == 2)
+                                        {
+                                            respuesta += partes[0];
+                                            contadorTemp++;
+                                            if (retorna)
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + (x + 1);
+                                            }
+                                            else
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = p" + x;
+                                            }
+
+                                            respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
+                                        }
+                                        else
+                                        {
+
+                                            contadorTemp++;
+                                            if (retorna)
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + (x + 1);
+                                            }
+                                            else
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + x;
+                                            }
+
+                                            respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[0];
+                                        }
+
+
+
+
+                                        var.poship = posheap;
+
+                                        respuesta += "\r\nPH = " + var.poship;
+
+                                        int temporal = contadorTemp;
+
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + var.posicion;
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "] = t" + temporal;
+
+                                        respuesta += "\r\nCall " + var.tipo + " ()";
+
+                                        Instancia.variables.aux = Instancia.variables.cabeza;
+
+                                        for (x = 0; x < Instancia.correlactivo_var; x++)
+                                        {
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                            int aux = contadorTemp;
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                            aux = contadorTemp;
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+                                            respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+                                        }
+
+                                        respuesta += "\r\n" + var.nombre + " = PH";
+
+                                        posheap = posheap + Instancia.tamaño;
+                                    }
+
+
                                 }
 
                             }
                             else
                             {
-                                txtErrores.Text += "\r\nLa Variable " + nombre + " No es Arreglo";
+                                string nombre = nodo.ChildNodes[2].Token.Text;
+
+                                Variable var = clase.variables.Buscar(nombre);
+
+                                if (var.arreglo)
+                                {
+                                    string dimensiones = ActuarC(nodo.ChildNodes[3]);
+                                    string valores = ActuarC(nodo.ChildNodes[6]);
+
+                                    string[] dim = dimensiones.Split(',');
+                                    int total = 0;
+
+                                    for (int x = 0; x < dim.Length; x++)
+                                    {
+                                        if (x == 0)
+                                        {
+                                            total = Int32.Parse(dim[x]);
+                                        }
+                                        else
+                                        {
+                                            total = total * Int32.Parse(dim[x]);
+                                        }
+                                    }
+
+                                    int contador = 0;
+
+                                    string[] tuplas = valores.Split(';');
+
+                                    for (int x = 0; x < tuplas.Length; x++)
+                                    {
+                                        string[] valor = tuplas[x].Split(',');
+
+                                        for (int y = 0; y < valor.Length; y++)
+                                        {
+                                            respuesta += "\r\n" + var.nombre + "[" + contador + "] = " + valor[y];
+
+                                            if (contador < total)
+                                            {
+                                                contador++;
+                                            }
+                                            else
+                                            {
+                                                respuesta = "";
+                                                txtErrores.Text += "\r\nDesboradmiento";
+                                            }
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    txtErrores.Text += "\r\nLa Variable " + nombre + " No es Arreglo";
+                                }
                             }
                         }
-                        else if (nodo.ChildNodes.Count == 9)
+                        else if (nodo.ChildNodes.Count == 10)
                         {
-                           // resultado = ActuarC(nodo.ChildNodes[0]);
+                            string nombre = nodo.ChildNodes[2].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+
+                            Variable var = clase.variables.Buscar(nombre);
+
+                            string tipo = nodo.ChildNodes[1].Token.Text;
+                            string Datos = TraduccionC(nodo.ChildNodes[7]);
+
+                            Clase Instancia = clases.Existe(var.tipo);
+
+                            string[] parametros = Datos.Split(';');
+                            Funcion Aejec = null;
+                            if (nombre.Equals(clase_actual))
+                            {
+                                Aejec = Instancia.funciones.ExisteP(nombre + "_", parametros.Length);
+
+                            }
+                            else
+                            {
+                                Aejec = Instancia.funciones.Existe(nombre);
+
+                                if (parametros.Length != Aejec.nParametros)
+                                {
+                                    Aejec = null;
+                                }
+
+                            }
+
+                            if (Aejec != null)
+                            {
+
+                                bool retorna = Aejec.variables.Buscar_existe("retorno");
+
+
+                                for (int x = 0; x < parametros.Length; x++)
+                                {
+                                    string[] partes = parametros[x].Split(',');
+
+                                    if (partes.Length == 2)
+                                    {
+                                        respuesta += partes[0];
+                                        contadorTemp++;
+                                        if (retorna)
+                                        {
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + (x + 1);
+                                        }
+                                        else
+                                        {
+                                            respuesta += "\r\nt" + contadorTemp + " = p" + x;
+                                        }
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
+                                    }
+                                    else
+                                    {
+
+                                        contadorTemp++;
+                                        if (retorna)
+                                        {
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + (x + 1);
+                                        }
+                                        else
+                                        {
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + x;
+                                        }
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[0];
+                                    }
+
+
+
+
+                                    var.poship = posheap;
+
+                                    respuesta += "\r\nPH = " + var.poship;
+
+                                    int temporal = contadorTemp;
+
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + var.posicion;
+
+                                    respuesta += "\r\npila[t" + contadorTemp + "] = t" + temporal;
+
+                                    respuesta += "\r\nCall " + var.tipo + " ()";
+
+                                    Instancia.variables.aux = Instancia.variables.cabeza;
+
+                                    for (x = 0; x < Instancia.correlactivo_var; x++)
+                                    {
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                        int aux = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                        aux = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+                                        respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+                                    }
+
+                                    respuesta += "\r\n" + var.nombre + " = PH";
+
+                                    posheap = posheap + Instancia.tamaño;
+                                }
+
+
+                            }
+
                         }
-                        
+                        else if (nodo.ChildNodes.Count == 7)
+                        {
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            string tipo = nodo.ChildNodes[0].Token.Text;
+
+                            Clase clase = clases.Existe(clase_actual);
+
+                            Variable temp = clase.variables.Buscar(nombre);
+
+                            respuesta += "\r\n" + temp.nombre + " = "+ posheap;
+
+                            respuesta += "\r\nCall "+temp.tipo+"_()";
+
+                            Clase Instancia = clases.Existe(tipo);
+
+                            posheap = posheap + Instancia.tamaño;
+
+                            respuesta += "\r\nPH = " + temp.nombre;
+
+                            for (int x = 0; x < Instancia.correlactivo_var; x++)
+                            {
+                                contadorTemp++;
+                                respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                int aux = contadorTemp;
+                                contadorTemp++;
+
+                                respuesta += "\r\nt" + contadorTemp+" = pila[t"+aux+"]";
+                                aux = contadorTemp;
+
+                                contadorTemp++;
+                                respuesta += "\r\nt" + contadorTemp + " = PH +" + x;
+
+                                respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+
+                            }
+                                                        
+                        }
                         break;
                     }
 
@@ -8670,61 +9146,166 @@ namespace Proyecto2_Compi2_CSharp
 
                             Funcion funcion = clase.funciones.Existe(fun_actual);
 
-                            
-
-                            string nombre = nodo.ChildNodes[1].Token.Text;
-
-                            string funcionop = nodo.ChildNodes[3].Token.Text;
-
-                            Variable temp = funcion.variables.Buscar(nombre);
-
-                            if (clase.funciones.ExisteF(funcionop))
+                            if (nodo.ChildNodes[0].Term.Name.ToString() == "Tipo")
                             {
-                                Funcion aux = clase.funciones.Existe(funcionop);
+                                string nombre = nodo.ChildNodes[1].Token.Text;
 
-                                string temporal = fun_actual;
+                                string funcionop = nodo.ChildNodes[3].Token.Text;
 
-                                if (aux.TieneParametros())
+                                Variable temp = funcion.variables.Buscar(nombre);
+
+                                if (clase.funciones.ExisteF(funcionop))
                                 {
-                                    txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                    Funcion aux = clase.funciones.Existe(funcionop);
+
+                                    string temporal = fun_actual;
+
+                                    if (aux.TieneParametros())
+                                    {
+                                        txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                    }
+                                    else
+                                    {
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+
+                                        respuesta += "\r\np = t" + contadorTemp;
+                                        respuesta += "\r\nCall " + aux.nombre + " ()";
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + 0";
+
+                                        int auxt = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                        string valor = "t" + contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                        respuesta += "\r\np = t" + contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                        respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
+
+                                    }
                                 }
                                 else
                                 {
-                                    contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
-
-                                    respuesta += "\r\np = t" + contadorTemp;
-                                    respuesta += "\r\nCall " + aux.nombre + " ()";
-
-                                    contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p + 0";
-                                    
-                                    int auxt = contadorTemp;
-
-                                    contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
-
-                                    string valor = "t" + contadorTemp;
-
-                                    contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
-
-                                    respuesta += "\r\np = t" + contadorTemp;
-
-                                    contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
-                                    respuesta += "\r\npila[t"+contadorTemp+"] =" +valor; 
-
+                                    txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
                                 }
                             }
                             else
                             {
-                                txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                string nombre = nodo.ChildNodes[1].Token.Text;
+
+                                string tipo = nodo.ChildNodes[0].Token.Text;
+
+                                if (funcion.variables.Buscar_existe(nombre))
+                                {
+                                    Variable temp = funcion.variables.Buscar(nombre);
+
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    
+                                    respuesta += "\r\npila[t" + contadorTemp + "] = "+ posheap;
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+
+                                    int cambiof = contadorTemp;
+
+                                    respuesta += "\r\np = t" + contadorTemp;
+
+                                    respuesta += "\r\nCall " + temp.tipo + "_()";
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                    Clase Instancia = clases.Existe(temp.tipo);
+                                    int aux = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+
+                                    respuesta += "\r\nPH = t" + contadorTemp;
+
+
+
+                                    for (int x = 0; x < Instancia.correlactivo_var; x++)
+                                    {
+                                        contadorTemp++;
+                                        respuesta+="\r\nt"+contadorTemp + " = t"+cambiof+" + "+x;
+                                        aux = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                        aux = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+
+                                        respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+
+
+                                    }
+
+                                    posheap = posheap + Instancia.tamaño;
+
+                                }
+                                else if (clase.variables.Buscar_existe(nombre))
+                                {
+                                    Variable temp = clase.variables.Buscar(nombre);
+
+
+                                    respuesta += "\r\n"+ temp.nombre+" = " + posheap;
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+
+                                    int cambiof = contadorTemp;
+
+                                    respuesta += "\r\np = t" + contadorTemp;
+
+                                    respuesta += "\r\nCall " + temp.tipo + "_()";
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                    Clase Instancia = clases.Existe(temp.tipo);
+                                    int aux = contadorTemp;
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
+
+                                    respuesta += "\r\nPH = t" + contadorTemp;
+
+
+
+                                    for (int x = 0; x < Instancia.correlactivo_var; x++)
+                                    {
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + cambiof + " + " + x;
+                                        aux = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                        aux = contadorTemp;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+
+                                        respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+
+
+                                    }
+                                }
+
                             }
 
-
-
-
+       
                         }                       
                         else if (nodo.ChildNodes.Count == 8)
                         {
@@ -8733,7 +9314,6 @@ namespace Proyecto2_Compi2_CSharp
                                 Clase clase = clases.Existe(clase_actual);
 
                                 Funcion funcion = clase.funciones.Existe(fun_actual);
-
                                 
 
                                 string nombre = nodo.ChildNodes[1].Token.Text;
@@ -8916,12 +9496,257 @@ namespace Proyecto2_Compi2_CSharp
                             }
                             
                         }
+                        else if (nodo.ChildNodes.Count == 9)
+                        {
+                            Clase clase = clases.Existe(clase_actual);
+
+                            Funcion funcion = clase.funciones.Existe(fun_actual);
+
+                            string nombre = nodo.ChildNodes[1].Token.Text;
+
+                            if (funcion.variables.Buscar_existe(nombre))
+                            {
+                                Variable var = funcion.variables.Buscar(nombre);
+
+                                string Datos = TraduccionC(nodo.ChildNodes[6]);
+
+                                Clase Instancia = clases.Existe(var.tipo);
+
+                                string[] parametros = Datos.Split(';');
+                                Funcion Aejec = null;
+                                if (nombre.Equals(clase_actual))
+                                {
+                                    Aejec = Instancia.funciones.ExisteP(nombre + "_", parametros.Length);
+
+                                }
+                                else
+                                {
+                                    Aejec = Instancia.funciones.Existe(nombre);
+
+                                    if (parametros.Length != Aejec.nParametros)
+                                    {
+                                        Aejec = null;
+                                    }
+
+                                }
+
+                                if (Aejec != null)
+                                {
+
+                                    bool retorna = Aejec.variables.Buscar_existe("retorno");
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                    int tfalso = contadorTemp;
+
+                                    for (int x = 0; x < parametros.Length; x++)
+                                    {
+                                        string[] partes = parametros[x].Split(',');
+
+                                        if (partes.Length == 2)
+                                        {
+                                            respuesta += partes[0];
+                                            contadorTemp++;
+                                            if (retorna)
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = t"+ tfalso + " +" +(x + 1);
+                                            }
+                                            else
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+" +" + x;
+                                            }
+
+                                            respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
+                                        }
+                                        else
+                                        {
+
+                                            contadorTemp++;
+                                            if (retorna)
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x + 1);
+                                            }
+                                            else
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+" + " + x;
+                                            }
+
+                                            respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[0];
+                                        }
+
+
+                                        var.poship = posheap;
+
+                                        respuesta += "\r\nPH = " + var.poship;
+
+                                        int temporal = contadorTemp;
+
+                                        contadorTemp++;
+
+                                        respuesta+="\r\nt"+contadorTemp+" = p + "+var.posicion;
+                                        respuesta += "\r\npila[t" + contadorTemp + "] = t" + temporal;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                        respuesta += "\r\np = t" + contadorTemp; 
+
+                                        respuesta += "\r\nCall " + var.tipo + " ()";
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+                                        respuesta += "\r\np = t" + contadorTemp;
+
+                                        Instancia.variables.aux = Instancia.variables.cabeza;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                        tfalso = contadorTemp;
+
+                                        for (x = 0; x < Instancia.correlactivo_var; x++)
+                                        {
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+" +" + x;
+                                            int aux = contadorTemp;
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                            aux = contadorTemp;
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+                                            respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+                                        }
+
+                                        posheap = posheap + Instancia.tamaño;
+                                    }
+
+
+                                }
+                            }
+                            else if (clase.variables.Buscar_existe(nombre))
+                            {
+                                
+                                Variable var = clase.variables.Buscar(nombre);
+
+                                string Datos = TraduccionC(nodo.ChildNodes[6]);
+
+                                Clase Instancia = clases.Existe(var.tipo);
+
+                                string[] parametros = Datos.Split(';');
+                                Funcion Aejec = null;
+                                if (nombre.Equals(clase_actual))
+                                {
+                                    Aejec = Instancia.funciones.ExisteP(nombre + "_", parametros.Length);
+
+                                }
+                                else
+                                {
+                                    Aejec = Instancia.funciones.Existe(nombre);
+
+                                    if (parametros.Length != Aejec.nParametros)
+                                    {
+                                        Aejec = null;
+                                    }
+
+                                }
+
+                                if (Aejec != null)
+                                {
+
+                                    bool retorna = Aejec.variables.Buscar_existe("retorno");
+
+                                    contadorTemp++;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                    int tfalso = contadorTemp;
+
+                                    for (int x = 0; x < parametros.Length; x++)
+                                    {
+                                        string[] partes = parametros[x].Split(',');
+
+                                        if (partes.Length == 2)
+                                        {
+                                            respuesta += partes[0];
+                                            contadorTemp++;
+                                            if (retorna)
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+" + " + (x + 1);
+                                            }
+                                            else
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
+                                            }
+
+                                            respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
+                                        }
+                                        else
+                                        {
+
+                                            contadorTemp++;
+                                            if (retorna)
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x + 1);
+                                            }
+                                            else
+                                            {
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
+                                            }
+
+                                            respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[0];
+                                        }
+
+
+
+
+                                        var.poship = posheap;
+
+                                        respuesta += "\r\nPH = " + var.poship;
+
+                                        int temporal = contadorTemp;
+
+
+                                        
+
+                                        respuesta += "\r\n"+var.nombre+" = t" + temporal;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                        respuesta += "\r\np = t" + contadorTemp;
+
+                                        respuesta += "\r\nCall " + var.tipo + " ()";
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+                                        respuesta += "\r\np = t" + contadorTemp;
+
+                                        Instancia.variables.aux = Instancia.variables.cabeza;
+
+                                        for (x = 0; x < Instancia.correlactivo_var; x++)
+                                        {
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                            int aux = contadorTemp;
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                            aux = contadorTemp;
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+                                            respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+                                        }
+
+                                        respuesta += "\r\n" + var.nombre + " = PH";
+
+                                        posheap = posheap + Instancia.tamaño;
+                                    }
+
+
+                                }
+                            }
+
+                        }
                        
                         break;
                     }
 
                 case "Asignacion":
-                    {
+                     {
                         Clase clase = clases.Existe(clase_actual);
 
                         if (nodo.ChildNodes[0].Term.Name.ToString() == "ID")
@@ -9137,53 +9962,111 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 else if (nodo.ChildNodes.Count == 6)
                                 {
-                                  
-                                    string nombre = nodo.ChildNodes[0].Token.Text;
 
-                                    string funcionop = nodo.ChildNodes[2].Token.Text;
-
-                                    if (clase.funciones.ExisteF(funcionop))
+                                    if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
                                     {
-                                        Funcion aux = clase.funciones.Existe(funcionop);
+                                        string nombre = nodo.ChildNodes[0].Token.Text;
 
+                                        string funcionop = nodo.ChildNodes[2].Token.Text;
 
-                                        if (aux.TieneParametros())
+                                        if (clase.funciones.ExisteF(funcionop))
                                         {
-                                            txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                            Funcion aux = clase.funciones.Existe(funcionop);
+
+
+                                            if (aux.TieneParametros())
+                                            {
+                                                txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                            }
+                                            else
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+
+                                                respuesta += "\r\np = t" + contadorTemp;
+                                                respuesta += "\r\nCall " + aux.nombre + " ()";
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + 0";
+
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                                string valor = "t" + contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                                respuesta += "\r\np = t" + contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                                respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
+
+                                            }
                                         }
                                         else
                                         {
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
-
-                                            respuesta += "\r\np = t" + contadorTemp;
-                                            respuesta += "\r\nCall " + aux.nombre + " ()";
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p + 0";
-
-                                            int auxt = contadorTemp;
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
-
-                                            string valor = "t" + contadorTemp;
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
-
-                                            respuesta += "\r\np = t" + contadorTemp;
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
-                                            respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
-
+                                            txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
                                         }
                                     }
                                     else
                                     {
-                                        txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+                                        
+                                        string tipo = temp.tipo;                                                                               
+                                        
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+
+                                        respuesta += "\r\npila[t" + contadorTemp + "] = " + posheap;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+
+                                        int cambiof = contadorTemp;
+
+                                        respuesta += "\r\np = t" + contadorTemp;
+
+                                        respuesta += "\r\nCall " + temp.tipo + "_()";
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                        Clase Instancia = clases.Existe(temp.tipo);
+                                        int aux = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+
+                                        respuesta += "\r\nPH = t" + contadorTemp;
+
+
+
+                                        for (int x = 0; x < Instancia.correlactivo_var; x++)
+                                        {
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = t" + cambiof + " + " + x;
+                                            aux = contadorTemp;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                            aux = contadorTemp;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+
+                                            respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+
+
+                                        }
+
+                                        posheap = posheap + Instancia.tamaño;
+
+                                        
+                                       
                                     }
+
                                 }
                                 else if (nodo.ChildNodes.Count == 7)
                                 {
@@ -9450,6 +10333,122 @@ namespace Proyecto2_Compi2_CSharp
 
 
 
+                                }
+                                else if(nodo.ChildNodes.Count == 8)
+                                {
+
+                                    string Datos = TraduccionC(nodo.ChildNodes[5]);
+
+                                    Clase Instancia = clases.Existe(temp.tipo);
+
+                                    string[] parametros = Datos.Split(';');
+                                    Funcion Aejec = null;
+                                    if (variable.Equals(clase_actual))
+                                    {
+                                        Aejec = Instancia.funciones.ExisteP(temp.tipo + "_", parametros.Length);
+
+                                    }
+                                    else
+                                    {
+                                        Aejec = Instancia.funciones.Existe(temp.tipo);
+
+                                        if (parametros.Length != Aejec.nParametros)
+                                        {
+                                            Aejec = null;
+                                        }
+
+                                    }
+
+                                    if (Aejec != null)
+                                    {
+
+                                        bool retorna = Aejec.variables.Buscar_existe("retorno");
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                        int tfalso = contadorTemp;
+
+                                        for (int x = 0; x < parametros.Length; x++)
+                                        {
+                                            string[] partes = parametros[x].Split(',');
+
+                                            if (partes.Length == 2)
+                                            {
+                                                respuesta += partes[0];
+                                                contadorTemp++;
+                                                if (retorna)
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " +" + (x + 1);
+                                                }
+                                                else
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " +" + x;
+                                                }
+
+                                                respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
+                                            }
+                                            else
+                                            {
+
+                                                contadorTemp++;
+                                                if (retorna)
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x + 1);
+                                                }
+                                                else
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
+                                                }
+
+                                                respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[0];
+                                            }
+
+
+                                            temp.poship = posheap;
+
+                                            respuesta += "\r\nPH = " + temp.poship;
+
+                                            int temporal = contadorTemp;
+
+                                            contadorTemp++;
+
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
+                                            respuesta += "\r\npila[t" + contadorTemp + "] = t" + temporal;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                            respuesta += "\r\np = t" + contadorTemp;
+
+                                            respuesta += "\r\nCall " + Aejec.nombre + " ()";
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+                                            respuesta += "\r\np = t" + contadorTemp;
+
+                                            Instancia.variables.aux = Instancia.variables.cabeza;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                            tfalso = contadorTemp;
+
+                                            for (x = 0; x < Instancia.correlactivo_var; x++)
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " +" + x;
+                                                int aux = contadorTemp;
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                                aux = contadorTemp;
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+                                                respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+                                            }
+
+                                            posheap = posheap + Instancia.tamaño;
+                                        }
+
+
+                                    }
                                 }
                                 else
                                 {
@@ -9764,51 +10763,99 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 else if (nodo.ChildNodes.Count == 6)
                                 {
-
-                                    string nombre = nodo.ChildNodes[0].Token.Text;
-
-                                    string funcionop = nodo.ChildNodes[2].Token.Text;
-
-                                    if (clase.funciones.ExisteF(funcionop))
+                                    if (nodo.ChildNodes[2].Term.Name.ToString() == "ID")
                                     {
-                                        Funcion aux = clase.funciones.Existe(funcionop);
+                                        string nombre = nodo.ChildNodes[0].Token.Text;
 
+                                        string funcionop = nodo.ChildNodes[2].Token.Text;
 
-                                        if (aux.TieneParametros())
+                                        if (clase.funciones.ExisteF(funcionop))
                                         {
-                                            txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                            Funcion aux = clase.funciones.Existe(funcionop);
+
+
+                                            if (aux.TieneParametros())
+                                            {
+                                                txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                            }
+                                            else
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+
+                                                respuesta += "\r\np = t" + contadorTemp;
+                                                respuesta += "\r\nCall " + aux.nombre + " ()";
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + 0";
+
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                                string valor = "t" + contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                                respuesta += "\r\np = t" + contadorTemp;
+
+                                                respuesta += "\r\n" + temp.nombre + " =" + valor;
+
+                                            }
+
                                         }
                                         else
                                         {
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
-
-                                            respuesta += "\r\np = t" + contadorTemp;
-                                            respuesta += "\r\nCall " + aux.nombre + " ()";
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p + 0";
-
-                                            int auxt = contadorTemp;
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
-
-                                            string valor = "t" + contadorTemp;
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
-
-                                            respuesta += "\r\np = t" + contadorTemp;
-                                            
-                                            respuesta += "\r\n"+temp.nombre+" =" + valor;
-
+                                            txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
                                         }
                                     }
                                     else
                                     {
-                                        txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+
+                                        respuesta += "\r\n" + temp.nombre + " = " + posheap;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+
+                                        int cambiof = contadorTemp;
+
+                                        respuesta += "\r\np = t" + contadorTemp;
+
+                                        respuesta += "\r\nCall " + temp.tipo + "_()";
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                        Clase Instancia = clases.Existe(temp.tipo);
+                                        int aux = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
+
+                                        respuesta += "\r\nPH = t" + contadorTemp;
+
+
+
+                                        for (int x = 0; x < Instancia.correlactivo_var; x++)
+                                        {
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = t" + cambiof + " + " + x;
+                                            aux = contadorTemp;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                            aux = contadorTemp;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+
+                                            respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+
+
+                                        }
                                     }
+                                    
                                 }
                                 else if (nodo.ChildNodes.Count == 7)
                                 {
@@ -10046,6 +11093,123 @@ namespace Proyecto2_Compi2_CSharp
 
 
 
+                                }
+                                else if (nodo.ChildNodes.Count == 8)
+                                {
+                                    
+
+                                    string Datos = TraduccionC(nodo.ChildNodes[5]);
+
+                                    Clase Instancia = clases.Existe(temp.tipo);
+
+                                    string[] parametros = Datos.Split(';');
+                                    Funcion Aejec = null;
+                                    if (temp.nombre.Equals(clase_actual))
+                                    {
+                                        Aejec = Instancia.funciones.ExisteP(temp.nombre + "_", parametros.Length);
+
+                                    }
+                                    else
+                                    {
+                                        Aejec = Instancia.funciones.Existe(temp.nombre);
+
+                                        if (parametros.Length != Aejec.nParametros)
+                                        {
+                                            Aejec = null;
+                                        }
+
+                                    }
+
+                                    if (Aejec != null)
+                                    {
+
+                                        bool retorna = Aejec.variables.Buscar_existe("retorno");
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                        int tfalso = contadorTemp;
+
+                                        for (int x = 0; x < parametros.Length; x++)
+                                        {
+                                            string[] partes = parametros[x].Split(',');
+
+                                            if (partes.Length == 2)
+                                            {
+                                                respuesta += partes[0];
+                                                contadorTemp++;
+                                                if (retorna)
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x + 1);
+                                                }
+                                                else
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
+                                                }
+
+                                                respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
+                                            }
+                                            else
+                                            {
+
+                                                contadorTemp++;
+                                                if (retorna)
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x + 1);
+                                                }
+                                                else
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
+                                                }
+
+                                                respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[0];
+                                            }
+
+
+
+
+                                            temp.poship = posheap;
+
+                                            respuesta += "\r\nPH = " + temp.poship;
+
+                                            int temporal = contadorTemp;
+
+
+
+
+                                            respuesta += "\r\n" + temp.nombre + " = t" + temporal;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                            respuesta += "\r\np = t" + contadorTemp;
+
+                                            respuesta += "\r\nCall " + Aejec.nombre + " ()";
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+                                            respuesta += "\r\np = t" + contadorTemp;
+
+                                            Instancia.variables.aux = Instancia.variables.cabeza;
+
+                                            for (x = 0; x < Instancia.correlactivo_var; x++)
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                                int aux = contadorTemp;
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                                aux = contadorTemp;
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+                                                respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+                                            }
+
+                                            respuesta += "\r\n" + temp.nombre + " = PH";
+
+                                            posheap = posheap + Instancia.tamaño;
+                                        }
+
+
+                                    }
                                 }
                                 else
                                 {
@@ -10357,51 +11521,100 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 else if (nodo.ChildNodes.Count == 8)
                                 {
-                                    
-                                    string nombre = nodo.ChildNodes[2].Token.Text;
 
-                                    string funcionop = nodo.ChildNodes[4].Token.Text;
-
-                                    if (clase.funciones.ExisteF(funcionop))
+                                    if (nodo.ChildNodes[4].Term.Name.ToString() == "ID")
                                     {
-                                        Funcion aux = clase.funciones.Existe(funcionop);
+                                        string nombre = nodo.ChildNodes[2].Token.Text;
 
+                                        string funcionop = nodo.ChildNodes[4].Token.Text;
 
-                                        if (aux.TieneParametros())
+                                        if (clase.funciones.ExisteF(funcionop))
                                         {
-                                            txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                            Funcion aux = clase.funciones.Existe(funcionop);
+
+
+                                            if (aux.TieneParametros())
+                                            {
+                                                txtErrores.Text += "\r\nLa Funcion " + funcion + " Necesita Parametros";
+                                            }
+                                            else
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+
+                                                respuesta += "\r\np = t" + contadorTemp;
+                                                respuesta += "\r\nCall " + aux.nombre + " ()";
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + 0";
+
+                                                int auxt = contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
+
+                                                string valor = "t" + contadorTemp;
+
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                                respuesta += "\r\np = t" + contadorTemp;
+
+                                                respuesta += "\r\n" + temp.nombre + " =" + valor;
+
+                                            }
                                         }
                                         else
                                         {
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
-
-                                            respuesta += "\r\np = t" + contadorTemp;
-                                            respuesta += "\r\nCall " + aux.nombre + " ()";
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p + 0";
-
-                                            int auxt = contadorTemp;
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
-
-                                            string valor = "t" + contadorTemp;
-
-                                            contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
-
-                                            respuesta += "\r\np = t" + contadorTemp;
-
-                                            respuesta += "\r\n" + temp.nombre + " =" + valor;
-
+                                            txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
                                         }
                                     }
                                     else
                                     {
-                                        txtErrores.Text += "\r\nNo Existe la Funcion " + funcion;
+
+                                        respuesta += "\r\n" + temp.nombre + " = " + posheap;
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+
+                                        int cambiof = contadorTemp;
+
+                                        respuesta += "\r\np = t" + contadorTemp;
+
+                                        respuesta += "\r\nCall " + temp.tipo + "_()";
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+
+                                        Clase Instancia = clases.Existe(temp.tipo);
+                                        int aux = contadorTemp;
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = " + temp.nombre;
+
+                                        respuesta += "\r\nPH = t" + contadorTemp;
+
+
+
+                                        for (int x = 0; x < Instancia.correlactivo_var; x++)
+                                        {
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = t" + cambiof + " + " + x;
+                                            aux = contadorTemp;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                            aux = contadorTemp;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+
+                                            respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+
+
+                                        }
                                     }
+
+
                                 }
                                 else if (nodo.ChildNodes.Count == 9)
                                 {
@@ -10635,6 +11848,123 @@ namespace Proyecto2_Compi2_CSharp
                                         txtErrores.Text += "\r\nDesbordamiento";
                                     }
 
+                                }
+                                else if(nodo.ChildNodes.Count == 10)
+                                {
+
+
+                                    string Datos = TraduccionC(nodo.ChildNodes[7]);
+
+                                    Clase Instancia = clases.Existe(temp.tipo);
+
+                                    string[] parametros = Datos.Split(';');
+                                    Funcion Aejec = null;
+                                    if (temp.nombre.Equals(clase_actual))
+                                    {
+                                        Aejec = Instancia.funciones.ExisteP(temp.nombre + "_", parametros.Length);
+
+                                    }
+                                    else
+                                    {
+                                        Aejec = Instancia.funciones.Existe(temp.nombre);
+
+                                        if (parametros.Length != Aejec.nParametros)
+                                        {
+                                            Aejec = null;
+                                        }
+
+                                    }
+
+                                    if (Aejec != null)
+                                    {
+
+                                        bool retorna = Aejec.variables.Buscar_existe("retorno");
+
+                                        contadorTemp++;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                        int tfalso = contadorTemp;
+
+                                        for (int x = 0; x < parametros.Length; x++)
+                                        {
+                                            string[] partes = parametros[x].Split(',');
+
+                                            if (partes.Length == 2)
+                                            {
+                                                respuesta += partes[0];
+                                                contadorTemp++;
+                                                if (retorna)
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x + 1);
+                                                }
+                                                else
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
+                                                }
+
+                                                respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
+                                            }
+                                            else
+                                            {
+
+                                                contadorTemp++;
+                                                if (retorna)
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x + 1);
+                                                }
+                                                else
+                                                {
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
+                                                }
+
+                                                respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[0];
+                                            }
+
+
+
+
+                                            temp.poship = posheap;
+
+                                            respuesta += "\r\nPH = " + temp.poship;
+
+                                            int temporal = contadorTemp;
+
+
+
+
+                                            respuesta += "\r\n" + temp.nombre + " = t" + temporal;
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
+                                            respuesta += "\r\np = t" + contadorTemp;
+
+                                            respuesta += "\r\nCall " + Aejec.nombre + " ()";
+
+                                            contadorTemp++;
+                                            respuesta += "\r\nt" + contadorTemp + " = p - " + funcion.correlactivo_var;
+                                            respuesta += "\r\np = t" + contadorTemp;
+
+                                            Instancia.variables.aux = Instancia.variables.cabeza;
+
+                                            for (x = 0; x < Instancia.correlactivo_var; x++)
+                                            {
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                                int aux = contadorTemp;
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
+                                                aux = contadorTemp;
+                                                contadorTemp++;
+                                                respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
+                                                respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
+                                            }
+
+                                            respuesta += "\r\n" + temp.nombre + " = PH";
+
+                                            posheap = posheap + Instancia.tamaño;
+                                        }
+
+
+                                    }
                                 }
                                 else
                                 {
@@ -12922,7 +14252,20 @@ namespace Proyecto2_Compi2_CSharp
                         break;
                     }
 
-                
+                case "Instancia":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            string variable = nodo.ChildNodes[0].Token.Text;
+                        }
+                        else
+                        {
+
+                        }
+                        break;
+                    }
+
+
             }
 
             return respuesta;
@@ -12957,7 +14300,7 @@ namespace Proyecto2_Compi2_CSharp
 
                             Clase clase = clases.Existe(clase_actual);                         
 
-                            respuesta+=clase.Visibilidad +" "+clase.Nombre+" ()\r\n{"+ TraduccionT(nodo.ChildNodes[3])+"\r\n}";
+                            respuesta+=clase.Visibilidad +" "+clase.Nombre+"\r\n{"+ TraduccionT(nodo.ChildNodes[3])+"\r\n}";
 
 
                         }
@@ -12967,7 +14310,7 @@ namespace Proyecto2_Compi2_CSharp
 
                             Clase clase = clases.Existe(clase_actual);
 
-                            respuesta += clase.Visibilidad + " " + clase.Nombre + " ()\r\n{" + TraduccionT(nodo.ChildNodes[4]) + "\r\n}";
+                            respuesta += clase.Visibilidad + " " + clase.Nombre + " \r\n{" + TraduccionT(nodo.ChildNodes[4]) + "\r\n}";
 
                         }
                         else if (nodo.ChildNodes.Count == 6)
@@ -12983,7 +14326,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                 Clase clase = clases.Existe(clase_actual);
 
-                                respuesta += clase.Visibilidad + " " + clase.Nombre + " ()\r\n{" + TraduccionT(nodo.ChildNodes[5]) + "\r\n}";
+                                respuesta += clase.Visibilidad + " " + clase.Nombre + "\r\n{" + TraduccionT(nodo.ChildNodes[5]) + "\r\n}";
                                 
                             }
                             else
@@ -13003,7 +14346,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 Clase clase = clases.Existe(clase_actual);
 
-                                respuesta += clase.Visibilidad + " " + clase.Nombre + " ()\r\n{" + TraduccionT(nodo.ChildNodes[6]) + "\r\n}";
+                                respuesta += clase.Visibilidad + " " + clase.Nombre + " \r\n{" + TraduccionT(nodo.ChildNodes[6]) + "\r\n}";
                             }
                             else
                             {
@@ -13112,7 +14455,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                 Funcion temp = clase.funciones.Existe(fun_actual);
 
-                                respuesta = "\r\n"+temp.visibilidad + " fuction " + temp.nombre + " (" + ")" + "\r\n{" + TraduccionT(nodo.ChildNodes[2]) + "\r\n}";
+                                respuesta = "\r\n"+temp.visibilidad + " fuction " + clase_actual + " (" + ")" + "\r\n{" + TraduccionT(nodo.ChildNodes[2]) + "\r\n}";
 
                                 
                             }
@@ -13147,7 +14490,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Funcion temp = clase.funciones.Existe(fun_actual);
 
-                                    respuesta = "\r\n" + temp.visibilidad + " fuction " + temp.nombre + " (" + ")" + "\r\n{" + TraduccionT(nodo.ChildNodes[3]) + "\r\n}";
+                                    respuesta = "\r\n" + temp.visibilidad + " fuction " + clase + " (" + ")" + "\r\n{" + TraduccionT(nodo.ChildNodes[3]) + "\r\n}";
                                 }
                                 else
                                 {
@@ -13182,12 +14525,14 @@ namespace Proyecto2_Compi2_CSharp
                                     string[] Sparametros = parametros.Split(',');
 
                                     string nombre = fun_actual;
+                                    string nombre2 = clase_actual;
 
                                     for (int y = 0; y < Sparametros.Length; y++)
                                     {
                                         string[] param = Sparametros[y].Split(' ');
 
                                         nombre += "_" + param[0];
+                                        nombre2 += "_" + param[0];
                                     }
 
                                     fun_actual=nombre;
@@ -13197,7 +14542,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Funcion temp = clase.funciones.Existe(fun_actual);
 
-                                    respuesta = "\r\n" + temp.visibilidad + " fuction " + temp.nombre + "(" + ")" + "\r\n{" + TraduccionT(nodo.ChildNodes[4]) + "\r\n}";
+                                    respuesta = "\r\n" + temp.visibilidad + " fuction " + nombre2 + "(" + ")" + "\r\n{" + TraduccionT(nodo.ChildNodes[4]) + "\r\n}";
 
                                     
                                 }
@@ -13221,12 +14566,14 @@ namespace Proyecto2_Compi2_CSharp
                                     string[] Sparametros = parametros.Split(',');
 
                                     string nombre = fun_actual;
+                                    string nombre2 = clase_actual;
 
                                     for (int y = 0; y < Sparametros.Length; y++)
                                     {
                                         string[] param = Sparametros[y].Split(' ');
 
                                         nombre += "_" + param[0];
+                                        nombre2 += "_" + param[0];
                                     }
 
                                     fun_actual = nombre;
@@ -13234,7 +14581,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Funcion temp = clase.funciones.Existe(fun_actual);
 
-                                    respuesta = "\r\n" + temp.visibilidad + " fuction " + temp.nombre + "(" + ")" + "\r\n{" + TraduccionT(nodo.ChildNodes[5]) + "\r\n}";
+                                    respuesta = "\r\n" + temp.visibilidad + " fuction " + nombre2 + "(" + ")" + "\r\n{" + TraduccionT(nodo.ChildNodes[5]) + "\r\n}";
                                     
                                 }
                                 else
@@ -16951,11 +18298,7 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     Analizar3d(nodo.ChildNodes[1]);
                                 }
-                                else
-                                {
-                                    seguirejec = true;
-                                }
-                                
+                               
                                 
 
                             }
@@ -17294,6 +18637,11 @@ namespace Proyecto2_Compi2_CSharp
                             if (etiqueta.nodo != null)
                             {
                                 Analizar3d(etiqueta.nodo);
+                                seguirejec = false;
+                            }
+                            else
+                            {
+                                seguirejec = false;
                             }
 
                             
@@ -17335,6 +18683,12 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Analizar3d(label.nodo);
 
+                                    string c = label.nombre[1].ToString();
+
+                                    int salida = Int32.Parse(c) + 2;
+                                    label = funcion.etiquetas.Buscar("L"+salida+" ");
+                                    Analizar3d(label.nodo);
+
                                     seguirejec = false;
 
                                 }
@@ -17344,27 +18698,40 @@ namespace Proyecto2_Compi2_CSharp
                         break;
                     }
 
+                case "Labels":
+                    {
+                        if (nodo.ChildNodes.Count == 2)
+                        {
+                            respuesta += Analizar3d(nodo.ChildNodes[0]);
+                            respuesta += Analizar3d(nodo.ChildNodes[1]);
+                        }
+                        else
+                        {
+                            respuesta += Analizar3d(nodo.ChildNodes[0]);
+                        }
+                        break;
+                    }
+
                 case "Label":
                     {
                         if (ejecutar)
                         {
                             if (nodo.ChildNodes.Count == 2)
                             {
-                                if (seguireti)
+                                if (seguirejec)
                                 {
                                     string nombre = nodo.ChildNodes[0].Token.Text;
                                     Funcion3D funcion = funciones3D.buscar(fun_actual);
                                     Etiqueta etiqueta = funcion.etiquetas.Buscar(nombre);
-                                    seguireti = false;
                                     Analizar3d(etiqueta.nodo);
+                                }
 
-                                    
-                                }
-                                else
-                                {
-                                    seguireti = true;
-                                }
                             }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString().Equals("Sentencias"))
+                            {
+                                Analizar3d(nodo.ChildNodes[0]);
+                            }
+                            
                         }
                         else
                         {
@@ -17376,7 +18743,11 @@ namespace Proyecto2_Compi2_CSharp
                                 Funcion3D funcion = funciones3D.buscar(fun_actual);
                                 funcion.etiquetas.Insertar(nuevo);
                                 
-                                Analizar3d(nodo.ChildNodes[1]);
+                                //Analizar3d(nodo.ChildNodes[1]);
+                            }
+                            else if (nodo.ChildNodes[0].Term.Name.ToString().Equals("Sentencias"))
+                            {
+
                             }
                             else
                             {
@@ -17621,6 +18992,7 @@ namespace Proyecto2_Compi2_CSharp
                             Analizar3d(funcion.nodo);
 
                             fun_actual = ftemporal;
+                            seguirejec = true;
                         }
 
                         break;
@@ -17636,10 +19008,35 @@ namespace Proyecto2_Compi2_CSharp
                         break;
                     }
 
+
             }
 
             return respuesta;
         }
         
+        public void DefinirTamaño(Clase clase)
+        {
+            int total = 0;
+            Funcion aux = clase.funciones.cabeza;
+
+            Boolean seguir = true;
+
+            while (seguir)
+            {
+                total += aux.correlactivo_var;
+
+                if (aux.siguiente != null)
+                {
+                    aux = aux.siguiente;
+                }
+                else
+                {
+                    seguir = false;
+                }
+            }
+
+            clase.tamaño = total;
+
+        }
     }
 }

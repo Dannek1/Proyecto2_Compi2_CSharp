@@ -153,7 +153,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Cabeza.Rule = Importaciones;
 
 
-            Importaciones.Rule = Importaciones + Importacion;
+            Importaciones.Rule = Importaciones + Importacion
+                                |Importacion;
 
 
             Importacion.Rule = Llamar + Cadena + ")" + finSentencia
@@ -178,14 +179,16 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Globales.Rule = Globales + Global
                          | Global;
 
-            Global.Rule = Visibilidad + Tipo + ID + finSentencia//4
+            Global.Rule =   Visibilidad + Tipo + ID + finSentencia//4
                           | Visibilidad + Tipo + ID + "=" + Operacion + finSentencia//6
                           | Visibilidad + Tipo + ID + Dimensiones + finSentencia//5
                           | Visibilidad + Tipo + ID + Dimensiones + "=" + "{" + AsignacionesArreglo + "}" + finSentencia//9
                           | Visibilidad + ID + ID + finSentencia//4
                           | Visibilidad + ID + ID + "=" + "new " + ID + "()" + finSentencia//8
+                          | Visibilidad + ID + ID + "=" + "new " + ID + "(" + Operaciones + ")" + finSentencia//10
                           | ID + ID + finSentencia//3
                           | ID + ID + "=" + "new " + ID + "()" + finSentencia//7
+                          | ID + ID + "=" + "new " + ID + "(" + Operaciones + ")" + finSentencia//9
                           | Tipo + ID + finSentencia//3
                           | Tipo + ID + "=" + Operacion + finSentencia//5
                           | Tipo + ID + Dimensiones + finSentencia//4
@@ -268,7 +271,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | Tipo + ID + "=" + ID + "(" + ")" + finSentencia//7
                             | Tipo + ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//8
                             | Tipo + ID + Dimensiones + finSentencia//4
-                            | Tipo + ID + Dimensiones + "=" + "{" + AsignacionesArreglo + "}" + finSentencia;//8
+                            | Tipo + ID + Dimensiones + "=" + "{" + AsignacionesArreglo + "}" + finSentencia//8
+                            | ID + ID + finSentencia//3
+                            | ID + ID + "=" + Nuevo + ID + "()" + finSentencia//7
+                            | ID + ID + "=" + Nuevo + ID + "(" + Operaciones + ")" + finSentencia; //9
 
             Declaracion.ErrorRule = SyntaxError + finSentencia;
 
@@ -296,8 +302,14 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | ID + Dimensiones + "=" + ID + "(" + Operaciones + ")" + finSentencia//8
                             | ID + Dimensiones + aumentar + finSentencia//4
                             | ID + Dimensiones + aumentar + finSentencia//4
+
+                            | ID + "=" + Nuevo + ID + "()" + finSentencia//6
+                            | ID + "=" + Nuevo + ID + "(" + Operaciones + ")" + finSentencia //8
+                            | Este + "." + ID + "=" + Nuevo + ID + "()" + finSentencia//8
+                            | Este + "." + ID + "=" + Nuevo + ID + "(" + Operaciones + ")" + finSentencia //10
+                            
                             | Este + "." + ID + "=" + Operacion + finSentencia//6
-                            | Este + "." + ID + "=" + ID + "(" + ")" + finSentencia//8
+                            | Este + "." + ID + "=" + ID + "(" + ")" + finSentencia//8                        
                             | Este + "." + ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//9
                             | Este + "." + ID + aumentar + finSentencia//5
                             | Este + "." + ID + disminuir + finSentencia//5
