@@ -264,6 +264,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                            | SX
                            | Repetir
                            | Do_While
+                           |Instancia
                            | Imprimir;
 
             Declaracion.Rule = Tipo + ID + finSentencia//3
@@ -302,12 +303,19 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | ID + Dimensiones + "=" + ID + "(" + Operaciones + ")" + finSentencia//8
                             | ID + Dimensiones + aumentar + finSentencia//4
                             | ID + Dimensiones + aumentar + finSentencia//4
-
                             | ID + "=" + Nuevo + ID + "()" + finSentencia//6
                             | ID + "=" + Nuevo + ID + "(" + Operaciones + ")" + finSentencia //8
+
+                            | Instancia + "=" + Operacion+ finSentencia//4
+                            | Instancia + aumentar + finSentencia//3
+                            | Instancia + disminuir + finSentencia//3
+                            | Instancia + "=" + ID + "(" + ")" + finSentencia//6
+                            | Instancia + "=" + ID + "(" + Operaciones + ")" + finSentencia//7
+
+                            | Este + "." + Instancia +"=" + Operacion + finSentencia//4
+
                             | Este + "." + ID + "=" + Nuevo + ID + "()" + finSentencia//8
                             | Este + "." + ID + "=" + Nuevo + ID + "(" + Operaciones + ")" + finSentencia //10
-                            
                             | Este + "." + ID + "=" + Operacion + finSentencia//6
                             | Este + "." + ID + "=" + ID + "(" + ")" + finSentencia//8                        
                             | Este + "." + ID + "=" + ID + "(" + Operaciones + ")" + finSentencia//9
@@ -420,7 +428,8 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                  | Cadena;
 
             Instancia.Rule = ID + "." + Instancia
-                            | ID;
+                            | ID
+                            |Funciones;
 
 
             this.Root = S;
