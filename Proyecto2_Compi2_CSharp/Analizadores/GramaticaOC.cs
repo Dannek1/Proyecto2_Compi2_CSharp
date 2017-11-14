@@ -312,7 +312,11 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | Instancia + "=" + ID + "(" + ")" + finSentencia//6
                             | Instancia + "=" + ID + "(" + Operaciones + ")" + finSentencia//7
 
-                            | Este + "." + Instancia +"=" + Operacion + finSentencia//4
+                            | Este + "." + Instancia + "=" + Operacion + finSentencia//6
+                            | Este + "." + Instancia + aumentar + finSentencia//5
+                            | Este + "." + Instancia + disminuir + finSentencia//5
+                            | Este + "." + Instancia + "=" + ID + "(" + ")" + finSentencia//8
+                            | Este + "." + Instancia + "=" + ID + "(" + Operaciones + ")" + finSentencia//9
 
                             | Este + "." + ID + "=" + Nuevo + ID + "()" + finSentencia//8
                             | Este + "." + ID + "=" + Nuevo + ID + "(" + Operaciones + ")" + finSentencia //10
@@ -429,6 +433,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             Instancia.Rule = ID + "." + Instancia
                             | ID
+                            |ID +Dimensiones
                             |Funciones;
 
 

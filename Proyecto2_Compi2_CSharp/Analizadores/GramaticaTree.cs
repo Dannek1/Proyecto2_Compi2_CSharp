@@ -161,6 +161,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                     Sino = new NonTerminal("Sino"),
                     Salir = new NonTerminal("Salir"),
                     Repetir = new NonTerminal("Repetir"),
+                    Instancia = new NonTerminal("Instancia"),
                     K = new NonTerminal("K");
 
             S.Rule = Cabeza + Cuerpo
@@ -172,10 +173,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | importacion;
 
             importacion.Rule = ID + "." + ID
-                            |Cadena
+                            | Cadena
                             | ruta;
 
-            Cuerpo.Rule =   RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent//6
+            Cuerpo.Rule = RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent//6
                           | RClase + ID + "[]:" + Eos + Indent + Partes + Dedent//4
                           | Visibilidad + RClase + ID + "[]:" + Eos + Indent + Partes + Dedent//5
                           | Visibilidad + RClase + ID + "[" + ID + "]:" + Eos + Indent + Partes + Dedent;//7
@@ -187,7 +188,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | Global;
 
             Global.Rule = Tipo + Nombres + Eos//2
-                        | Tipo + Nombres + Dimensiones +Eos//3
+                        | Tipo + Nombres + Dimensiones + Eos//3
                         | Visibilidad + Tipo + Nombres + Eos//3
                         | Visibilidad + Tipo + Nombres + Dimensiones + Eos//4
                         | Tipo + Nombres + "=>" + Operacion + Eos//4
@@ -229,6 +230,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                            | douASt
                            | intASt
                            | douAINt
+                           | Instancia
                            | Salir;
 
             Declaracion.Rule = Tipo + Nombres + Eos
@@ -239,14 +241,18 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | ID + aumentar + Eos//2
                             | ID + disminuir + Eos//2
                             | ID + "=>" + ID + "[" + "]" + Eos//5
-                            | ID + "=>" + ID + "[" +Operaciones + "]" + Eos//6
+                            | ID + "=>" + ID + "[" + Operaciones + "]" + Eos//6
                             | ID + Dimensiones + "=>" + Operacion + Eos//4
                             | ID + Dimensiones + "=>" + ID + "[" + "]" + Eos//6
                             | ID + Dimensiones + "=>" + ID + "[" + Operaciones + "]" + Eos//7
                             | ID + Dimensiones + aumentar + Eos//3
                             | ID + Dimensiones + disminuir + Eos//3
-
-                            //| ID + "." + ID + "=>" + Operacion + Eos//5
+                            
+                            | Instancia + "=>" + Operacion + Eos//3
+                            | Instancia + aumentar + Eos//2
+                            | Instancia + disminuir + Eos//2
+                            | Instancia + "=>" + ID + "[" + "]" + Eos//5
+                            | Instancia + "=>" + ID + "[" + Operaciones + "]" + Eos//6
 
 
                             | Rself + "." + ID + "=>" + Operacion + Eos//5
@@ -377,6 +383,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | Parametro;
 
             Parametro.Rule = Tipo + ID;
+
+            Instancia.Rule = ID + "." + Instancia
+                           | ID
+                           | Funciones;
 
             this.Root = S;
         }
