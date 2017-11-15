@@ -22,7 +22,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
             //reservadas
             RegexBasedTerminal Rimportar = new RegexBasedTerminal("Rimportar", "importar ");
-            RegexBasedTerminal Rsuper = new RegexBasedTerminal("Rsuper", "super");
+            RegexBasedTerminal Rsuper = new RegexBasedTerminal("Rsuper", "super\\[");
             RegexBasedTerminal Rsobreescribir = new RegexBasedTerminal("Rsobreescribir", "\\/\\*\\*Sobreescribir\\*\\*\\/");
             RegexBasedTerminal Rmetodo = new RegexBasedTerminal("Rmetodo", "metodo");
             RegexBasedTerminal Rfuncion = new RegexBasedTerminal("Rfuncion", "funcion");
@@ -162,6 +162,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                     Salir = new NonTerminal("Salir"),
                     Repetir = new NonTerminal("Repetir"),
                     Instancia = new NonTerminal("Instancia"),
+                    super = new NonTerminal("super"),
                     K = new NonTerminal("K");
 
             S.Rule = Cabeza + Cuerpo
@@ -216,6 +217,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                            | Asignacion
                            | Declaracion
                            | Funciones
+                           | super
                            | IF
                            | For
                            | While
@@ -253,6 +255,12 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                             | Instancia + disminuir + Eos//2
                             | Instancia + "=>" + ID + "[" + "]" + Eos//5
                             | Instancia + "=>" + ID + "[" + Operaciones + "]" + Eos//6
+
+                            | Rself + "." + Instancia + "=>" + Operacion + Eos//5
+                            | Rself + "." + Instancia + aumentar + Eos//4
+                            | Rself + "." + Instancia + disminuir + Eos//4
+                            | Rself + "." + Instancia + "=>" + ID + "[" + "]" + Eos//7
+                            | Rself + "." + Instancia + "=>" + ID + "[" + Operaciones + "]" + Eos//8
 
 
                             | Rself + "." + ID + "=>" + Operacion + Eos//5
@@ -368,6 +376,9 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Funciones.Rule = ID + "[" + Operaciones + "]" +Eos
                            | ID + "[" + "]" +Eos ;
 
+            super.Rule = Rsuper + Operaciones + "]" + Eos
+                       | Rsuper + "]" + Eos;
+
             Operaciones.Rule = Operaciones + "," + Operacion
                               | Operacion;
 
@@ -385,7 +396,10 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Parametro.Rule = Tipo + ID;
 
             Instancia.Rule = ID + "." + Instancia
+                           | ID +Eos
                            | ID
+                           | ID + Dimensiones + Eos
+                           | ID + Dimensiones
                            | Funciones;
 
             this.Root = S;

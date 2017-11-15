@@ -264,7 +264,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                            | SX
                            | Repetir
                            | Do_While
-                           |Instancia
+                           | Instancia
                            | Imprimir;
 
             Declaracion.Rule = Tipo + ID + finSentencia//3
