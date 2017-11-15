@@ -152,7 +152,14 @@ namespace Proyecto2_Compi2_CSharp
 
                 txt3D.Text = TresD;
 
-                
+                if (TresD != "")
+                {
+                    TresD = Optimizar(TresD);
+
+                    txt3Dop.Text = TresD;
+                }
+
+
 
                 if (TresD != "")
                 {
@@ -242,7 +249,7 @@ namespace Proyecto2_Compi2_CSharp
             else
             {
                 String Consola = txtConsola.Text;
-                Consola += "\r\nAnalizando En Lenguaje OLC++";
+                Consola += "\r\nAnalizando En Lenguaje OLC++ ";
                 txtConsola.Text = Consola;
                 GramaticaOC gramatica = new GramaticaOC();
 
@@ -7879,13 +7886,13 @@ namespace Proyecto2_Compi2_CSharp
                                 for(int x = 0; x < Instancia.correlactivo_var; x++)
                                 {
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp+" = p +"+ x;
+                                    respuesta += "\r\nt" + contadorTemp+ " = p + "+ x;
                                     int aux = contadorTemp;
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = pila[t"+aux+"]";
+                                    respuesta += "\r\nt" + contadorTemp + " = pila[t"+aux+ "]";
                                     aux = contadorTemp;
                                     contadorTemp++;
-                                    respuesta+="\r\nt"+contadorTemp+" = PH + "+ x;
+                                    respuesta+="\r\nt"+contadorTemp+ " = PH + "+ x;
                                     respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
                                 }
                                 posheap = posheap + Instancia.tamaño;
@@ -8044,7 +8051,7 @@ namespace Proyecto2_Compi2_CSharp
                                         for (x = 0; x < Instancia.correlactivo_var; x++)
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + x;
                                             int aux = contadorTemp;
                                             contadorTemp++;
                                             respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
@@ -8214,7 +8221,7 @@ namespace Proyecto2_Compi2_CSharp
                                     for (x = 0; x < Instancia.correlactivo_var; x++)
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + x;
                                         int aux = contadorTemp;
                                         contadorTemp++;
                                         respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
@@ -8245,7 +8252,7 @@ namespace Proyecto2_Compi2_CSharp
 
                             respuesta += "\r\n" + temp.nombre + " = "+ posheap;
 
-                            respuesta += "\r\nCall "+temp.tipo+"_()";
+                            respuesta += "\r\nCall "+temp.tipo+ "_()";
 
                             Clase Instancia = clases.Existe(tipo);
 
@@ -8256,15 +8263,15 @@ namespace Proyecto2_Compi2_CSharp
                             for (int x = 0; x < Instancia.correlactivo_var; x++)
                             {
                                 contadorTemp++;
-                                respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                respuesta += "\r\nt" + contadorTemp + " = p + " + x;
                                 int aux = contadorTemp;
                                 contadorTemp++;
 
-                                respuesta += "\r\nt" + contadorTemp+" = pila[t"+aux+"]";
+                                respuesta += "\r\nt" + contadorTemp+ " = pila[t"+aux+ "]";
                                 aux = contadorTemp;
 
                                 contadorTemp++;
-                                respuesta += "\r\nt" + contadorTemp + " = PH +" + x;
+                                respuesta += "\r\nt" + contadorTemp + " = PH + " + x;
 
                                 respuesta += "\r\nHeap[t" + contadorTemp + "] = t" + aux;
 
@@ -8301,7 +8308,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 Clase clase = clases.Existe(x);
                                 Funcion temp = clase.funciones.Existe(x + "_");
-                                respuesta = "\r\n " +temp.visibilidad+" fuction " + temp.nombre + " ()" + "{}";
+                                respuesta = "\r\n " +temp.visibilidad+ " fuction " + temp.nombre + " ()" + "{}";
 
                             }
                             else if (x.Equals("principal"))
@@ -8408,7 +8415,7 @@ namespace Proyecto2_Compi2_CSharp
                                     Clase clase = clases.Existe(x);
                                     Funcion temp = clase.funciones.Existe(x + "_");
 
-                                    respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" +"{ }";
+                                    respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "{ }";
 
 
                                 }
@@ -8547,7 +8554,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                             Funcion temp = clase.funciones.Existe(nombre);
 
-                                            respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" +"{ }";
+                                            respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "{ }";
 
                                         }
                                         else
@@ -8567,7 +8574,7 @@ namespace Proyecto2_Compi2_CSharp
                                             fun_actual = x + "_";
                                             Funcion temp = clase.funciones.Existe(x + "_");
 
-                                            respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" +"\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
+                                            respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "\r\n{" + TraduccionC(nodo.ChildNodes[5]) + "\r\n}";
 
                                         }
 
@@ -8580,7 +8587,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Funcion temp = clases.Existe(clase_actual).funciones.Existe(x);
 
-                                    respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" +"{ }";
+                                    respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "{ }";
                                }
                            }
                            else
@@ -8598,7 +8605,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                        Funcion funcion = clase.funciones.Existe(x);
 
-                                       respuesta = funcion.visibilidad + " fuction " + funcion.nombre+" (){}";
+                                       respuesta = funcion.visibilidad + " fuction " + funcion.nombre+ " (){}";
 
                                    }
                                 }
@@ -8614,7 +8621,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                        Funcion temp = clase.funciones.Existe(x);
 
-                                        respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" +"{ }";
+                                        respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "{ }";
 
                                    }
 
@@ -8648,7 +8655,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                     Funcion temp = clase.funciones.Existe(nombre);
 
-                                    respuesta = temp.visibilidad+" fuction " + nombre + " ()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
+                                    respuesta = temp.visibilidad+ " fuction " + nombre + " ()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
 
                                }
                                else
@@ -9087,7 +9094,7 @@ namespace Proyecto2_Compi2_CSharp
                                                                            
                                         Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
 
-                                        respuesta = funcion.visibilidad + " fuction " + nombre + " ()\r\n{\r\n" + TraduccionC(nodo.ChildNodes[8])+"\r\n}";
+                                        respuesta = funcion.visibilidad + " fuction " + nombre + " ()\r\n{\r\n" + TraduccionC(nodo.ChildNodes[8])+ "\r\n}";
                                         
 
                                            
@@ -9242,8 +9249,8 @@ namespace Proyecto2_Compi2_CSharp
 
                             contadorTemp++;
 
-                            respuesta += "\r\nt" + contadorTemp + "=" + "p + " + variable.posicion;
-                            respuesta += "\r\npila[t" + contadorTemp + "]" + "=" + valor;
+                            respuesta += "\r\nt" + contadorTemp + " =" + "p + " + variable.posicion;
+                            respuesta += "\r\npila[t" + contadorTemp + "]" + " =" + valor;
                             
 
                         }                       
@@ -9274,7 +9281,7 @@ namespace Proyecto2_Compi2_CSharp
                                     else
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                         respuesta += "\r\np = t" + contadorTemp;
                                         respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -9295,7 +9302,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\np = t" + contadorTemp;
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                         respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
 
                                     }
@@ -9317,7 +9324,7 @@ namespace Proyecto2_Compi2_CSharp
 
 
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     
                                     respuesta += "\r\npila[t" + contadorTemp + "] = "+ posheap;
 
@@ -9345,7 +9352,7 @@ namespace Proyecto2_Compi2_CSharp
                                     for (int x = 0; x < Instancia.correlactivo_var; x++)
                                     {
                                         contadorTemp++;
-                                        respuesta+="\r\nt"+contadorTemp + " = t"+cambiof+" + "+x;
+                                        respuesta+="\r\nt"+contadorTemp + " = t"+cambiof+ " + "+x;
                                         aux = contadorTemp;
 
                                         contadorTemp++;
@@ -9368,7 +9375,7 @@ namespace Proyecto2_Compi2_CSharp
                                     Variable temp = clase.variables.Buscar(nombre);
 
 
-                                    respuesta += "\r\n"+ temp.nombre+" = " + posheap;
+                                    respuesta += "\r\n"+ temp.nombre+ " = " + posheap;
 
                                     contadorTemp++;
                                     respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
@@ -9444,7 +9451,7 @@ namespace Proyecto2_Compi2_CSharp
                                         if (aux.variables.Buscar_existe("retorno")){
 
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                             int lfalse = contadorTemp;
 
                                             for(int x = 0; x < parametros.Length; x++)
@@ -9486,7 +9493,7 @@ namespace Proyecto2_Compi2_CSharp
                                             respuesta += "\r\np = t" + contadorTemp;
 
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                             respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
 
                                         }
@@ -9554,7 +9561,7 @@ namespace Proyecto2_Compi2_CSharp
                                             
                                            
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                             respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -9571,7 +9578,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     contadorTemp++;
                                                     respuesta += "\r\nt" + contadorTemp + " = PH + " + contador;
 
-                                                    respuesta += "\r\nHeap[t"+contadorTemp+"] = "+ val[x];
+                                                    respuesta += "\r\nHeap[t"+contadorTemp+ "] = "+ val[x];
 
                                                     contador++;
                                                     if (posheap == ((contador-1) + temp.poship))
@@ -9656,11 +9663,11 @@ namespace Proyecto2_Compi2_CSharp
                                             contadorTemp++;
                                             if (retorna)
                                             {
-                                                respuesta += "\r\nt" + contadorTemp + " = t"+ tfalso + " +" +(x + 1);
+                                                respuesta += "\r\nt" + contadorTemp + " = t"+ tfalso + " + " +(x + 1);
                                             }
                                             else
                                             {
-                                                respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+" +" + x;
+                                                respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+ " + " + x;
                                             }
 
                                             respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
@@ -9675,7 +9682,7 @@ namespace Proyecto2_Compi2_CSharp
                                             }
                                             else
                                             {
-                                                respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+" + " + x;
+                                                respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+ " + " + x;
                                             }
 
                                             respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[0];
@@ -9690,7 +9697,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                         contadorTemp++;
 
-                                        respuesta+="\r\nt"+contadorTemp+" = p + "+var.posicion;
+                                        respuesta+="\r\nt"+contadorTemp+ " = p + "+var.posicion;
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + temporal;
 
                                         contadorTemp++;
@@ -9712,7 +9719,7 @@ namespace Proyecto2_Compi2_CSharp
                                         for (x = 0; x < Instancia.correlactivo_var; x++)
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+" +" + x;
+                                            respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+ " + " + x;
                                             int aux = contadorTemp;
                                             contadorTemp++;
                                             respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
@@ -9774,7 +9781,7 @@ namespace Proyecto2_Compi2_CSharp
                                             contadorTemp++;
                                             if (retorna)
                                             {
-                                                respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+" + " + (x + 1);
+                                                respuesta += "\r\nt" + contadorTemp + " = t"+tfalso+ " + " + (x + 1);
                                             }
                                             else
                                             {
@@ -9811,7 +9818,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                         
 
-                                        respuesta += "\r\n"+var.nombre+" = t" + temporal;
+                                        respuesta += "\r\n"+var.nombre+ " = t" + temporal;
 
                                         contadorTemp++;
                                         respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
@@ -9828,7 +9835,7 @@ namespace Proyecto2_Compi2_CSharp
                                         for (x = 0; x < Instancia.correlactivo_var; x++)
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + x;
                                             int aux = contadorTemp;
                                             contadorTemp++;
                                             respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
@@ -9888,7 +9895,7 @@ namespace Proyecto2_Compi2_CSharp
                                         }
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
                                     }
@@ -9925,7 +9932,7 @@ namespace Proyecto2_Compi2_CSharp
                                             if (pos <= total)
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                                 respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -9990,7 +9997,7 @@ namespace Proyecto2_Compi2_CSharp
                                             if (pos <= total)
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                                 respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -10029,7 +10036,7 @@ namespace Proyecto2_Compi2_CSharp
                                     if (nodo.ChildNodes[1].Term.Name.ToString() == "aumentar")
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         int auxt = contadorTemp;
                                         contadorTemp++;
@@ -10041,7 +10048,7 @@ namespace Proyecto2_Compi2_CSharp
                                         auxt = contadorTemp;
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt;
 
@@ -10049,7 +10056,7 @@ namespace Proyecto2_Compi2_CSharp
                                     else
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         int auxt = contadorTemp;
                                         contadorTemp++;
@@ -10061,7 +10068,7 @@ namespace Proyecto2_Compi2_CSharp
                                         auxt = contadorTemp;
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt;
 
@@ -10088,7 +10095,7 @@ namespace Proyecto2_Compi2_CSharp
                                             else
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                                 respuesta += "\r\np = t" + contadorTemp;
                                                 respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -10109,7 +10116,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 respuesta += "\r\np = t" + contadorTemp;
 
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                                 respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
 
                                             }
@@ -10125,7 +10132,7 @@ namespace Proyecto2_Compi2_CSharp
                                         string tipo = temp.tipo;
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = " + posheap;
 
@@ -10199,7 +10206,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 {
 
                                                     contadorTemp++;
-                                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                     int lfalse = contadorTemp;
 
                                                     for (int x = 0; x < parametros.Length; x++)
@@ -10241,7 +10248,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     respuesta += "\r\np = t" + contadorTemp;
 
                                                     contadorTemp++;
-                                                    respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                                     respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
 
                                                 }
@@ -10282,7 +10289,7 @@ namespace Proyecto2_Compi2_CSharp
                                             else
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                                 respuesta += "\r\np = t" + contadorTemp;
                                                 respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -10326,7 +10333,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     if (pos <= total)
                                                     {
                                                         contadorTemp++;
-                                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                                         respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -10409,7 +10416,7 @@ namespace Proyecto2_Compi2_CSharp
                                         if (pos < total)
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                             respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -10485,11 +10492,11 @@ namespace Proyecto2_Compi2_CSharp
                                                 contadorTemp++;
                                                 if (retorna)
                                                 {
-                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " +" + (x + 1);
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x + 1);
                                                 }
                                                 else
                                                 {
-                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " +" + x;
+                                                    respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
                                                 }
 
                                                 respuesta += "\r\npila[t" + contadorTemp + "]= " + partes[1];
@@ -10541,7 +10548,7 @@ namespace Proyecto2_Compi2_CSharp
                                             for (x = 0; x < Instancia.correlactivo_var; x++)
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " +" + x;
+                                                respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
                                                 int aux = contadorTemp;
                                                 contadorTemp++;
                                                 respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
@@ -10579,7 +10586,7 @@ namespace Proyecto2_Compi2_CSharp
                                             {
 
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                 int lfalse = contadorTemp;
 
                                                 for (int x = 0; x < parametros.Length; x++)
@@ -10649,7 +10656,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     if (pos < total)
                                                     {
                                                         contadorTemp++;
-                                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                                         respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -10888,7 +10895,7 @@ namespace Proyecto2_Compi2_CSharp
                                             else
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                                 respuesta += "\r\np = t" + contadorTemp;
                                                 respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -10988,7 +10995,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 {
 
                                                     contadorTemp++;
-                                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                     int lfalse = contadorTemp;
 
                                                     for (int x = 0; x < parametros.Length; x++)
@@ -11069,7 +11076,7 @@ namespace Proyecto2_Compi2_CSharp
                                             else
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                                 respuesta += "\r\np = t" + contadorTemp;
                                                 respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -11300,7 +11307,7 @@ namespace Proyecto2_Compi2_CSharp
                                             for (x = 0; x < Instancia.correlactivo_var; x++)
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + x;
                                                 int aux = contadorTemp;
                                                 contadorTemp++;
                                                 respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
@@ -11340,7 +11347,7 @@ namespace Proyecto2_Compi2_CSharp
                                             {
 
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                 int lfalse = contadorTemp;
 
                                                 for (int x = 0; x < parametros.Length; x++)
@@ -11499,7 +11506,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                 respuesta += partes[0];
 
-                                respuesta += "\r\n"+partes[1]+" = " + valor;
+                                respuesta += "\r\n"+partes[1]+ " = " + valor;
                             }
                             else if(nodo.ChildNodes.Count == 6)
                             {
@@ -11520,7 +11527,7 @@ namespace Proyecto2_Compi2_CSharp
                                     else
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                         respuesta += "\r\np = t" + contadorTemp;
                                         respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -11546,7 +11553,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += partes[0];
                                         contadorTemp++;
 
-                                        respuesta += "\r\n"+ partes[1]+" = " + valor;
+                                        respuesta += "\r\n"+ partes[1]+ " = " + valor;
 
                                     }
                                 }
@@ -11576,7 +11583,7 @@ namespace Proyecto2_Compi2_CSharp
                                         {
 
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                             int lfalse = contadorTemp;
 
                                             for (int x = 0; x < parametros.Length; x++)
@@ -11716,7 +11723,7 @@ namespace Proyecto2_Compi2_CSharp
                                     else
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                         respuesta += "\r\np = t" + contadorTemp;
                                         respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -11772,7 +11779,7 @@ namespace Proyecto2_Compi2_CSharp
                                         {
 
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                             int lfalse = contadorTemp;
 
                                             for (int x = 0; x < parametros.Length; x++)
@@ -12039,7 +12046,7 @@ namespace Proyecto2_Compi2_CSharp
                                             else
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                                 respuesta += "\r\np = t" + contadorTemp;
                                                 respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -12140,7 +12147,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 {
 
                                                     contadorTemp++;
-                                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                     int lfalse = contadorTemp;
 
                                                     for (int x = 0; x < parametros.Length; x++)
@@ -12221,7 +12228,7 @@ namespace Proyecto2_Compi2_CSharp
                                             else
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                                 respuesta += "\r\np = t" + contadorTemp;
                                                 respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -12447,7 +12454,7 @@ namespace Proyecto2_Compi2_CSharp
                                             for (x = 0; x < Instancia.correlactivo_var; x++)
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + x;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + x;
                                                 int aux = contadorTemp;
                                                 contadorTemp++;
                                                 respuesta += "\r\nt" + contadorTemp + " = pila[t" + aux + "]";
@@ -12487,7 +12494,7 @@ namespace Proyecto2_Compi2_CSharp
                                             {
 
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                 int lfalse = contadorTemp;
 
                                                 for (int x = 0; x < parametros.Length; x++)
@@ -12848,7 +12855,7 @@ namespace Proyecto2_Compi2_CSharp
                                         if (pos < total)
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                             respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -12858,7 +12865,7 @@ namespace Proyecto2_Compi2_CSharp
                                             int auxt = contadorTemp;
 
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = Headp[t" +auxt+"],t"+contadorTemp ;
+                                            respuesta += "\r\nt" + contadorTemp + " = Headp[t" +auxt+ "],t"+contadorTemp ;
 
                                             
 
@@ -12880,7 +12887,7 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 else
                                 {
-                                    txtErrores.Text+="\r\nLa Variable "+vart+" No Es un arreglo";
+                                    txtErrores.Text+="\r\nLa Variable "+vart+ " No Es un arreglo";
                                 }
 
 
@@ -12921,7 +12928,7 @@ namespace Proyecto2_Compi2_CSharp
                                         {
                                             
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = "+temp.nombre+"["+pos+ "],t" + contadorTemp;
+                                            respuesta += "\r\nt" + contadorTemp + " = "+temp.nombre+ "["+pos+ "],t" + contadorTemp;
 
 
 
@@ -12961,7 +12968,7 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     Variable temp = funcion.variables.Buscar(vart);
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     int aux = contadorTemp;
 
                                     contadorTemp++;
@@ -13039,7 +13046,7 @@ namespace Proyecto2_Compi2_CSharp
                             if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
                             {
                                 respuesta += "\r\nL" + lfalso + " ";
-                                respuesta += "\r\nL" + contadorL+" ";
+                                respuesta += "\r\nL" + contadorL+ " ";
                                 
                             }
                             else
@@ -13462,7 +13469,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
 
                                     Escond2 = false;
-                                    respuesta = Partes1[0] + Partes2[0]+";"+cond1 +";"+ cond22;
+                                    respuesta = Partes1[0] + Partes2[0]+ ";"+cond1 + ";"+ cond22;
                                     
                                 }
                                 else if (nodo.ChildNodes[1].Token.Terminal.Name.ToString() == "Xor")
@@ -13489,9 +13496,9 @@ namespace Proyecto2_Compi2_CSharp
                                 respuesta += Partes[0];
                                 contadorL++;
 
-                                respuesta += ";\r\nif " + Partes[1] + " Goto L" + contadorL +" ";
+                                respuesta += ";\r\nif " + Partes[1] + " Goto L" + contadorL + " ";
                                 contadorL++;
-                                respuesta += ";\r\nGoto L" + contadorL+" ";
+                                respuesta += ";\r\nGoto L" + contadorL+ " ";
 
                             }
                             else
@@ -13902,7 +13909,7 @@ namespace Proyecto2_Compi2_CSharp
                                 }
 
                                 contadorTemp++;
-                                respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                 respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -13925,16 +13932,16 @@ namespace Proyecto2_Compi2_CSharp
                                 if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "aumentar")
                                 {
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     int auxt = contadorTemp;
                                     contadorTemp++;
-                                    respuesta += "\r\nt"+ contadorTemp+" = pila[t" + auxt+"]";
+                                    respuesta += "\r\nt"+ contadorTemp+ " = pila[t" + auxt+ "]";
                                     int auxt2 = contadorTemp;
                                     contadorTemp++;
                                     respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
                                     auxt2 = contadorTemp;
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     
                                     respuesta += "\r\npila[t" + contadorTemp+ "] = t" + auxt2;
 
@@ -13946,7 +13953,7 @@ namespace Proyecto2_Compi2_CSharp
                                 else if (nodo.ChildNodes[8].Token.Terminal.Name.ToString() == "disminuir")
                                 {
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     int auxt = contadorTemp;
                                     contadorTemp++;
                                     respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -13955,7 +13962,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
                                     auxt2 = contadorTemp;
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -13984,7 +13991,7 @@ namespace Proyecto2_Compi2_CSharp
 
                                 }
 
-                                respuesta += "\r\n"+temp.nombre+" = " + valor;
+                                respuesta += "\r\n"+temp.nombre+ " = " + valor;
 
                                 string cond = TraduccionC(nodo.ChildNodes[5]);
 
@@ -14061,7 +14068,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
 
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -14086,7 +14093,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += TraduccionC(nodo.ChildNodes[11]);
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                         int auxt = contadorTemp;
                                         contadorTemp++;
                                         respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -14095,7 +14102,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
                                         auxt2 = contadorTemp;
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -14109,7 +14116,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += TraduccionC(nodo.ChildNodes[11]);
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                         int auxt = contadorTemp;
                                         contadorTemp++;
                                         respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -14118,7 +14125,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
                                         auxt2 = contadorTemp;
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -14156,7 +14163,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
 
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -14181,7 +14188,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += TraduccionC(nodo.ChildNodes[11]);
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                         int auxt = contadorTemp;
                                         contadorTemp++;
                                         respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -14190,7 +14197,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
                                         auxt2 = contadorTemp;
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -14204,7 +14211,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += TraduccionC(nodo.ChildNodes[11]);
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                         int auxt = contadorTemp;
                                         contadorTemp++;
                                         respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -14213,7 +14220,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
                                         auxt2 = contadorTemp;
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -14317,7 +14324,7 @@ namespace Proyecto2_Compi2_CSharp
                                 }
 
                                 contadorTemp++;
-                                respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                 respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -14342,7 +14349,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += TraduccionC(nodo.ChildNodes[12]);
 
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     int auxt = contadorTemp;
                                     contadorTemp++;
                                     respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -14351,7 +14358,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
                                     auxt2 = contadorTemp;
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -14365,7 +14372,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += TraduccionC(nodo.ChildNodes[12]);
 
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     int auxt = contadorTemp;
                                     contadorTemp++;
                                     respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -14374,7 +14381,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
                                     auxt2 = contadorTemp;
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -14430,7 +14437,7 @@ namespace Proyecto2_Compi2_CSharp
                             respuesta += partes1[1];
                             respuesta += partes2[1];
                             respuesta += TraduccionC(nodo.ChildNodes[6]);
-                            respuesta += "\r\nL" + contadorL +" ";
+                            respuesta += "\r\nL" + contadorL + " ";
                             //ActuarC(nodo.ChildNodes[6]);
                         }
                         else
@@ -14463,7 +14470,7 @@ namespace Proyecto2_Compi2_CSharp
 
                             respuesta += partes1[1];
                             respuesta += partes2[1];
-                            respuesta += "\r\nL" + contadorL +" ";
+                            respuesta += "\r\nL" + contadorL + " ";
 
 
                             // txtConsola.Text += "\r\nCondiciones Corectas";
@@ -14574,9 +14581,9 @@ namespace Proyecto2_Compi2_CSharp
                             Variable variable = funcion.variables.Buscar("retorno");
 
                             contadorTemp++;
-                            respuesta += "\r\nt"+contadorTemp +" = p + "+variable.posicion;
+                            respuesta += "\r\nt"+contadorTemp + " = p + "+variable.posicion;
 
-                            respuesta += "\r\npila[t"+contadorTemp +"] = "+partes[1];
+                            respuesta += "\r\npila[t"+contadorTemp + "] = "+partes[1];
 
                         }
                         else
@@ -14610,21 +14617,10 @@ namespace Proyecto2_Compi2_CSharp
 
                             string[] parametros = Datos.Split(';');
                             Funcion Aejec=null;
-                            if (nombre.Equals(clase_actual))
-                            {
-                                Aejec = clase.funciones.ExisteP(nombre+"_",parametros.Length);                                 
+                          
+                            Aejec = clase.funciones.ExisteP(nombre+ "_",parametros.Length);                                 
 
-                            }
-                            else
-                            {
-                                Aejec = clase.funciones.Existe(nombre);
-
-                                if (parametros.Length != Aejec.nParametros)
-                                {
-                                    Aejec = null;
-                                }
-
-                            }
+                           
 
                             if (Aejec != null)
                             {
@@ -14635,7 +14631,7 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 else
                                 {
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + actual.correlactivo_var;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + actual.correlactivo_var;
                                 }
 
                                 int tpfalso = contadorTemp;
@@ -14691,7 +14687,7 @@ namespace Proyecto2_Compi2_CSharp
                                 }
                                 else
                                 {
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + actual.correlactivo_var;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + actual.correlactivo_var;
                                 }
 
 
@@ -14733,7 +14729,7 @@ namespace Proyecto2_Compi2_CSharp
                             }
                             else
                             {
-                                respuesta += "\r\nt" + contadorTemp + " = p +" + actual.correlactivo_var;
+                                respuesta += "\r\nt" + contadorTemp + " = p + " + actual.correlactivo_var;
                             }
 
                             
@@ -14984,7 +14980,7 @@ namespace Proyecto2_Compi2_CSharp
 
                             Clase clase = clases.Existe(clase_actual);                         
 
-                            respuesta+=clase.Visibilidad +" "+clase.Nombre+"\r\n{"+ TraduccionT(nodo.ChildNodes[3])+"\r\n}";
+                            respuesta+=clase.Visibilidad + " "+clase.Nombre+ "\r\n{"+ TraduccionT(nodo.ChildNodes[3])+ "\r\n}";
 
 
                         }
@@ -15575,7 +15571,7 @@ namespace Proyecto2_Compi2_CSharp
                                         if (pos < total)
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                             respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -15685,7 +15681,7 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     Variable temp = funcion.variables.Buscar(vart);
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     int aux = contadorTemp;
 
                                     contadorTemp++;
@@ -15756,7 +15752,7 @@ namespace Proyecto2_Compi2_CSharp
                                 valor = pre;
                             }
                             contadorTemp++;
-                            respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                            respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                             respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -15805,7 +15801,7 @@ namespace Proyecto2_Compi2_CSharp
                                         }
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
                                     }
@@ -15842,7 +15838,7 @@ namespace Proyecto2_Compi2_CSharp
                                             if (pos <= total)
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                                 respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -15907,7 +15903,7 @@ namespace Proyecto2_Compi2_CSharp
                                             if (pos <= total)
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                                 respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -15946,7 +15942,7 @@ namespace Proyecto2_Compi2_CSharp
                                     if (nodo.ChildNodes[1].Term.Name.ToString() == "aumentar")
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         int auxt = contadorTemp;
                                         contadorTemp++;
@@ -15958,7 +15954,7 @@ namespace Proyecto2_Compi2_CSharp
                                         auxt = contadorTemp;
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt;
 
@@ -15966,7 +15962,7 @@ namespace Proyecto2_Compi2_CSharp
                                     else
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         int auxt = contadorTemp;
                                         contadorTemp++;
@@ -15978,7 +15974,7 @@ namespace Proyecto2_Compi2_CSharp
                                         auxt = contadorTemp;
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt;
 
@@ -16003,7 +15999,7 @@ namespace Proyecto2_Compi2_CSharp
                                         else
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                             respuesta += "\r\np = t" + contadorTemp;
                                             respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -16024,7 +16020,7 @@ namespace Proyecto2_Compi2_CSharp
                                             respuesta += "\r\np = t" + contadorTemp;
 
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                             respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
 
                                         }
@@ -16058,7 +16054,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 {
 
                                                     contadorTemp++;
-                                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                     int lfalse = contadorTemp;
 
                                                     for (int x = 0; x < parametros.Length; x++)
@@ -16100,7 +16096,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     respuesta += "\r\np = t" + contadorTemp;
 
                                                     contadorTemp++;
-                                                    respuesta += "\r\nt" + contadorTemp + "= p + " + temp.posicion;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                                     respuesta += "\r\npila[t" + contadorTemp + "] =" + valor;
 
                                                 }
@@ -16141,7 +16137,7 @@ namespace Proyecto2_Compi2_CSharp
                                             else
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                                 respuesta += "\r\np = t" + contadorTemp;
                                                 respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -16185,7 +16181,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     if (pos <= total)
                                                     {
                                                         contadorTemp++;
-                                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                                         respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -16268,7 +16264,7 @@ namespace Proyecto2_Compi2_CSharp
                                         if (pos < total)
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                             respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -16322,7 +16318,7 @@ namespace Proyecto2_Compi2_CSharp
                                             {
 
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                 int lfalse = contadorTemp;
 
                                                 for (int x = 0; x < parametros.Length; x++)
@@ -16392,7 +16388,7 @@ namespace Proyecto2_Compi2_CSharp
                                                     if (pos < total)
                                                     {
                                                         contadorTemp++;
-                                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                                         respuesta += "\r\nPH = pila[t" + contadorTemp + "]";
 
@@ -16630,7 +16626,7 @@ namespace Proyecto2_Compi2_CSharp
                                         else
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                             respuesta += "\r\np = t" + contadorTemp;
                                             respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -16683,7 +16679,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 {
 
                                                     contadorTemp++;
-                                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                     int lfalse = contadorTemp;
 
                                                     for (int x = 0; x < parametros.Length; x++)
@@ -16764,7 +16760,7 @@ namespace Proyecto2_Compi2_CSharp
                                             else
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                                 respuesta += "\r\np = t" + contadorTemp;
                                                 respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -16918,7 +16914,7 @@ namespace Proyecto2_Compi2_CSharp
                                             {
 
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                 int lfalse = contadorTemp;
 
                                                 for (int x = 0; x < parametros.Length; x++)
@@ -17097,7 +17093,7 @@ namespace Proyecto2_Compi2_CSharp
                                     else
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                         respuesta += "\r\np = t" + contadorTemp;
                                         respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -17153,7 +17149,7 @@ namespace Proyecto2_Compi2_CSharp
                                         {
 
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                             int lfalse = contadorTemp;
 
                                             for (int x = 0; x < parametros.Length; x++)
@@ -17290,7 +17286,7 @@ namespace Proyecto2_Compi2_CSharp
                                     else
                                     {
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                         respuesta += "\r\np = t" + contadorTemp;
                                         respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -17346,7 +17342,7 @@ namespace Proyecto2_Compi2_CSharp
                                         {
 
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                             int lfalse = contadorTemp;
 
                                             for (int x = 0; x < parametros.Length; x++)
@@ -17610,7 +17606,7 @@ namespace Proyecto2_Compi2_CSharp
                                         else
                                         {
                                             contadorTemp++;
-                                            respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                            respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                             respuesta += "\r\np = t" + contadorTemp;
                                             respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -17664,7 +17660,7 @@ namespace Proyecto2_Compi2_CSharp
                                                 {
 
                                                     contadorTemp++;
-                                                    respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                    respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                     int lfalse = contadorTemp;
 
                                                     for (int x = 0; x < parametros.Length; x++)
@@ -17745,7 +17741,7 @@ namespace Proyecto2_Compi2_CSharp
                                             else
                                             {
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                                 respuesta += "\r\np = t" + contadorTemp;
                                                 respuesta += "\r\nCall " + aux.nombre + " ()";
@@ -17894,7 +17890,7 @@ namespace Proyecto2_Compi2_CSharp
                                             {
 
                                                 contadorTemp++;
-                                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
                                                 int lfalse = contadorTemp;
 
                                                 for (int x = 0; x < parametros.Length; x++)
@@ -18041,7 +18037,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 Variable temp = funcion.variables.Buscar(nombre[x]);
                                 contadorTemp++;
-                                respuesta+="\r\nt"+contadorTemp+" = p +"+ temp.posicion;
+                                respuesta+="\r\nt"+contadorTemp+ " = p + "+ temp.posicion;
 
                                 respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -18105,7 +18101,7 @@ namespace Proyecto2_Compi2_CSharp
 
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " +" + (x+1);
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x+1);
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -18134,7 +18130,7 @@ namespace Proyecto2_Compi2_CSharp
 
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = t" + tfalso+" +" +x;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + tfalso+ " + " +x;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -18159,7 +18155,7 @@ namespace Proyecto2_Compi2_CSharp
                                 Funcion funcion = clase.funciones.Existe(nombre);
 
                                 contadorTemp++;
-                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                 respuesta += "\r\np = t" + contadorTemp;
 
@@ -18671,7 +18667,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
 
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -18696,7 +18692,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += TraduccionC(nodo.ChildNodes[13]);
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                         int auxt = contadorTemp;
                                         contadorTemp++;
                                         respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -18705,7 +18701,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
                                         auxt2 = contadorTemp;
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -18719,7 +18715,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += TraduccionC(nodo.ChildNodes[13]);
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                         int auxt = contadorTemp;
                                         contadorTemp++;
                                         respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -18728,7 +18724,7 @@ namespace Proyecto2_Compi2_CSharp
                                         respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
                                         auxt2 = contadorTemp;
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                        respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -18836,7 +18832,7 @@ namespace Proyecto2_Compi2_CSharp
                                 }
 
                                 contadorTemp++;
-                                respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                 respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -18861,7 +18857,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += TraduccionC(nodo.ChildNodes[14]);
 
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     int auxt = contadorTemp;
                                     contadorTemp++;
                                     respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -18870,7 +18866,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " + 1";
                                     auxt2 = contadorTemp;
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -18884,7 +18880,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += TraduccionC(nodo.ChildNodes[14]);
 
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
                                     int auxt = contadorTemp;
                                     contadorTemp++;
                                     respuesta += "\r\nt" + contadorTemp + " = pila[t" + auxt + "]";
@@ -18893,7 +18889,7 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += "\r\nt" + contadorTemp + " = t" + auxt2 + " - 1";
                                     auxt2 = contadorTemp;
                                     contadorTemp++;
-                                    respuesta += "\r\nt" + contadorTemp + " = p +" + temp.posicion;
+                                    respuesta += "\r\nt" + contadorTemp + " = p + " + temp.posicion;
 
                                     respuesta += "\r\npila[t" + contadorTemp + "] = t" + auxt2;
 
@@ -19606,7 +19602,7 @@ namespace Proyecto2_Compi2_CSharp
 
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " +" + (x + 1);
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + (x + 1);
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -19635,7 +19631,7 @@ namespace Proyecto2_Compi2_CSharp
 
 
                                         contadorTemp++;
-                                        respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " +" + x;
+                                        respuesta += "\r\nt" + contadorTemp + " = t" + tfalso + " + " + x;
 
                                         respuesta += "\r\npila[t" + contadorTemp + "] = " + valor;
 
@@ -19663,7 +19659,7 @@ namespace Proyecto2_Compi2_CSharp
                                 Funcion funcion = clase.funciones.Existe(nombre);
 
                                 contadorTemp++;
-                                respuesta += "\r\nt" + contadorTemp + " = p +" + funcion.correlactivo_var;
+                                respuesta += "\r\nt" + contadorTemp + " = p + " + funcion.correlactivo_var;
 
                                 respuesta += "\r\np = t" + contadorTemp;
 
@@ -19699,7 +19695,7 @@ namespace Proyecto2_Compi2_CSharp
                             {
                                 if (nodo.ChildNodes[1].Term.Name != "suma")
                                 {
-                                    respuesta = Operaciones(OperacionesC(nodo.ChildNodes[0]), OperacionesC(nodo.ChildNodes[2]), "+");
+                                    respuesta = Operaciones(OperacionesC(nodo.ChildNodes[0]), OperacionesC(nodo.ChildNodes[2]), "+ ");
                                 }
                                 else if (nodo.ChildNodes[1].Term.Name != "resta")
                                 {
@@ -20180,6 +20176,10 @@ namespace Proyecto2_Compi2_CSharp
 
                                     respuesta = t.valor;
                                 }
+                                else if (nombre.Equals("p"))
+                                {
+                                    respuesta = puntero.ToString();
+                                }
                                 else
                                 {
                                     Variable t = clases.Existe(clase_actual).variables.Buscar(nombre);
@@ -20274,7 +20274,7 @@ namespace Proyecto2_Compi2_CSharp
                                     string c = label.nombre[1].ToString();
 
                                     int salida = Int32.Parse(c) + 2;
-                                    label = funcion.etiquetas.Buscar("L"+salida+" ");
+                                    label = funcion.etiquetas.Buscar("L"+salida+ " ");
                                     Analizar3d(label.nodo);
 
                                     seguirejec = false;
@@ -20651,7 +20651,7 @@ namespace Proyecto2_Compi2_CSharp
 
                         while (seguirvariables)
                         {
-                            html += "<tr>\n<td>" + variable.nombre + "</td>\n<td>"+ variable.tipo+"</td>\n<td> 1</td>\n<td>"+ variable.posicion+"</td>\n<td>Global</td>\n</tr>";
+                            html += "<tr>\n<td>" + variable.nombre + "</td>\n<td>"+ variable.tipo+ "</td>\n<td> 1</td>\n<td>"+ variable.posicion+ "</td>\n<td>Global</td>\n</tr>";
 
                             if (variable.siguiente != null)
                             {
@@ -20686,7 +20686,7 @@ namespace Proyecto2_Compi2_CSharp
                                 while (seguirvariables)
                                 {
 
-                                    html += "<tr>\n<td>" + variable.nombre + "</td>\n<td>" + variable.tipo + "</td>\n<td> 1</td>\n<td>" + variable.posicion + "</td>\n<td>"+funcion.nombre+"</td>\n</tr>";
+                                    html += "<tr>\n<td>" + variable.nombre + "</td>\n<td>" + variable.tipo + "</td>\n<td> 1</td>\n<td>" + variable.posicion + "</td>\n<td>"+funcion.nombre+ "</td>\n</tr>";
 
                                     if (variable.siguiente != null)
                                     {
@@ -20741,6 +20741,401 @@ namespace Proyecto2_Compi2_CSharp
             System.IO.File.WriteAllText(@"C:\Arboles\Errores.html", html);
 
             Process.Start(@"C:\Arboles\Errores.html");
+        }
+
+        public string Optimizar(string codigo)
+        {
+            string respuesta="";
+
+            //Regla 8
+
+            string[] lineas = codigo.Split('\n');
+
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if(lineas[x].Contains("+ 0"))
+                {
+                    string linea=lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    if (partes[0].Equals(partes[2]))
+                    {
+                        if (txtOp.Text == "")
+                        {
+                            txtOp.Text = "Segun Regla 8: La Linea " + x + " Sera Eliminada\r\n Linea Eliminada: "+linea;
+                        }
+                        else
+                        {
+                            txtOp.Text += "\r\nSegun Regla 8: La Linea " + x + " Sera Eliminada\r\n Linea Eliminada: " + linea;
+                        }
+                    }
+                    else
+                    {
+                        respuesta += lineas[x] + "\n";
+                    }
+
+                }
+                else
+                {
+                    respuesta += lineas[x]+"\n";
+                }
+            }
+
+            //Regla 9
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("- 0"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    if (partes[0].Equals(partes[2]))
+                    {
+                        if (txtOp.Text == "")
+                        {
+                            txtOp.Text = "Segun Regla 9: La Linea " + x + " Sera Eliminada\r\n Linea Eliminada: " + linea;
+                        }
+                        else
+                        {
+                            txtOp.Text += "\r\nSegun Regla 9: La Linea " + x + " Sera Eliminada\r\n Linea Eliminada: " + linea;
+                        }
+                    }
+                    else
+                    {
+                        respuesta += lineas[x] + "\n";
+                    }
+
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 10
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("* 1"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    if (partes[0].Equals(partes[2]))
+                    {
+                        if (txtOp.Text == "")
+                        {
+                            txtOp.Text = "Segun Regla 10: La Linea " + x + " Sera Eliminada\r\n Linea Eliminada: " + linea;
+                        }
+                        else
+                        {
+                            txtOp.Text += "\r\nSegun Regla 10: La Linea " + x + " Sera Eliminada\r\n Linea Eliminada: " + linea;
+                        }
+                    }
+                    else
+                    {
+                        respuesta += lineas[x] + "\n";
+                    }
+
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 11
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("/ 1"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    if (partes[0].Equals(partes[2]))
+                    {
+                        if (txtOp.Text == "")
+                        {
+                            txtOp.Text = "Segun Regla 11: La Linea " + x + " Sera Eliminada\r\n Linea Eliminada: " + linea;
+                        }
+                        else
+                        {
+                            txtOp.Text += "\r\nSegun Regla 11: La Linea " + x + " Sera Eliminada\r\n Linea Eliminada: " + linea;
+                        }
+                    }
+                    else
+                    {
+                        respuesta += lineas[x] + "\n";
+                    }
+
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 12
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("+ 0"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    string resultado = partes[0] + " " + partes[1] + " " + partes[2] + "\r";
+
+                    if (txtOp.Text == "")
+                    {
+                        txtOp.Text = "Segun Regla 12: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+                    else
+                    {
+                        txtOp.Text += "\r\nSegun Regla 12: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+                    
+                    respuesta += resultado + "\n";
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 13
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("- 0"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    string resultado = partes[0] + " " + partes[1] + " " + partes[2] + "\r";
+
+                    if (txtOp.Text == "")
+                    {
+                        txtOp.Text = "Segun Regla 13: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+                    else
+                    {
+                        txtOp.Text += "\r\nSegun Regla 13: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+
+                    respuesta += resultado + "\n";
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 14
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("* 1"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    string resultado = partes[0] + " " + partes[1] + " " + partes[2] + "\r";
+
+                    if (txtOp.Text == "")
+                    {
+                        txtOp.Text = "Segun Regla 14: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+                    else
+                    {
+                        txtOp.Text += "\r\nSegun Regla 14: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+
+                    respuesta += resultado + "\n";
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 15
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("/ 1"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    string resultado = partes[0] + " " + partes[1] + " " + partes[2] + "\r";
+
+                    if (txtOp.Text == "")
+                    {
+                        txtOp.Text = "Segun Regla 15: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+                    else
+                    {
+                        txtOp.Text += "\r\nSegun Regla 15: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+
+                    respuesta += resultado + "\n";
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 16
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("^ 2"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    string resultado = partes[0] + " " + partes[1] + " " + partes[2] + " * "+ partes[2] + "\r";
+
+                    if (txtOp.Text == "")
+                    {
+                        txtOp.Text = "Segun Regla 16: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+                    else
+                    {
+                        txtOp.Text += "\r\nSegun Regla 16: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+
+                    respuesta += resultado + "\n";
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 17
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("* 2"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    string resultado = partes[0] + " " + partes[1] + " " + partes[2] + " + " + partes[2] + "\r";
+
+                    if (txtOp.Text == "")
+                    {
+                        txtOp.Text = "Segun Regla 17: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+                    else
+                    {
+                        txtOp.Text += "\r\nSegun Regla 17: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+
+                    respuesta += resultado + "\n";
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 18
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("* 0"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    string resultado = partes[0] + " " + partes[1] + " 0\r";
+
+                    if (txtOp.Text == "")
+                    {
+                        txtOp.Text = "Segun Regla 18: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+                    else
+                    {
+                        txtOp.Text += "\r\nSegun Regla 18: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+
+                    respuesta += resultado + "\n";
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            //Regla 19
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("/ 0"))
+                {
+                    string linea = lineas[x];
+
+                    string[] partes = linea.Split(' ');
+
+                    string resultado = partes[0] + " " + partes[1] + " 0\r";
+
+                    if (txtOp.Text == "")
+                    {
+                        txtOp.Text = "Segun Regla 19: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+                    else
+                    {
+                        txtOp.Text += "\r\nSegun Regla 19: La Linea " + x + " Sera Modificada\r\n Linea Original: " + linea + "\r\nLinea Optimizada: " + resultado;
+                    }
+
+                    respuesta += resultado + "\n";
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+            return respuesta;
         }
     }
 }

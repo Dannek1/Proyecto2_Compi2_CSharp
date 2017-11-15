@@ -281,6 +281,7 @@
             this.txtConsola.Location = new System.Drawing.Point(3, 3);
             this.txtConsola.Multiline = true;
             this.txtConsola.Name = "txtConsola";
+            this.txtConsola.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtConsola.Size = new System.Drawing.Size(729, 110);
             this.txtConsola.TabIndex = 0;
             // 
@@ -301,6 +302,7 @@
             this.txtErrores.Location = new System.Drawing.Point(3, 3);
             this.txtErrores.Multiline = true;
             this.txtErrores.Name = "txtErrores";
+            this.txtErrores.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtErrores.Size = new System.Drawing.Size(729, 110);
             this.txtErrores.TabIndex = 0;
             // 
@@ -322,6 +324,7 @@
             this.txtOp.Location = new System.Drawing.Point(3, 3);
             this.txtOp.Multiline = true;
             this.txtOp.Name = "txtOp";
+            this.txtOp.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtOp.Size = new System.Drawing.Size(729, 110);
             this.txtOp.TabIndex = 0;
             // 
@@ -365,6 +368,7 @@
             this.txt3Dop.Location = new System.Drawing.Point(3, 3);
             this.txt3Dop.Multiline = true;
             this.txt3Dop.Name = "txt3Dop";
+            this.txt3Dop.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txt3Dop.Size = new System.Drawing.Size(729, 110);
             this.txt3Dop.TabIndex = 0;
             // 
