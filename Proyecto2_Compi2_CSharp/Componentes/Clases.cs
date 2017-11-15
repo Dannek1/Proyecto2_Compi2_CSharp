@@ -8,7 +8,7 @@ namespace Proyecto2_Compi2_CSharp.Componentes
 {
     public class Clases
     {
-        Clase cabeza;
+        public Clase cabeza;
         Clase ultimo;
         Clase aux;
 

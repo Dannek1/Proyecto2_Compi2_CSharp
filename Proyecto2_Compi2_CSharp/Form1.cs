@@ -1355,6 +1355,7 @@ namespace Proyecto2_Compi2_CSharp
                                     {
                                         Clase temp = clases.Existe(clase_actual);
                                         Funcion nuevo = new Funcion("principal", x, "publico");
+                                        fun_actual = "principal";
 
                                         nuevo.nodo = nodo.ChildNodes[4];
                                         temp.funciones.Insertar(nuevo);
@@ -1498,6 +1499,7 @@ namespace Proyecto2_Compi2_CSharp
                                             nuevo.variables.Insertar(variable);
                                         }
 
+                                        string nombre = fun_actual;
                                         nuevo.parametros = new Parametros();
 
                                         for (int y = 0; y < Sparametros.Length; y++)
@@ -1514,8 +1516,11 @@ namespace Proyecto2_Compi2_CSharp
                                             nuevo.correlactivo_var++;
 
                                             nuevo.variables.Insertar(variable);
+                                            nombre += "_" + nuevo.tipo;
                                         }
 
+                                        nuevo.nombre = nombre;
+                                        fun_actual = nombre;
                                         temp.funciones.Insertar(nuevo);
 
                                         resultado = tipo + " " + fun_actual + "(" + parametros + ")" + "{}";
@@ -1756,8 +1761,6 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     string tipo = ActuarC(nodo.ChildNodes[0]);
 
-                                    
-
                                     string nombre = nodo.ChildNodes[1].Token.Text;
 
                                     Clase temp = clases.Existe(clase_actual);
@@ -1779,6 +1782,7 @@ namespace Proyecto2_Compi2_CSharp
                                     }
 
                                     nuevo.parametros = new Parametros();
+                                    
 
                                     for (int y = 0; y < Sparametros.Length; y++)
                                     {
@@ -1794,9 +1798,12 @@ namespace Proyecto2_Compi2_CSharp
                                         nuevo.correlactivo_var++;
 
                                         nuevo.variables.Insertar(variable);
+                                        nombre += "_" + variable.tipo;
                                     }
 
                                     nuevo.nodo = nodo.ChildNodes[6];
+
+                                    nuevo.nombre = nombre;
 
                                     temp.funciones.Insertar(nuevo);
 
@@ -2346,9 +2353,12 @@ namespace Proyecto2_Compi2_CSharp
 
                                     funcion.variables.Insertar(variable);
 
+                                    nombre += "_" + variable.tipo;
+
                                 }
+                                funcion.nombre = nombre;
 
-
+                                fun_actual = nombre;
                                 clases.Existe(clase_actual).funciones.Insertar(funcion);
                             }
                             else if (nodo.ChildNodes[0].Term.Name.ToString() == "Visibilidad")
@@ -2395,10 +2405,12 @@ namespace Proyecto2_Compi2_CSharp
 
                                         nuevo.variables.Insertar(variable);
 
+                                        fun_actual += "_" + variable.tipo;
+
                                     }
 
                                     nuevo.nodo = nodo.ChildNodes[7];
-
+                                    nuevo.nombre = fun_actual;
                                     temp.funciones.Insertar(nuevo);
 
                                     resultado = visi + " " + tipo + " " + fun_actual + "(" + parametros + ")" + "\r\n{" + ActuarC(nodo.ChildNodes[7]) + "\r\n}";
@@ -2842,14 +2854,10 @@ namespace Proyecto2_Compi2_CSharp
                                 string tipo = ActuarC(nodo.ChildNodes[1]);
                                 string nombre = nodo.ChildNodes[3].Token.Text;
 
-                                if (clases.Existe(clase_actual).funciones.ExisteF(nombre)) {
 
-                                    Funcion funcion = clases.Existe(clase_actual).funciones.Existe(nombre);
 
-                                    funcion.tipo = tipo;
-                                    funcion.visibilidad = visi;
+                                Funcion funcion = new Funcion(tipo, nombre, visi);
 
-                                   
 
                                     funcion.SetArreglor(true);
 
@@ -2890,13 +2898,11 @@ namespace Proyecto2_Compi2_CSharp
 
                                         funcion.variables.Insertar(variable);
 
+                                    funcion.nombre += "_" + variable.tipo;
+
                                     }
 
-                                }
-                                else
-                                {
-                                    txtErrores.Text += "\n\rNo existe funcion para sobrescribir";
-                                }
+                                
 
 
                             }
@@ -8361,6 +8367,7 @@ namespace Proyecto2_Compi2_CSharp
                                     {
                                         Clase clase = clases.Existe(clase_actual);
                                         Funcion temp = clase.funciones.Existe("principal");
+                                        fun_actual = temp.nombre;
                                         respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "{\r\n" + TraduccionC(nodo.ChildNodes[4]) + "\r\n}";
                                     }
                                     else
@@ -8453,12 +8460,24 @@ namespace Proyecto2_Compi2_CSharp
                                    {
 
 
-                                       fun_actual = nodo.ChildNodes[1].Token.Text;
+                                       fun_actual = nodo.ChildNodes[0].Token.Text;
 
                                        Clase clase = clases.Existe(clase_actual);
 
+                                        string parametros = ActuarC(nodo.ChildNodes[2]);
 
-                                       Funcion temp = clase.funciones.Existe(clase_actual);
+                                        string[] Sparametros = parametros.Split(',');
+
+                                        string nombre = fun_actual;
+
+                                        for (int y = 0; y < Sparametros.Length; y++)
+                                        {
+                                            string[] param = Sparametros[y].Split(' ');
+
+                                            nombre += "_" + param[0];
+                                        }
+
+                                        Funcion temp = clase.funciones.Existe(nombre);
 
 
                                         respuesta = "\r\n " + temp.visibilidad + " fuction " + temp.nombre + " ()" + "{}";
@@ -8613,10 +8632,23 @@ namespace Proyecto2_Compi2_CSharp
                                    string nombre = nodo.ChildNodes[1].Token.Text;
 
                                    Clase clase = clases.Existe(clase_actual);
-                                    Funcion temp = clase.funciones.Existe(nombre);
                                     
 
-                                   respuesta = temp.visibilidad+" fuction " + nombre + " ()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
+                                    string parametros = ActuarC(nodo.ChildNodes[2]);
+
+                                    string[] Sparametros = parametros.Split(',');
+
+
+                                    for (int y = 0; y < Sparametros.Length; y++)
+                                    {
+                                        string[] param = Sparametros[y].Split(' ');
+
+                                        nombre += "_" + param[0];
+                                    }
+
+                                    Funcion temp = clase.funciones.Existe(nombre);
+
+                                    respuesta = temp.visibilidad+" fuction " + nombre + " ()" + "\r\n{" + TraduccionC(nodo.ChildNodes[6]) + "\r\n}";
 
                                }
                                else
@@ -8835,7 +8867,20 @@ namespace Proyecto2_Compi2_CSharp
 
                                    Clase clase = clases.Existe(clase_actual);
 
-                                   Funcion temp = clase.funciones.Existe(fun_actual);
+                                    string parametros = ActuarC(nodo.ChildNodes[4]);
+
+                                    string[] Sparametros = parametros.Split(',');
+
+
+                                    for (int y = 0; y < Sparametros.Length; y++)
+                                    {
+                                        string[] param = Sparametros[y].Split(' ');
+
+                                        fun_actual += "_" + param[0];
+                                    }
+
+
+                                    Funcion temp = clase.funciones.Existe(fun_actual);
 
                                    respuesta = temp.visibilidad + " fuction " + fun_actual + " ()" + "\r\n{" + TraduccionC(nodo.ChildNodes[7]) + "\r\n}";
                                }
@@ -13680,7 +13725,20 @@ namespace Proyecto2_Compi2_CSharp
 
                 case "Imprimir":
                     {
-                        respuesta += "\r\nPrint(" + ActuarC(nodo.ChildNodes[1])+")";
+
+                        string valor = TraduccionC(nodo.ChildNodes[1]);
+                        string[] partes = valor.Split(',');
+
+                        if (partes.Length == 2)
+                        {
+                            respuesta += partes[0];
+                            respuesta += "\r\nPrint(" + partes[1] + ")";
+                        }
+                        else
+                        {
+                            respuesta += "\r\nPrint(" + valor + ")";
+                        }
+                        
                         break;
                     }
 
@@ -20567,6 +20625,122 @@ namespace Proyecto2_Compi2_CSharp
 
             clase.tamaño = total;
 
+        }
+
+        private void tablaDeSimbolosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (clases.cabeza != null)
+            {
+                string html = "<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n<title> Tabla de Simbolos</title>\n<style type=\"text/css\">\n  body {\n    background-color: #F00;\n}\n</style>\n</head>\n<body>\n<h1> Tabla de Simbolos\n</h1>\n<table width=\"500\" border=\"5\" cellspacing=\"0\" cellpadding=\"0\">\n<tr>\n<th scope=\"col\"> Nombre </th>\n<th scope=\"col\"> Tipo </th>\n<th scope=\"col\"> Tamaño </th>\n<th scope=\"col\"> Posicion </th>\n<th scope=\"col\"> Ambito </th>\n</tr>";
+
+                bool seguirclases = true;
+                bool seguirfunciones = true;
+                bool seguirvariables = true;
+
+                Clase clase = clases.cabeza; 
+
+                while (seguirclases)
+                {
+                    html += "<tr>\n<td>" + clase.Nombre + "</td>\n<td>Clase</td>\n<td>" + clase.tamaño + "</td>\n<td><B> - </B></td>\n<td><B> - </B></td>\n</tr>";
+
+                    if (clase.variables.cabeza != null)
+                    {
+                        Variable variable = clase.variables.cabeza;
+
+                        seguirvariables = true;
+
+                        while (seguirvariables)
+                        {
+                            html += "<tr>\n<td>" + variable.nombre + "</td>\n<td>"+ variable.tipo+"</td>\n<td> 1</td>\n<td>"+ variable.posicion+"</td>\n<td>Global</td>\n</tr>";
+
+                            if (variable.siguiente != null)
+                            {
+                                variable = variable.siguiente;
+                            }
+                            else
+                            {
+                                seguirvariables = false;
+                            }
+                        }
+
+                    }
+
+
+                    if (clase.funciones.cabeza != null)
+                    {
+                        Funcion funcion = clase.funciones.cabeza;
+
+                        seguirfunciones = true;
+
+
+                        while (seguirfunciones)
+                        {
+                            html += "<tr>\n<td>" + funcion.nombre + "</td>\n<td>" + funcion.tipo + "</td>\n<td>"+ (funcion.correlactivo_var+1)+ "</td>\n<td><B> - </B> </td>\n<td>Global</td>\n</tr>";
+
+                            if (funcion.variables.cabeza != null)
+                            {
+                                Variable variable = funcion.variables.cabeza;
+
+                                seguirvariables = true;
+
+                                while (seguirvariables)
+                                {
+
+                                    html += "<tr>\n<td>" + variable.nombre + "</td>\n<td>" + variable.tipo + "</td>\n<td> 1</td>\n<td>" + variable.posicion + "</td>\n<td>"+funcion.nombre+"</td>\n</tr>";
+
+                                    if (variable.siguiente != null)
+                                    {
+                                        variable = variable.siguiente;
+                                    }
+                                    else
+                                    {
+                                        seguirvariables = false;
+                                    }
+                                }
+                            }
+
+
+                            if (funcion.siguiente != null)
+                            {
+                                funcion = funcion.siguiente;
+                            }
+                            else
+                            {
+                                seguirfunciones = false;
+                            }
+                        }
+                    }
+
+                    if (clase.siguiente != null)
+                    {
+                        clase = clase.siguiente;
+                    }
+                    else
+                    {
+                        seguirclases = false;
+                    }
+                }
+
+                html += "</table>\n</body>\n</html> ";
+
+                System.IO.File.WriteAllText(@"C:\Arboles\Simbolos.html", html);
+
+                Process.Start(@"C:\Arboles\Simbolos.html");
+
+            }
+        }
+
+        private void erroresToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string html = "<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n<title> Lista de Errores</title>\n<style type=\"text/css\">\n  body {\n    background-color: #F00;\n}\n</style>\n</head>\n<body>\n<h1> Errores Detectador\n</h1>";
+
+            html += "<p>" + txtErrores.Text + "</p>";
+
+            html += "</table>\n</body>\n</html> ";
+
+            System.IO.File.WriteAllText(@"C:\Arboles\Errores.html", html);
+
+            Process.Start(@"C:\Arboles\Errores.html");
         }
     }
 }

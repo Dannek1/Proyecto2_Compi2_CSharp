@@ -39,6 +39,9 @@
             this.compartirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cerrarSesiónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tablaDeSimbolosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.erroresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aSTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
@@ -126,7 +129,7 @@
             // iniciarSesiónToolStripMenuItem
             // 
             this.iniciarSesiónToolStripMenuItem.Name = "iniciarSesiónToolStripMenuItem";
-            this.iniciarSesiónToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.iniciarSesiónToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.iniciarSesiónToolStripMenuItem.Text = "Iniciar Sesión";
             this.iniciarSesiónToolStripMenuItem.Click += new System.EventHandler(this.iniciarSesiónToolStripMenuItem_Click);
             // 
@@ -134,7 +137,7 @@
             // 
             this.compartirToolStripMenuItem.Enabled = false;
             this.compartirToolStripMenuItem.Name = "compartirToolStripMenuItem";
-            this.compartirToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.compartirToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.compartirToolStripMenuItem.Text = "Compartir";
             this.compartirToolStripMenuItem.Click += new System.EventHandler(this.compartirToolStripMenuItem_Click);
             // 
@@ -142,15 +145,39 @@
             // 
             this.cerrarSesiónToolStripMenuItem.Enabled = false;
             this.cerrarSesiónToolStripMenuItem.Name = "cerrarSesiónToolStripMenuItem";
-            this.cerrarSesiónToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cerrarSesiónToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.cerrarSesiónToolStripMenuItem.Text = "Cerrar Sesión";
             this.cerrarSesiónToolStripMenuItem.Click += new System.EventHandler(this.cerrarSesiónToolStripMenuItem_Click);
             // 
             // reportesToolStripMenuItem
             // 
+            this.reportesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tablaDeSimbolosToolStripMenuItem,
+            this.erroresToolStripMenuItem,
+            this.aSTToolStripMenuItem});
             this.reportesToolStripMenuItem.Name = "reportesToolStripMenuItem";
             this.reportesToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
             this.reportesToolStripMenuItem.Text = "Reportes";
+            // 
+            // tablaDeSimbolosToolStripMenuItem
+            // 
+            this.tablaDeSimbolosToolStripMenuItem.Name = "tablaDeSimbolosToolStripMenuItem";
+            this.tablaDeSimbolosToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.tablaDeSimbolosToolStripMenuItem.Text = "Tabla de Simbolos";
+            this.tablaDeSimbolosToolStripMenuItem.Click += new System.EventHandler(this.tablaDeSimbolosToolStripMenuItem_Click);
+            // 
+            // erroresToolStripMenuItem
+            // 
+            this.erroresToolStripMenuItem.Name = "erroresToolStripMenuItem";
+            this.erroresToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.erroresToolStripMenuItem.Text = "Errores";
+            this.erroresToolStripMenuItem.Click += new System.EventHandler(this.erroresToolStripMenuItem_Click);
+            // 
+            // aSTToolStripMenuItem
+            // 
+            this.aSTToolStripMenuItem.Name = "aSTToolStripMenuItem";
+            this.aSTToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.aSTToolStripMenuItem.Text = "AST";
             // 
             // toolStrip1
             // 
@@ -417,6 +444,9 @@
         private System.Windows.Forms.ToolStripMenuItem iniciarSesiónToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compartirToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cerrarSesiónToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tablaDeSimbolosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem erroresToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aSTToolStripMenuItem;
     }
 }
 
