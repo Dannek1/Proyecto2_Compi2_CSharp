@@ -162,6 +162,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
                     Salir = new NonTerminal("Salir"),
                     Repetir = new NonTerminal("Repetir"),
                     Instancia = new NonTerminal("Instancia"),
+                    Instancia2 = new NonTerminal("Instancia2"),
                     super = new NonTerminal("super"),
                     K = new NonTerminal("K");
 
@@ -342,6 +343,7 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
 
                K.Rule=  ID
                       | ID + Dimensiones
+                      | Instancia2
                       | Rself + "." + ID
                       | Valor
                       | aINT
@@ -396,10 +398,15 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Parametro.Rule = Tipo + ID;
 
             Instancia.Rule = ID + "." + Instancia
-                           | ID +Eos
-                           | ID
-                           | ID + Dimensiones + Eos
                            | ID + Dimensiones
+                           | ID
+                           | ID +Eos
+                           | ID + Dimensiones + Eos
+                           | Funciones;
+
+            Instancia2.Rule = ID + "." + Instancia2
+                           | ID + Dimensiones
+                           | ID
                            | Funciones;
 
             this.Root = S;
