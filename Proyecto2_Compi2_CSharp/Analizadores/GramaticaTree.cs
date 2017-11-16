@@ -384,13 +384,13 @@ namespace Proyecto2_Compi2_CSharp.Analizadores
             Operaciones.Rule = Operaciones + "," + Operacion
                               | Operacion;
 
-            Elegir.Rule = Relegir +  Operacion  + DosPuntos + Eos+ Casos;
+            Elegir.Rule = Relegir +  Operacion  + DosPuntos + Eos+ Indent + Casos+  Dedent;
 
             Casos.Rule = Casos + Caso
                         | Caso;
 
-            Caso.Rule = Condicion + DosPuntos + Indent + Sentencias + Dedent
-                       | "defecto" + DosPuntos + Indent + Sentencias + Dedent;
+            Caso.Rule = Condicion + DosPuntos + Eos + Indent + Sentencias + Dedent
+                       | "defecto" + DosPuntos + Eos + Indent + Sentencias + Dedent;
 
             Parametros.Rule = Parametros + "," + Parametro
                             | Parametro;

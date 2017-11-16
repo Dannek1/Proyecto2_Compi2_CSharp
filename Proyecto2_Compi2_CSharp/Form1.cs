@@ -24,7 +24,7 @@ namespace Proyecto2_Compi2_CSharp
         int contadorPestañas = 0;
         int contadorTemp = 0;
         int contadorL = 0;
-        int posheap=0;
+        int posheap = 0;
         int puntero = 0;
         int punteroheap = 0;
         string graph = "";
@@ -48,6 +48,7 @@ namespace Proyecto2_Compi2_CSharp
 
         string heapsOcupados = "";
         string codactual = "";
+        string tElegir = "";
 
         
 
@@ -5258,7 +5259,7 @@ namespace Proyecto2_Compi2_CSharp
 
                 case "Elegir":
                     {
-                        ActuarT(nodo.ChildNodes[5]);
+                        ActuarT(nodo.ChildNodes[3]);
                         break;
                     }
 
@@ -15784,9 +15785,9 @@ namespace Proyecto2_Compi2_CSharp
                                 {
                                     if (nodo.ChildNodes[1].Term.Name.Equals("=>"))
                                     {
-                                        string valor = ActuarT(nodo.ChildNodes[2]);
+                                        string valor = TraduccionT(nodo.ChildNodes[2]);
 
-                                        string preR = TraduccionC(nodo.ChildNodes[2]);
+                                        string preR = TraduccionT(nodo.ChildNodes[2]);
 
                                         string[] partes = preR.Split(',');
 
@@ -19081,11 +19082,26 @@ namespace Proyecto2_Compi2_CSharp
                     {
                         contadorL++;
 
+                        string operacion= TraduccionT(nodo.ChildNodes[1]);
+
+                        string[] partes = operacion.Split(',');
+
+                        if (partes.Length == 2)
+                        {
+                            respuesta += partes[0];
+                            tElegir = partes[1];
+                        }
+                        else
+                        {
+                            tElegir = partes[0];
+                        }
+
                         salidatree ="L" + contadorL + " ";
 
+                        string s= "L" + contadorL + " ";
                         respuesta += TraduccionT(nodo.ChildNodes[3]);
 
-                        respuesta += "\r\nL" + contadorL + " ";
+                        respuesta += "\r\n" + s;
 
 
                         break;
@@ -19109,9 +19125,10 @@ namespace Proyecto2_Compi2_CSharp
 
                 case "Caso":
                     {
+
                         if (nodo.ChildNodes[0].Term.Name == "Condicion")
                         {
-                            string pre = TraduccionT(nodo.ChildNodes[1]);
+                            string pre = TraduccionT(nodo.ChildNodes[0]);
                             int lfalso = contadorL - 1;
 
 
@@ -19119,10 +19136,19 @@ namespace Proyecto2_Compi2_CSharp
 
                             if (partes.Length != 4)
                             {
-                                for (int x = 0; x < partes.Length; x++)
+                                if (partes.Length == 1)
                                 {
-                                    respuesta += partes[x];
+                                    respuesta += "\r\nif " + tElegir + " == " + partes[0];
                                 }
+                                else
+                                {
+                                    for (int x = 0; x < partes.Length; x++)
+                                    {
+                                        respuesta += partes[x];
+                                    }
+                                }
+
+                                
                             }
                             else
                             {
@@ -19131,23 +19157,36 @@ namespace Proyecto2_Compi2_CSharp
                                     respuesta += partes[x];
                                 }
                             }
-                            if (nodo.ChildNodes[1].ChildNodes[0].ChildNodes.Count == 1)
+                            if (nodo.ChildNodes[0].ChildNodes[0].ChildNodes.Count == 1)
                             {
+                                contadorL++;
+                                respuesta += " Goto L" + lfalso + " ";
+                                respuesta += "\r\nGoto L" + contadorL + " ";
                                 respuesta += "\r\nL" + lfalso + " ";
-                                respuesta += TraduccionT(nodo.ChildNodes[3]);
+                                respuesta += TraduccionT(nodo.ChildNodes[2]);
+                                respuesta += "\r\nGoto L" + contadorL + " ";
                                 respuesta += "\r\nL" + contadorL + " ";
 
                             }
                             else
                             {
+                                contadorL++;
+                                respuesta += " Goto L" + contadorL + " ";
+                                respuesta += "\r\nGoto L" + lfalso + " ";
+                                respuesta += "\r\nL" + lfalso + " ";
                                 respuesta += "\r\nL" + contadorL + " ";
-                                respuesta += TraduccionT(nodo.ChildNodes[3]);
+                                respuesta += TraduccionT(nodo.ChildNodes[2]);
+                                respuesta += "\r\nGoto L" + lfalso + " ";
                                 respuesta += "\r\nL" + lfalso + " ";
                             }
+
+                            contadorL++;
+                            //contadorL++;
                         }
                         else
                         {
-                            respuesta += TraduccionT(nodo.ChildNodes[3]);
+                            respuesta += TraduccionT(nodo.ChildNodes[2]);
+
                         }
 
                             break;
@@ -20747,10 +20786,55 @@ namespace Proyecto2_Compi2_CSharp
         {
             string respuesta="";
 
-            //Regla 8
+            //Regla 2
 
             string[] lineas = codigo.Split('\n');
 
+            for (int x = 0; x < lineas.Length; x++)
+            {
+                if (lineas[x].Contains("Goto"))
+                {
+                    if (x != (lineas.Length - 1))
+                    {
+                        if (lineas[x+1].Contains("Goto"))
+                        {
+                            if (!lineas[x].Contains("if"))
+                            {
+                                if (txtOp.Text == "")
+                                {
+                                    txtOp.Text = "Segun Regla 2: No Se Alcanza La Linea " + (x + 1) + " Sera Eliminada\r\n Linea Eliminada: " + lineas[x + 1];
+                                }
+                                else
+                                {
+                                    txtOp.Text += "Segun Regla 2: No Se Alcanza La Linea " + (x + 1) + " Sera Eliminada\r\n Linea Eliminada: " + lineas[x + 1];
+                                }
+
+                                respuesta += lineas[x] + "\n";
+                                x++;
+                            }
+                            else
+                            {
+                                respuesta += lineas[x] + "\n";
+                            }
+
+                            
+                        }
+
+
+                    }
+
+                }
+                else
+                {
+                    respuesta += lineas[x] + "\n";
+                }
+            }
+
+
+            //Regla 8
+
+            lineas = respuesta.Split('\n');
+            respuesta = "";
             for (int x = 0; x < lineas.Length; x++)
             {
                 if(lineas[x].Contains("+ 0"))
